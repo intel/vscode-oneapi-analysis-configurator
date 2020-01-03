@@ -152,7 +152,8 @@
 	"scripts": {
 		"vscode:prepublish": "npm run compile",
 		"compile": "tsc -p ./",
-		"watch": "tsc -watch -p ./"
+		"watch": "tsc -watch -p ./",
+		"package": "vsce package --yarn --baseContentUrl https://gitlab.devtools.intel.com/sip-oneapi/vscode-launcher-plugin/raw/master/"
 	},
 	"devDependencies": {
 		"@types/mkdirp": "^0.5.2",

@@ -1,0 +1,172 @@
+{
+	"name": "perf-tools",
+	"displayName": "Intel Perf Tools Integration Test",
+	"description": "Proof of Concept Test",
+	"version": "0.0.1",
+	"publisher": "SIP",
+	"enableProposedApi": true,
+	"engines": {
+		"vscode": "^1.32.0"
+	},
+	"categories": [
+		"Other"
+	],
+	"activationEvents": [
+		"onView:perfTools",
+		"onCommand:workbench.action.tasks.runTask"
+	],
+	"main": "./out/extension.js",
+	"contributes": {
+		"viewsContainers": {
+			"activitybar": [
+				{
+					"id": "intel-oneapi-container",
+					"title": "Intel Performance Tools",
+					"icon": "media/intel.png"
+				}
+			]
+		},
+		"views": {
+			"intel-oneapi-container": [
+				{
+					"id": "perfTools",
+					"name": "Perf Tools"
+				}
+			]
+		},
+		"commands": [
+			{
+				"command": "perfTools.refreshEntry",
+				"title": "Refresh",
+				"icon": {
+					"light": "resources/light/refresh.svg",
+					"dark": "resources/dark/refresh.svg"
+				}
+			},
+			{
+				"command": "perfTools.addEntry",
+				"title": "Add"
+			},
+			{
+				"command": "perfTools.launchEntry",
+				"title": "Launch",
+				"icon": {
+					"light": "resources/rocket-launch.svg",
+					"dark": "resources/rocket-launch.svg"
+				}
+			},
+			{
+				"command": "perfTools.launchAdvisor",
+				"title": "Launch Advisor",
+				"icon": {
+					"light": "resources/rocket-launch.svg",
+					"dark": "resources/rocket-launch.svg"
+				}
+			},
+			{
+				"command": "perfTools.launchVTune",
+				"title": "Launch VTune",
+				"icon": {
+					"light": "resources/rocket-launch.svg",
+					"dark": "resources/rocket-launch.svg"
+				}
+			},
+			{
+				"command": "perfTools.deleteEntry",
+				"title": "Delete"
+			}
+		],
+		"menus": {
+			"view/title": [
+				{
+					"command": "perfTools.refreshEntry",
+					"when": "view == perfTools",
+					"group": "navigation"
+				},
+				{
+					"command": "perfTools.addEntry",
+					"when": "view == perfTools"
+				}
+			],
+			"view/item/context": [
+				{
+					"command": "perfTools.launchEntry",
+					"when": "view == perfTools && viewItem == perftools",
+					"group": "inline"
+				},
+				{
+					"command": "perfTools.deleteEntry",
+					"when": "view == perfTools && viewItem == perftools"
+				}
+			],
+			"explorer/context": [
+				{
+					"command": "perfTools.launchAdvisor"
+				},
+				{
+					"command": "perfTools.launchVTune"
+				}
+			]
+		},
+		"configuration": [
+			{
+				"title": "Intel Performance Tools",
+				"properties": {
+					"intel.oneapi.install-root": {
+						"type": "string",
+						"description": "Root install location for Intel oneAPI",
+						"scope": "window"
+					},
+					"application.executable-path": {
+						"type": "string",
+						"description": "Path of the executable to analyze",
+						"scope": "resource"
+					},
+					"advisor.project-folder": {
+						"type": "string",
+						"default": "./advisor",
+						"description": "Path of the Intel Advisor Project Folder",
+						"scope":"resource"
+					},
+					"vtune.project-folder": {
+						"type": "string",
+						"default": "./vtune",
+						"description": "Path of the Intel VTune Project Folder",
+						"scope":"resource"
+					}
+				}
+			}
+		],
+		"taskDefinitions": [
+			{
+				"type": "toolProvider",
+				"properties": {
+					"test1": {
+						"type": "string",
+						"description": "Testing"
+					}
+				}
+			}
+		]
+	},
+	"scripts": {
+		"vscode:prepublish": "npm run compile",
+		"compile": "tsc -p ./",
+		"watch": "tsc -watch -p ./"
+	},
+	"devDependencies": {
+		"@types/mkdirp": "^0.5.2",
+		"@types/node": "^10.12.21",
+		"@types/rimraf": "^2.0.2",
+		"@types/vscode": "^1.36.0",
+		"typescript": "^3.5.1",
+		"tslint": "^5.12.1"
+	},
+	"dependencies": {
+		"jsonc-parser": "^0.4.2",
+		"ftp": "^0.3.10",
+		"mkdirp": "^0.5.1",
+		"rimraf": "^2.6.2",
+		"promisify-child-process": "^3.1.1"
+	}
+}

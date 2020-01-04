@@ -161,6 +161,7 @@
 		"@types/rimraf": "^2.0.2",
 		"@types/vscode": "^1.36.0",
 		"typescript": "^3.5.1",
+		"vsce": "^1.71.0",
 		"tslint": "^5.12.1"
 	},
 	"dependencies": {

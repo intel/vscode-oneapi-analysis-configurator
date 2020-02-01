@@ -1,9 +1,9 @@
 {
-	"name": "perf-tools",
-	"displayName": "Intel Perf Tools Integration Test",
-	"description": "Proof of Concept Test",
-	"version": "0.0.1",
-	"publisher": "SIP",
+	"name": "intel-performance-tools-launcher",
+	"displayName": "Intel® Performance Tools Launcher",
+	"description": "This extension enables launching Intel® Performance Tools, Intel VTune™ and Intel Advisor, and passing project specific parameters to the tool",
+	"version": "0.0.2",
+	"publisher": "Intel",
 	"enableProposedApi": true,
 	"engines": {
 		"vscode": "^1.36.0"
@@ -12,41 +12,12 @@
 		"Other"
 	],
 	"activationEvents": [
-		"onView:perfTools",
-		"onCommand:workbench.action.tasks.runTask"
+		"onCommand:workbench.action.tasks.runTask",
+		"*"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
-		"viewsContainers": {
-			"activitybar": [
-				{
-					"id": "intel-oneapi-container",
-					"title": "Intel Performance Tools",
-					"icon": "media/intel.png"
-				}
-			]
-		},
-		"views": {
-			"intel-oneapi-container": [
-				{
-					"id": "perfTools",
-					"name": "Perf Tools"
-				}
-			]
-		},
 		"commands": [
-			{
-				"command": "perfTools.refreshEntry",
-				"title": "Refresh",
-				"icon": {
-					"light": "resources/light/refresh.svg",
-					"dark": "resources/dark/refresh.svg"
-				}
-			},
-			{
-				"command": "perfTools.addEntry",
-				"title": "Add"
-			},
 			{
 				"command": "perfTools.launchEntry",
 				"title": "Launch",
@@ -70,35 +41,9 @@
 					"light": "resources/rocket-launch.svg",
 					"dark": "resources/rocket-launch.svg"
 				}
-			},
-			{
-				"command": "perfTools.deleteEntry",
-				"title": "Delete"
 			}
 		],
 		"menus": {
-			"view/title": [
-				{
-					"command": "perfTools.refreshEntry",
-					"when": "view == perfTools",
-					"group": "navigation"
-				},
-				{
-					"command": "perfTools.addEntry",
-					"when": "view == perfTools"
-				}
-			],
-			"view/item/context": [
-				{
-					"command": "perfTools.launchEntry",
-					"when": "view == perfTools && viewItem == perftools",
-					"group": "inline"
-				},
-				{
-					"command": "perfTools.deleteEntry",
-					"when": "view == perfTools && viewItem == perftools"
-				}
-			],
 			"explorer/context": [
 				{
 					"command": "perfTools.launchAdvisor"
@@ -112,9 +57,14 @@
 			{
 				"title": "Intel Performance Tools",
 				"properties": {
-					"intel.oneapi.install-root": {
+					"intel.advisor.install-root": {
 						"type": "string",
-						"description": "Root install location for Intel oneAPI",
+						"description": "Root install location for Intel Advisor",
+						"scope": "window"
+					},
+					"intel.vtune.install-root": {
+						"type": "string",
+						"description": "Root install location for Intel VTune",
 						"scope": "window"
 					},
 					"application.executable-path": {

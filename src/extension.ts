@@ -2,17 +2,16 @@
 
 import * as vscode from 'vscode';
 
-import { ToolProvider, Tool } from './perfTools';
+import { Tool } from './perfTools';
+import { ToolProvider } from "./ToolProvider";
 
 let advisorStatusBarItem: vscode.StatusBarItem, vtuneStatusBarItem: vscode.StatusBarItem;
 
 export function activate({ subscriptions }: vscode.ExtensionContext) {
 
+	// Todo: The extension is currently activated at startup, as activationEvents in package.json uses "*". Find the viewID for explorer so it could be activated via "onView:viewId".
+
 	const perfToolsProvider = new ToolProvider(vscode.workspace.rootPath);
-	vscode.window.registerTreeDataProvider('perfTools', perfToolsProvider);
-	vscode.commands.registerCommand('perfTools.refreshEntry', () => perfToolsProvider.refresh());
-	vscode.commands.registerCommand('extension.showMessage', moduleName => vscode.window.showInformationMessage('Informative Message!'));
-	vscode.commands.registerCommand('perfTools.addEntry', () => vscode.window.showInformationMessage(`Successfully called add entry.`));
 	vscode.commands.registerCommand('perfTools.launchEntry', async (node: Tool) => {
 		let url = await perfToolsProvider.getBaseUri(node.folderRoot);
 		perfToolsProvider.quickLaunch(perfToolsProvider.buildTool(node.id, url));
@@ -26,8 +25,6 @@ export function activate({ subscriptions }: vscode.ExtensionContext) {
 		let uri = await perfToolsProvider.getBaseUri(node);
 		perfToolsProvider.quickLaunch(perfToolsProvider.buildTool("vtune", uri));
 	});
-
-	vscode.commands.registerCommand('perfTools.deleteEntry', (node: Tool) => vscode.window.showInformationMessage(`Successfully called delete entry on ${node.label}.`));
 
 	var type = "toolProvider";
 	vscode.tasks.registerTaskProvider(type, {
@@ -45,17 +42,5 @@ export function activate({ subscriptions }: vscode.ExtensionContext) {
 			return task;
 		}
 	});
-
-	// create new status bar items
-	advisorStatusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 1);
-	advisorStatusBarItem.command = 'perfTools.launchAdvisor';
-	advisorStatusBarItem.text = 'Launch Advisor';
-	subscriptions.push(advisorStatusBarItem);
-	advisorStatusBarItem.show();
-	vtuneStatusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 2);
-	vtuneStatusBarItem.command = 'perfTools.launchVTune';
-	vtuneStatusBarItem.text = 'Launch VTune';
-	subscriptions.push(vtuneStatusBarItem);
-	vtuneStatusBarItem.show();
 }
 

@@ -1,12 +1,13 @@
 {
-	"name": "intel-performance-tools-launcher",
-	"displayName": "Intel® Performance Tools Launcher",
-	"description": "This extension enables launching Intel® Performance Tools, Intel VTune™ and Intel Advisor, and passing project specific parameters to the tool",
+	"name": "profiling-tools-launcher",
+	"displayName": "Intel® oneAPI Profilng Tools Launcher",
+	"description": "Launch Intel® VTune™ or Intel® Advisor while passing project specific parameters to the tool",
+	"publisher": "intel-corporation",
 	"version": "0.0.2",
-	"publisher": "Intel",
-	"enableProposedApi": true,
+	"license": "MIT",
+	"preview": true,
 	"engines": {
-		"vscode": "^1.36.0"
+		"vscode": "^1.42.0"
 	},
 	"categories": [
 		"Other"
@@ -19,70 +20,42 @@
 	"contributes": {
 		"commands": [
 			{
-				"command": "perfTools.launchEntry",
-				"title": "Launch",
-				"icon": {
-					"light": "resources/rocket-launch.svg",
-					"dark": "resources/rocket-launch.svg"
-				}
+				"command": "intelOneAPI.profiling.launchAdvisor",
+				"title": "Intel oneAPI: Launch Advisor"
 			},
 			{
-				"command": "perfTools.launchAdvisor",
-				"title": "Launch Advisor",
-				"icon": {
-					"light": "resources/rocket-launch.svg",
-					"dark": "resources/rocket-launch.svg"
-				}
-			},
-			{
-				"command": "perfTools.launchVTune",
-				"title": "Launch VTune",
-				"icon": {
-					"light": "resources/rocket-launch.svg",
-					"dark": "resources/rocket-launch.svg"
-				}
+				"command": "intelOneAPI.profiling.launchVTune",
+				"title": "Intel oneAPI: Launch VTune™"
 			}
 		],
-		"menus": {
-			"explorer/context": [
-				{
-					"command": "perfTools.launchAdvisor"
-				},
-				{
-					"command": "perfTools.launchVTune"
-				}
-			]
-		},
 		"configuration": [
 			{
-				"title": "Intel Performance Tools",
+				"title": "Intel® oneAPI Profiling Tools Launcher",
 				"properties": {
-					"intel.advisor.install-root": {
-						"type": "string",
-						"description": "Root install location for Intel Advisor",
-						"scope": "window"
-					},
-					"intel.vtune.install-root": {
-						"type": "string",
-						"description": "Root install location for Intel VTune",
-						"scope": "window"
-					},
-					"application.executable-path": {
+					"intelOneAPI.profiling.binary-path": {
 						"type": "string",
 						"description": "Path of the executable to analyze",
 						"scope": "resource"
 					},
-					"advisor.project-folder": {
+					"intelOneAPI.profiling.advisor.install-root": {
 						"type": "string",
-						"default": "./advisor",
-						"description": "Path of the Intel Advisor Project Folder",
-						"scope":"resource"
+						"description": "Root install location for Intel® Advisor",
+						"scope": "window"
 					},
-					"vtune.project-folder": {
+					"intelOneAPI.profiling.vtune.install-root": {
 						"type": "string",
-						"default": "./vtune",
-						"description": "Path of the Intel VTune Project Folder",
-						"scope":"resource"
+						"description": "Root install location for Intel® VTune™",
+						"scope": "window"
+					},
+					"intelOneAPI.profiling.advisor.project-folder": {
+						"type": "string",
+						"description": "Path of the Intel® Advisor project folder",
+						"scope": "resource"
+					},
+					"intelOneAPI.profiling.vtune.project-folder": {
+						"type": "string",
+						"description": "Path of the Intel® VTune™ project folder",
+						"scope": "resource"
 					}
 				}
 			}
@@ -103,22 +76,24 @@
 		"vscode:prepublish": "npm run compile",
 		"compile": "tsc -p ./",
 		"watch": "tsc -watch -p ./",
+		"pretest": "npm run compile",
+		"test": "node ./out/test/runTest.js",
+		"lint": "eslint -c .eslintrc.js --ext .ts ./",
 		"package": "vsce package --yarn --baseContentUrl https://gitlab.devtools.intel.com/sip-oneapi/vscode-launcher-plugin/raw/master/"
 	},
 	"devDependencies": {
 		"@types/mkdirp": "^0.5.2",
+		"@types/mocha": "^7.0.1",
 		"@types/node": "^10.12.21",
 		"@types/rimraf": "^2.0.2",
 		"@types/vscode": "^1.36.0",
-		"typescript": "^3.5.1",
-		"vsce": "^1.71.0",
-		"tslint": "^5.12.1"
+		"@typescript-eslint/eslint-plugin": "^2.19.0",
+		"@typescript-eslint/parser": "^2.19.0",
+		"eslint": "^6.8.0",
+		"mocha": "^7.0.1",
+		"typescript": "^3.3.1",
+		"vsce": "^1.73.0",
+		"vscode-test": "^1.3.0"
 	},
-	"dependencies": {
-		"jsonc-parser": "^0.4.2",
-		"ftp": "^0.3.10",
-		"mkdirp": "^0.5.1",
-		"rimraf": "^2.6.2",
-		"promisify-child-process": "^3.1.1"
-	}
+	"dependencies": {}
 }

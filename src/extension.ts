@@ -1,46 +1,75 @@
-'use strict';
-
+/**
+ * Copyright (c) 2020 Intel Corporation
+ * Licensed under the MIT License. See the project root LICENSE
+ * 
+ * SPDX-License-Identifier: MIT
+ */
 import * as vscode from 'vscode';
+import { ProjectSettings } from './ProjectSettings';
+import { AdvisorLaunchScriptWriter } from './AdvisorLaunchScriptWriter';
+import { VtuneLaunchScriptWriter } from './VtuneLaunchScriptWriter';
+	
+// Return the uri corresponding to the base folder of the item currently selected in the explorer.
+// If the node is not given, ask the user to select the base folder
+function getBaseUri(node: vscode.Uri): vscode.Uri | undefined {
+	let baseUri: vscode.Uri | undefined;
 
-import { Tool } from './perfTools';
-import { ToolProvider } from "./ToolProvider";
+	// If only one folder, just return its uri
+	const folders = vscode.workspace.workspaceFolders;
+	if (folders && folders.length === 1) {
+		baseUri = folders[0].uri;
+	}
 
-let advisorStatusBarItem: vscode.StatusBarItem, vtuneStatusBarItem: vscode.StatusBarItem;
+	// Get the folder corresponding to the selected node
+	if (node) {
+		const folder: vscode.WorkspaceFolder | undefined = vscode.workspace.getWorkspaceFolder(node);
+		if (folder) {
+			baseUri = folder.uri;
+		}
+	}
 
-export function activate({ subscriptions }: vscode.ExtensionContext) {
+	return baseUri;
+}
 
-	// Todo: The extension is currently activated at startup, as activationEvents in package.json uses "*". Find the viewID for explorer so it could be activated via "onView:viewId".
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export function activate(context: vscode.ExtensionContext): void{
+	// Todo: The extension is currently activated at startup, as activationEvents in package.json uses '*'. 
+	// Find the viewID for explorer so it could be activated via 'onView:viewId'.
 
-	const perfToolsProvider = new ToolProvider(vscode.workspace.rootPath);
-	vscode.commands.registerCommand('perfTools.launchEntry', async (node: Tool) => {
-		let url = await perfToolsProvider.getBaseUri(node.folderRoot);
-		perfToolsProvider.quickLaunch(perfToolsProvider.buildTool(node.id, url));
+	// Register the commands that will interact with the user and write the launcher scripts.
+	vscode.commands.registerCommand('intelOneAPI.profiling.launchAdvisor', async (selectedNode: vscode.Uri) => {
+		const settings = new ProjectSettings('advisor', 'Intel® Advisor', getBaseUri(selectedNode));
+		await settings.getProjectSettings();
+		
+		const writer = new AdvisorLaunchScriptWriter();
+		writer.writeLauncherScript(settings.getToolInstallFolder(), settings.getToolOutputFolder(), settings.getProjectBinary());
+	});
+	vscode.commands.registerCommand('intelOneAPI.profiling.launchVTune', async (selectedNode: vscode.Uri) => {
+		const settings = new ProjectSettings('vtune', 'Intel® VTune™', getBaseUri(selectedNode));
+		await settings.getProjectSettings();
+		
+		const writer = new VtuneLaunchScriptWriter();
+		writer.writeLauncherScript(settings.getToolInstallFolder(), settings.getToolOutputFolder(), settings.getProjectBinary());
 	});
 
-	vscode.commands.registerCommand('perfTools.launchAdvisor', async (node: vscode.Uri) => {
-		let uri = await perfToolsProvider.getBaseUri(node);
-		perfToolsProvider.quickLaunch(perfToolsProvider.buildTool("advisor", uri));
-	});
-	vscode.commands.registerCommand('perfTools.launchVTune', async (node: vscode.Uri) => {
-		let uri = await perfToolsProvider.getBaseUri(node);
-		perfToolsProvider.quickLaunch(perfToolsProvider.buildTool("vtune", uri));
-	});
-
-	var type = "toolProvider";
+	// Register the tasks that will invoke the launcher scripts.
+	const type = 'toolProvider';
 	vscode.tasks.registerTaskProvider(type, {
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		provideTasks(token?: vscode.CancellationToken) {
-			var executionVTune = new vscode.ShellExecution("/tmp/intel/inteloneapi/launch-vtune.sh");
-			var executionAdvisor = new vscode.ShellExecution("/tmp/intel/inteloneapi/launch-advisor.sh");
+			const advisor = new AdvisorLaunchScriptWriter();
+			const vtune = new VtuneLaunchScriptWriter();
 
 			return [
 				new vscode.Task({ type: type }, vscode.TaskScope.Workspace,
-					"Launch VTune", "Intel Tools", executionVTune),
+					'Launch Advisor', 'Intel® oneAPI', new vscode.ShellExecution(advisor.getLauncherScriptPath())),
 				new vscode.Task({ type: type }, vscode.TaskScope.Workspace,
-					"Launch Advisor", "Intel Tools", executionAdvisor)];
-		},
+					'Launch VTune™', 'Intel® oneAPI', new vscode.ShellExecution(vtune.getLauncherScriptPath()))
+				];
+			},
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		resolveTask(task: vscode.Task, token?: vscode.CancellationToken) {
 			return task;
 		}
 	});
 }
-

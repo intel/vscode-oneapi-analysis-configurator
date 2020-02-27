@@ -10,7 +10,7 @@ import { AdvisorLaunchScriptWriter } from './AdvisorLaunchScriptWriter';
 import { VtuneLaunchScriptWriter } from './VtuneLaunchScriptWriter';
 	
 // Return the uri corresponding to the base folder of the item currently selected in the explorer.
-// If the node is not given, ask the user to select the base folder
+// If the node is not given, ask the user to select the base folder.
 function getBaseUri(node: vscode.Uri): vscode.Uri | undefined {
 	let baseUri: vscode.Uri | undefined;
 
@@ -42,14 +42,14 @@ export function activate(context: vscode.ExtensionContext): void{
 		await settings.getProjectSettings();
 		
 		const writer = new AdvisorLaunchScriptWriter();
-		writer.writeLauncherScript(settings.getToolInstallFolder(), settings.getToolOutputFolder(), settings.getProjectBinary());
+		writer.writeLauncherScript(settings);
 	});
 	vscode.commands.registerCommand('intelOneAPI.profiling.launchVTune', async (selectedNode: vscode.Uri) => {
 		const settings = new ProjectSettings('vtune', 'Intel® VTune™', getBaseUri(selectedNode));
 		await settings.getProjectSettings();
 		
 		const writer = new VtuneLaunchScriptWriter();
-		writer.writeLauncherScript(settings.getToolInstallFolder(), settings.getToolOutputFolder(), settings.getProjectBinary());
+		writer.writeLauncherScript(settings);
 	});
 
 	// Register the tasks that will invoke the launcher scripts.

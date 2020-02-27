@@ -8,6 +8,12 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import * as os from 'os';
 
+//
+// This class prompts the user for the binary to be profiled,
+// the profiler install location, and the profiler output directory.
+// It then caches these settings in the local .vscode/settings.json and
+// re-loads them on subsequent invocations so that the user is not prompted.
+//
 export class ProjectSettings {
 	private projectRoot: vscode.Uri | undefined;
 	private projectBinary: string;
@@ -16,6 +22,11 @@ export class ProjectSettings {
 	private toolInstallFolder: string;
 	private toolOutputFolder: string;
 
+	// Initialize member variables.
+	// tool - The short name for the tool (advisor/vtune) that can be used in file path construction.
+	// toolName - The display name™ of the tool used when prompting the user for information.
+	// rootNode - the root node of the selected item in the VS Code Explorer, used to find the root path
+	//            of the currently open folder or workspace.
 	public constructor(tool: string, toolName: string, rootNode: vscode.Uri | undefined) {
 		// Project-specific values.
 		this.projectRoot = rootNode;
@@ -28,6 +39,8 @@ export class ProjectSettings {
 		this.toolOutputFolder = '';
 	}
 
+	// Prompt the user for all information required to launch the profiler.
+	// Future work is planned to improve the UX so that the user is prompted less.
 	public async getProjectSettings(): Promise<void> {
 		if (!this.getProjectRootNode()) {
 			await this.promptForProjectRootNode();
@@ -43,6 +56,7 @@ export class ProjectSettings {
 		}
 	}
 
+	// Get the path of the executable to be profiled.
 	public getProjectBinary(): string {
 		if (!this.projectBinary && this.projectRoot) {
 			this.projectBinary = vscode.workspace.getConfiguration('intelOneAPI.profiling', this.projectRoot).get('binary-path') || '';
@@ -50,6 +64,7 @@ export class ProjectSettings {
 		return this.projectBinary;
 	}
 
+	// Prompt the user to browse to the executable to be profiled.
 	public async promptForProjectBinary(): Promise<void> {
 		const executableUri: vscode.Uri[] | undefined = await vscode.window.showOpenDialog({
 			canSelectMany: false,
@@ -67,6 +82,7 @@ export class ProjectSettings {
 		}
 	}
 
+	// Get the install directory of the profiler.
 	public getToolInstallFolder(): string {
 		if (!this.toolInstallFolder) {
 			this.toolInstallFolder = vscode.workspace.getConfiguration('intelOneAPI.profiling').get(this.toolName + '.install-root') || '';
@@ -74,6 +90,7 @@ export class ProjectSettings {
 		return this.toolInstallFolder;
 	}
 
+	// Prompt the user to provide the install directory of the profiler.
 	public async promptForToolInstallFolder(): Promise<void> {
 		const defaultPath = (os.type() === 'Windows_NT') ?
 			'C:\\Program Files (x86)\\inteloneapi\\' + this.toolName + '\\latest' :
@@ -89,6 +106,7 @@ export class ProjectSettings {
 		}
 	}
 	
+	// Get the path of the output directory of the profiler.
 	public getToolOutputFolder(): string {
 		if (!this.toolOutputFolder && this.projectRoot) {
 			this.toolOutputFolder = vscode.workspace.getConfiguration('intelOneAPI.profiling', this.projectRoot).get(this.toolName + '.project-folder') || '';
@@ -96,6 +114,7 @@ export class ProjectSettings {
 		return this.toolOutputFolder;
 	}
 
+	// Prompt the user to provide the output directory of the profiler.
 	public async promptForToolOutputFolder(): Promise<void> {
 		const toolProjectPath: string | undefined = await vscode.window.showInputBox({
 				prompt: 'Tool\'s Project Path',
@@ -112,9 +131,9 @@ export class ProjectSettings {
 		}
 	}
 
-	// The Workspace Folder methods exist for the sole case of a folder or VS Code workspace
-	// not being open when the launcher is invoked. Since there's nowhere to save the value,
-	// nothing is retrieved or updated in a settings file.
+	// WIP - The RootNode methods exist for the sole case of the extension being run
+	// without a folder or workspace open. There's no cache logic here since there
+	// won't be a .vscode/settings.json from which to read or write.
 	public getProjectRootNode(): string {
 		return (this.projectRoot) ? this.projectRoot.fsPath : '';
 	}

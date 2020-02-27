@@ -9,6 +9,7 @@ import * as path from 'path';
 import * as fs from 'fs';
 import * as os from 'os';
 import { LaunchScriptWriter } from './LaunchScriptWriter';
+import { ProjectSettings } from './ProjectSettings';
 
 export class AdvisorLaunchScriptWriter implements LaunchScriptWriter {
     private osType: string = os.type();
@@ -18,7 +19,11 @@ export class AdvisorLaunchScriptWriter implements LaunchScriptWriter {
         return path.join(os.tmpdir(), 'inteloneapi', `launch-advisor.${fileExt}`);
     }
 
-    public async writeLauncherScript(toolInstallFolder: string, toolOutputFolder: string, projectBinary: string): Promise<void> {
+    public async writeLauncherScript(settings: ProjectSettings): Promise<void> {
+        const toolInstallFolder = settings.getToolInstallFolder();
+        const toolOutputFolder = settings.getToolOutputFolder();
+        const projectBinary = settings.getProjectBinary();
+
 		if (!toolInstallFolder || !toolOutputFolder || !projectBinary) {
 			return;
 		}
@@ -30,7 +35,7 @@ export class AdvisorLaunchScriptWriter implements LaunchScriptWriter {
                 command = `#!/bin/bash\nsource "${toolInstallFolder}/env/vars.sh" && advixe-cl --create-project --project-dir "${toolOutputFolder}" -- "${projectBinary}" && advixe-gui "${toolOutputFolder}/e000"`;
                 break;
             case 'Windows_NT':
-                command = `@echo off\n"${toolInstallFolder}\\env\\vars.bat" && advixe-cl --create-project --project-dir "${toolOutputFolder}" -- "${projectBinary}" && advixe-gui "${toolOutputFolder}/e000"`;
+                command = `@echo off\r\n"${toolInstallFolder}\\env\\vars.bat" && advixe-cl --create-project --project-dir "${toolOutputFolder}" -- "${projectBinary}" && advixe-gui "${toolOutputFolder}/e000"`;
                 break;
         }
         if (command) {

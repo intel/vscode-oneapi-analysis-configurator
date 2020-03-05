@@ -26,7 +26,7 @@
 			},
 			{
 				"command": "intelOneAPI.profiling.launchVTune",
-				"title": "Intel oneAPI: Launch VTune"
+				"title": "Intel oneAPI: Launch VTune Profiler"
 			}
 		],
 		"configuration": [

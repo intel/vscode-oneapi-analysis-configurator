@@ -1,6 +1,6 @@
 {
 	"name": "profiling-tools-launcher",
-	"displayName": "Intel® oneAPI Profilng Tools Launcher",
+	"displayName": "Intel® oneAPI Profiling Tools Launcher",
 	"description": "Launch Intel® VTune™ Profiler or Intel® Advisor while passing project specific parameters to the tool",
 	"publisher": "intel-corporation",
 	"version": "0.0.2",

@@ -1,4 +1,4 @@
-# Intel® Profiling Tools Launchers
+﻿# Intel® Profiling Tools Launcher
 
 This is a plugin for seamless integration with Intel® Profiling Tools such as Intel® VTune™ Profiler and Intel® Advisor.
 

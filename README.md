@@ -1,8 +1,10 @@
 # Intel Profiling Tools Launchers
 
-This is is a proof of concept implementation to test and show how a VS Code plugin could be used to add simple launchers for Intel Profiling Tools such as VTune and Advisor.
+This is a plugin for seamless integration with Intel Profiling Tools such as Intel VTune™ Profiler and Intel Advisor.
 
-This is based on VS Code Tree View sample. For futher demonstration of VS Code capabilities see the samples.
+Identify performance bottlenecks with advanced sampling and profiling techniques in the Intel® VTune™ Profiler.
+
+Intel Advisor is a SIMD vectorization optimization and shared memory threading assistance tool for C, C++, C# and Fortran software developers and architects.
 
 # Running the project
 

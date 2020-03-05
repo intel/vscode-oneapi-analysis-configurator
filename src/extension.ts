@@ -45,7 +45,7 @@ export function activate(context: vscode.ExtensionContext): void{
 		writer.writeLauncherScript(settings);
 	});
 	vscode.commands.registerCommand('intelOneAPI.profiling.launchVTune', async (selectedNode: vscode.Uri) => {
-		const settings = new ProjectSettings('vtune', 'Intel® VTune™', getBaseUri(selectedNode));
+		const settings = new ProjectSettings('vtune', 'Intel® VTune™ Profiler', getBaseUri(selectedNode));
 		await settings.getProjectSettings();
 		
 		const writer = new VtuneLaunchScriptWriter();
@@ -64,7 +64,7 @@ export function activate(context: vscode.ExtensionContext): void{
 				new vscode.Task({ type: type }, vscode.TaskScope.Workspace,
 					'Launch Advisor', 'Intel® oneAPI', new vscode.ShellExecution(advisor.getLauncherScriptPath())),
 				new vscode.Task({ type: type }, vscode.TaskScope.Workspace,
-					'Launch VTune™', 'Intel® oneAPI', new vscode.ShellExecution(vtune.getLauncherScriptPath()))
+					'Launch VTune', 'Intel® oneAPI', new vscode.ShellExecution(vtune.getLauncherScriptPath()))
 				];
 			},
 		// eslint-disable-next-line @typescript-eslint/no-unused-vars

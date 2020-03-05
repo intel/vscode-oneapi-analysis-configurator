@@ -1,10 +1,11 @@
 {
 	"name": "profiling-tools-launcher",
 	"displayName": "Intel® oneAPI Profilng Tools Launcher",
-	"description": "Launch Intel® VTune™ or Intel® Advisor while passing project specific parameters to the tool",
+	"description": "Launch Intel® VTune™ Profiler or Intel® Advisor while passing project specific parameters to the tool",
 	"publisher": "intel-corporation",
 	"version": "0.0.2",
 	"license": "MIT",
+	"icon": "media/icon.png",
 	"preview": true,
 	"engines": {
 		"vscode": "^1.42.0"
@@ -25,7 +26,7 @@
 			},
 			{
 				"command": "intelOneAPI.profiling.launchVTune",
-				"title": "Intel oneAPI: Launch VTune™"
+				"title": "Intel oneAPI: Launch VTune"
 			}
 		],
 		"configuration": [
@@ -44,7 +45,7 @@
 					},
 					"intelOneAPI.profiling.vtune.install-root": {
 						"type": "string",
-						"description": "Root install location for Intel® VTune™",
+						"description": "Root install location for Intel® VTune™ Profiler",
 						"scope": "window"
 					},
 					"intelOneAPI.profiling.advisor.project-folder": {
@@ -54,7 +55,7 @@
 					},
 					"intelOneAPI.profiling.vtune.project-folder": {
 						"type": "string",
-						"description": "Path of the Intel® VTune™ project folder",
+						"description": "Path of the Intel® VTune™ Profiler project folder",
 						"scope": "resource"
 					}
 				}

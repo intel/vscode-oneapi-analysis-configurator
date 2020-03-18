@@ -1,15 +1,24 @@
 # Intel® oneAPI Profiling Tools Launcher
 
-This is a plugin for seamless integration with Intel® Profiling Tools such as Intel® VTune™ Profiler and Intel® Advisor.
+This is a plugin for seamless integration with Intel® Profiling Tools such as the Intel® VTune™ Profiler and Intel® Advisor.
 
-Identify performance bottlenecks with advanced sampling and profiling techniques in the Intel® VTune™ Profiler.
+Identify performance bottlenecks with advanced sampling and profiling techniques in the [Intel® VTune™ Profiler](https://software.intel.com/oneapi/vtune-profiler).
 
-Intel® Advisor is a SIMD vectorization optimization and shared memory threading assistance tool for C, C++, C# and Fortran software developers and architects.
+[Intel® Advisor](https://software.intel.com/oneapi/advisor) is a SIMD vectorization optimization and shared memory threading assistance tool for C, C++, C# and Fortran software developers and architects.
 
-# Running the project
+## Where to find Intel oneAPI toolkits.
 
+This extension does not provide any of the tools that are required to perform profiling.
+
+Please visit https://software.intel.com/oneapi for details.
+
+## Contributing 
+Install Visual Studio Code (at least version 1.42) and open this project within it. You also need `node + npm`.
 - Switch to project root folder
 - `npm install`
 - `code .`
-- `F5 to debug`
-- In the new instance of VS Code that opens: Open a folder (that has some project)  
+
+At this point you should be able to run the extension in the "Extension Development Host"
+
+## License
+This extension is released under the MIT License.

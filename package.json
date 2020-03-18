@@ -3,7 +3,7 @@
 	"displayName": "Intel® oneAPI Profiling Tools Launcher",
 	"description": "Launch Intel® VTune™ Profiler or Intel® Advisor while passing project specific parameters to the tool",
 	"publisher": "intel-corporation",
-	"version": "0.0.4",
+	"version": "0.0.5",
 	"license": "MIT",
 	"icon": "media/icon.png",
 	"preview": true,

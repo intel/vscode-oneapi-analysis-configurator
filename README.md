@@ -1,6 +1,6 @@
-# Intel® oneAPI Profiling Tools Launcher
+# Launcher for Intel oneAPI Analyzers
 
-This is a plugin for seamless integration with Intel® Profiling Tools such as the Intel® VTune™ Profiler and Intel® Advisor.
+This is a plugin for seamless integration with Intel® analysis tools such as the Intel® VTune™ Profiler and Intel® Advisor.
 
 Identify performance bottlenecks with advanced sampling and profiling techniques in the [Intel® VTune™ Profiler](https://software.intel.com/oneapi/vtune-profiler).
 
@@ -8,7 +8,7 @@ Identify performance bottlenecks with advanced sampling and profiling techniques
 
 ## Where to find Intel oneAPI toolkits.
 
-This extension does not provide any of the tools that are required to perform profiling.
+This extension does not provide any of the tools that are required to perform profiling or analysis.
 
 Please visit https://software.intel.com/oneapi for details.
 

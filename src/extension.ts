@@ -37,14 +37,14 @@ export function activate(context: vscode.ExtensionContext): void{
 	// Find the viewID for explorer so it could be activated via 'onView:viewId'.
 
 	// Register the commands that will interact with the user and write the launcher scripts.
-	vscode.commands.registerCommand('intelOneAPI.profiling.launchAdvisor', async (selectedNode: vscode.Uri) => {
+	vscode.commands.registerCommand('intelOneAPI.analysis.launchAdvisor', async (selectedNode: vscode.Uri) => {
 		const settings = new ProjectSettings('advisor', 'Intel® Advisor', getBaseUri(selectedNode));
 		await settings.getProjectSettings();
 		
 		const writer = new AdvisorLaunchScriptWriter();
 		writer.writeLauncherScript(settings);
 	});
-	vscode.commands.registerCommand('intelOneAPI.profiling.launchVTune', async (selectedNode: vscode.Uri) => {
+	vscode.commands.registerCommand('intelOneAPI.analysis.launchVTune', async (selectedNode: vscode.Uri) => {
 		const settings = new ProjectSettings('vtune', 'Intel® VTune™ Profiler', getBaseUri(selectedNode));
 		await settings.getProjectSettings();
 		

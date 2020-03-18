@@ -59,7 +59,7 @@ export class ProjectSettings {
 	// Get the path of the executable to be profiled.
 	public getProjectBinary(): string {
 		if (!this.projectBinary && this.projectRoot) {
-			this.projectBinary = vscode.workspace.getConfiguration('intelOneAPI.profiling', this.projectRoot).get('binary-path') || '';
+			this.projectBinary = vscode.workspace.getConfiguration('intelOneAPI.analysis', this.projectRoot).get('binary-path') || '';
 		}
 		return this.projectBinary;
 	}
@@ -77,7 +77,7 @@ export class ProjectSettings {
 				if (!path.isAbsolute(this.projectBinary)) {
 					this.projectBinary = path.join(this.projectRoot.fsPath, this.projectBinary);
 				}
-				vscode.workspace.getConfiguration('intelOneAPI.profiling', this.projectRoot).update('binary-path', this.projectBinary);
+				vscode.workspace.getConfiguration('intelOneAPI.analysis', this.projectRoot).update('binary-path', this.projectBinary);
 			}
 		}
 	}
@@ -85,7 +85,7 @@ export class ProjectSettings {
 	// Get the install directory of the profiler.
 	public getToolInstallFolder(): string {
 		if (!this.toolInstallFolder) {
-			this.toolInstallFolder = vscode.workspace.getConfiguration('intelOneAPI.profiling').get(this.toolName + '.install-root') || '';
+			this.toolInstallFolder = vscode.workspace.getConfiguration('intelOneAPI.analysis').get(this.toolName + '.install-root') || '';
 		}
 		return this.toolInstallFolder;
 	}
@@ -102,14 +102,14 @@ export class ProjectSettings {
 		});
 		if (root) {
 			this.toolInstallFolder = root;
-			vscode.workspace.getConfiguration('intelOneAPI.profiling').update(this.toolName + '.install-root', this.toolInstallFolder);
+			vscode.workspace.getConfiguration('intelOneAPI.analysis').update(this.toolName + '.install-root', this.toolInstallFolder);
 		}
 	}
 	
 	// Get the path of the output directory of the profiler.
 	public getToolOutputFolder(): string {
 		if (!this.toolOutputFolder && this.projectRoot) {
-			this.toolOutputFolder = vscode.workspace.getConfiguration('intelOneAPI.profiling', this.projectRoot).get(this.toolName + '.project-folder') || '';
+			this.toolOutputFolder = vscode.workspace.getConfiguration('intelOneAPI.analysis', this.projectRoot).get(this.toolName + '.project-folder') || '';
 		}
 		return this.toolOutputFolder;
 	}
@@ -127,7 +127,7 @@ export class ProjectSettings {
 					this.toolOutputFolder = path.join(this.projectRoot.fsPath, this.toolOutputFolder);
 				}
 			}
-			vscode.workspace.getConfiguration('intelOneAPI.profiling', this.projectRoot).update(this.toolName + '.project-folder', this.toolOutputFolder);
+			vscode.workspace.getConfiguration('intelOneAPI.analysis', this.projectRoot).update(this.toolName + '.project-folder', this.toolOutputFolder);
 		}
 	}
 

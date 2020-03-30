@@ -1,10 +1,16 @@
 # Launcher for Intel oneAPI Analyzers
 
-This is an extension for seamless integration with Intel® analysis tools such as the Intel® VTune™ Profiler and Intel® Advisor.
+This is an extension for seamless integration with Intel® analysis tools including the Intel® VTune™ Profiler and Intel® Advisor.
 
-Identify performance bottlenecks with advanced sampling and profiling techniques in the [Intel® VTune™ Profiler](https://software.intel.com/oneapi/vtune-profiler).
 
-[Intel® Advisor](https://software.intel.com/oneapi/advisor) is a SIMD vectorization optimization and shared memory threading assistance tool for C, C++, C# and Fortran software developers and architects.
+[Intel® VTune™ Profiler](https://software.intel.com/oneapi/vtune-profiler) is a performance profiling tool that provides advanced
+sampling and profiling techniques to quickly analyze code, isolate issues and deliver insights for optimizing performance on modern
+processors. 
+
+
+[Intel® Advisor](https://software.intel.com/oneapi/advisor) is for software architects and developers who need the right
+information and recommendations to make the best design and optimization decisions for efficient vectorization, threading, and
+offloading to accelerators.
 
 ## Where to find Intel oneAPI toolkits.
 

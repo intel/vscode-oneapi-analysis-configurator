@@ -93,8 +93,8 @@ export class ProjectSettings {
 	// Prompt the user to provide the install directory of the profiler.
 	public async promptForToolInstallFolder(): Promise<void> {
 		const defaultPath = (os.type() === 'Windows_NT') ?
-			'C:\\Program Files (x86)\\inteloneapi\\' + this.toolName + '\\latest' :
-			'/opt/intel/inteloneapi/' + this.toolName + '/latest';
+			'C:\\Program Files (x86)\\intel\\oneAPI\\' + this.toolName + '\\latest' :
+			'/opt/intel/oneapi/' + this.toolName + '/latest';
 
 		const root: string | undefined = await vscode.window.showInputBox({
 			prompt: this.toolDisplayName + ' Installation Path',

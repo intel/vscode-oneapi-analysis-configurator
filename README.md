@@ -12,7 +12,7 @@ processors.
 information and recommendations to make the best design and optimization decisions for efficient vectorization, threading, and
 offloading to accelerators.
 
-## Where to find Intel oneAPI toolkits.
+## Where to find Intel oneAPI toolkits
 
 This extension does not provide any of the tools that are required to perform profiling or analysis.
 
@@ -22,7 +22,7 @@ Please visit https://software.intel.com/oneapi for details.
 You need to have at least one of the above Intel analysis tools installed for this extension to work and be useful. 
 - Open a Visual Studio Code project.
 - Build your project to create the executable you plan to analyze.
-- Press 'Ctrl+Shift+P' to open VS Code's Command Pallet.
+- Press 'Ctrl+Shift+P' to open VS Code's Command Palette.
 - Type 'launch' to search for tasks containing the term 'launch'
 - Click on 'Intel oneAPI:Launch Advisor' or 'Intel oneAPI: Launch VTune Profiler'
 - Select the executable you want to analyze. This needs to be done once for a workspace unless you want to analyze a different executable.

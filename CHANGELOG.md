@@ -1,5 +1,10 @@
 # Change Log
 
+##  0.0.8
+
+- Change default install location for the tools
+- Fix typos in README.md
+
 ##  0.0.7
 
 - Update logo and README.md

@@ -2,7 +2,7 @@ import { Workbench, VSBrowser } from "vscode-extension-tester";
 import { DialogHandler } from "vscode-extension-tester-native";
 import { execSync } from "child_process";
 import { expect } from "chai";
-import { mkdir, rmdirSync } from "fs";
+import { mkdirSync, rmdirSync } from "fs";
 import * as path from "path";
 
 describe("Launcher Extension basic tests", () => {
@@ -12,9 +12,7 @@ describe("Launcher Extension basic tests", () => {
     let workspacePath = path.join(process.cwd(), "test-data", "launchers-workspace");
 
     before(() => {
-        mkdir(workspacePath, { recursive: true }, (err: any) => {
-            if (err) throw err;
-        });
+        mkdirSync(workspacePath, { recursive: true });
         
         const sourcePath = path.join(process.cwd(), "src", "test", "ui", "assets", "hello-world.c");
         executablePath = path.join(workspacePath, "hello-world");

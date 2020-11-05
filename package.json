@@ -3,10 +3,10 @@
 	"displayName": "Launcher for Intel oneAPI Analyzers",
 	"description": "Launch Intel® VTune™ Profiler or Intel® Advisor while passing project specific parameters to the tool",
 	"publisher": "intel-corporation",
-	"version": "0.0.8",
+	"version": "0.0.9",
 	"license": "MIT",
 	"icon": "media/icon.png",
-	"preview": true,
+	"keywords": ["intel", "oneapi", "Advisor", "vtune", "iot"],
 	"engines": {
 		"vscode": "^1.42.0"
 	},

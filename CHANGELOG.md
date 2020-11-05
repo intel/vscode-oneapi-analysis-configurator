@@ -1,5 +1,10 @@
 # Change Log
 
+##  0.0.9
+
+- First non-preview release
+- Added tags to manifest for discoverability in marketplace.
+
 ##  0.0.8
 
 - Change default install location for the tools

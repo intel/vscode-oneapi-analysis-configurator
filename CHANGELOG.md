@@ -1,5 +1,9 @@
 # Change Log
 
+## 0.0.10
+
+- Change default location of vTune on macOS
+
 ##  0.0.9
 
 - First non-preview release

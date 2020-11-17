@@ -5,6 +5,7 @@
  * SPDX-License-Identifier: MIT
  */
 import * as vscode from 'vscode';
+import * as os from 'os';
 import { ProjectSettings } from './ProjectSettings';
 import { AdvisorLaunchScriptWriter } from './AdvisorLaunchScriptWriter';
 import { VtuneLaunchScriptWriter } from './VtuneLaunchScriptWriter';
@@ -45,7 +46,12 @@ export function activate(context: vscode.ExtensionContext): void{
 		writer.writeLauncherScript(settings);
 	});
 	vscode.commands.registerCommand('intelOneAPI.analysis.launchVTune', async (selectedNode: vscode.Uri) => {
-		const settings = new ProjectSettings('vtune', 'Intel® VTune™ Profiler', getBaseUri(selectedNode));
+		let vtuneName = 'vtune';
+		if (os.type() === 'Darwin') {
+			// On MacOS, the vtune tool is installed in a different folder.
+			vtuneName = "vtune_profiler";
+		}
+		const settings = new ProjectSettings(vtuneName, 'Intel® VTune™ Profiler', getBaseUri(selectedNode));
 		await settings.getProjectSettings();
 		
 		const writer = new VtuneLaunchScriptWriter();

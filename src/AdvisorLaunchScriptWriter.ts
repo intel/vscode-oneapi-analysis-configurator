@@ -32,10 +32,10 @@ export class AdvisorLaunchScriptWriter implements LaunchScriptWriter {
         switch (this.osType) {
             case 'Linux':
             case 'Darwin':
-                command = `#!/bin/bash\nsource "${toolInstallFolder}/env/vars.sh" && advixe-cl --create-project --project-dir "${toolOutputFolder}" -- "${projectBinary}" && advixe-gui "${toolOutputFolder}/e000"`;
+                command = `#!/bin/bash\nsource "${toolInstallFolder}/env/vars.sh" && advixe-cl --create-project --project-dir "${toolOutputFolder}" -- "${projectBinary}" && advisor-gui "${toolOutputFolder}/e000"`;
                 break;
             case 'Windows_NT':
-                command = `@echo off\r\n"${toolInstallFolder}\\env\\vars.bat" && advixe-cl --create-project --project-dir "${toolOutputFolder}" -- "${projectBinary}" && advixe-gui "${toolOutputFolder}/e000"`;
+                command = `@echo off\r\n"${toolInstallFolder}\\env\\vars.bat" && advixe-cl --create-project --project-dir "${toolOutputFolder}" -- "${projectBinary}" && advisor-gui "${toolOutputFolder}/e000"`;
                 break;
         }
         if (command) {

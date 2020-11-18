@@ -3,6 +3,7 @@
 ## 0.0.10
 
 - Change default location of vTune on macOS
+- Change Advisor GUI executable.
 
 ##  0.0.9
 

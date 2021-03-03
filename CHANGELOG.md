@@ -1,5 +1,9 @@
 # Change Log
 
+## 0.0.11
+
+- Update Logo
+
 ## 0.0.10
 
 - Change default location of VTune Profiler on macOS

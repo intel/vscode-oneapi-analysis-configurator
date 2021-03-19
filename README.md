@@ -16,7 +16,9 @@ offloading to accelerators.
 
 This extension does not provide any of the tools that are required to perform profiling or analysis.
 
-Please visit https://software.intel.com/oneapi for details.
+Please visit https://software.intel.com/oneapi for details. For more information on how to use Visual Studio Code with Intel oneAPI toolkits please visit [Using VS Code with Intel oneAPI toolkits](https://software.intel.com/content/www/us/en/develop/documentation/using-vs-code-with-intel-oneapi/top.html)
+
+
 
 ## Use
 You need to have at least one of the above Intel analysis tools installed for this extension to work and be useful. 

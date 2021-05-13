@@ -35,6 +35,14 @@
 				"title": "Intel oneAPI: Generate tasks"
 			},
 			{
+				"command": "intelOneAPI.launchConfigurator.quickBuild",
+				"title": "Intel oneAPI: Quick build current file with ICX"
+			},
+			{
+				"command": "intelOneAPI.launchConfigurator.quickBuildSycl",
+				"title": "Intel oneAPI: Quick build current file with ICX and SYCL enabled"
+			},
+			{
 				"command": "intelOneAPI.analysis.launchAdvisor",
 				"title": "Intel oneAPI: Launch Advisor"
 			},

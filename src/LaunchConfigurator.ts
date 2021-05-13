@@ -9,7 +9,7 @@
 import * as vscode from 'vscode';
 import { execSync } from 'child_process';
 import { posix, join, parse, normalize } from 'path';
-import { existsSync } from 'fs';
+import { existsSync, writeFileSync } from 'fs';
 
 const debugConfig = {
     name: '(gdb-oneapi) ${workspaceFolderBasename} Launch',
@@ -196,6 +196,39 @@ export class LaunchConfigurator {
             }
         } while (isContinue);
         vscode.window.showWarningMessage(`At the moment, debugging is only available on the CPU and FPGA_Emu accelerators.\nOperation on other types of accelerators is not guaranteed.`, { modal: true });
+        return true;
+    }
+
+    async quickBuild(isSyclEnabled: boolean): Promise<boolean> {
+        if (!process.env.SETVARS_COMPLETED) {
+            vscode.window.showErrorMessage('Quick build failed. Initialize the oneAPI environment.', { modal: true });
+            return false;
+        }
+        const textEditor = vscode.window.activeTextEditor;
+        if (!textEditor) {
+            vscode.window.showErrorMessage('Quick build failed. No open file.', { modal: true });
+            return false;
+        }
+        const document = textEditor.document;
+        const language = document.languageId;
+        if (language != 'cpp') {
+            vscode.window.showErrorMessage('Quick build failed. The open file must be a cpp file.', { modal: true });
+            return false;
+        }
+        const parsedPath = parse(document.fileName);
+        const source = document.fileName;
+        const dest = join(parsedPath.dir, parsedPath.name);
+        const cmd = isSyclEnabled ? `icpx -fsycl -fsycl-unnamed-lambda ${source} -o ${dest} -v` : `icpx ${source} -o ${dest} -v`;
+        try {
+            execSync(cmd);
+        }
+        catch (err) {
+            const logPath = join(parsedPath.dir, `compile_log`);
+            writeFileSync(logPath, err.message);
+            vscode.window.showErrorMessage(`Quick build failed. See compile log: ${logPath}`, { modal: true });
+            return false;
+        }
+        vscode.window.showInformationMessage(`File ${dest} was builded.`)
         return true;
     }
 

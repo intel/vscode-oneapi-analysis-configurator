@@ -79,7 +79,11 @@ export function activate(context: vscode.ExtensionContext): void{
 			return task;
 		}
 	});
+	
 	let launchConfigurator = new LaunchConfigurator(context);
 	context.subscriptions.push(vscode.commands.registerCommand('intelOneAPI.launchConfigurator.generateLaunchJson', () => launchConfigurator.makeLaunchFile()));
 	context.subscriptions.push(vscode.commands.registerCommand('intelOneAPI.launchConfigurator.generateTaskJson', () => launchConfigurator.makeTasksFile()));
+	context.subscriptions.push(vscode.commands.registerCommand('intelOneAPI.launchConfigurator.quickBuild', () => launchConfigurator.quickBuild(false)));
+	context.subscriptions.push(vscode.commands.registerCommand('intelOneAPI.launchConfigurator.quickBuildSycl', () => launchConfigurator.quickBuild(true)));
+
 }

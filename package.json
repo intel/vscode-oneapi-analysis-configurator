@@ -27,6 +27,14 @@
 	"contributes": {
 		"commands": [
 			{
+				"command": "intelOneAPI.launchConfigurator.generateLaunchJson",
+				"title": "Intel oneAPI: Generate launch configurations"
+			},
+			{
+				"command": "intelOneAPI.launchConfigurator.generateTaskJson",
+				"title": "Intel oneAPI: Generate tasks"
+			},
+			{
 				"command": "intelOneAPI.analysis.launchAdvisor",
 				"title": "Intel oneAPI: Launch Advisor"
 			},

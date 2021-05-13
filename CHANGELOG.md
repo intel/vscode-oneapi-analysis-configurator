@@ -1,5 +1,9 @@
 # Change Log
 
+## 0.0.13
+
+- Added functions for generating tasks and launch configuration
+
 ## 0.0.12
 
 - Update Readme wiht extra doc link

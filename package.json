@@ -103,7 +103,7 @@
 		"test": "node ./out/test/runTest.js",
 		"lint": "eslint -c .eslintrc.js --ext .ts ./",
 		"package": "vsce package --yarn",
-		"ui-test": "extest setup-and-run --yarn out/test/ui/*.js"
+		"ui-test": "extest setup-and-run -o ./src/test/ui/configs/settings.json --yarn out/test/ui/*.js"
 	},
 	"devDependencies": {
 		"@types/chai": "^4.2.18",

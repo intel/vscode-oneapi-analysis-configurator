@@ -10,7 +10,7 @@ import { ProjectSettings } from './ProjectSettings';
 import { AdvisorLaunchScriptWriter } from './AdvisorLaunchScriptWriter';
 import { VtuneLaunchScriptWriter } from './VtuneLaunchScriptWriter';
 import { LaunchConfigurator } from './LaunchConfigurator';
-	
+
 // Return the uri corresponding to the base folder of the item currently selected in the explorer.
 // If the node is not given, ask the user to select the base folder.
 function getBaseUri(node: vscode.Uri): vscode.Uri | undefined {
@@ -34,7 +34,7 @@ function getBaseUri(node: vscode.Uri): vscode.Uri | undefined {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export function activate(context: vscode.ExtensionContext): void{
+export function activate(context: vscode.ExtensionContext): void {
 	// Todo: The extension is currently activated at startup, as activationEvents in package.json uses '*'. 
 	// Find the viewID for explorer so it could be activated via 'onView:viewId'.
 
@@ -42,7 +42,7 @@ export function activate(context: vscode.ExtensionContext): void{
 	vscode.commands.registerCommand('intelOneAPI.analysis.launchAdvisor', async (selectedNode: vscode.Uri) => {
 		const settings = new ProjectSettings('advisor', 'Intel® Advisor', getBaseUri(selectedNode));
 		await settings.getProjectSettings();
-		
+
 		const writer = new AdvisorLaunchScriptWriter();
 		writer.writeLauncherScript(settings);
 	});
@@ -54,7 +54,7 @@ export function activate(context: vscode.ExtensionContext): void{
 		}
 		const settings = new ProjectSettings(vtuneName, 'Intel® VTune™ Profiler', getBaseUri(selectedNode));
 		await settings.getProjectSettings();
-		
+
 		const writer = new VtuneLaunchScriptWriter();
 		writer.writeLauncherScript(settings);
 	});
@@ -72,18 +72,28 @@ export function activate(context: vscode.ExtensionContext): void{
 					'Launch Advisor', 'Intel® oneAPI', new vscode.ShellExecution(advisor.getLauncherScriptPath())),
 				new vscode.Task({ type: type }, vscode.TaskScope.Workspace,
 					'Launch VTune Profiler', 'Intel® oneAPI', new vscode.ShellExecution(vtune.getLauncherScriptPath()))
-				];
-			},
+			];
+		},
 		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		resolveTask(task: vscode.Task, token?: vscode.CancellationToken) {
 			return task;
 		}
 	});
-	
+
 	let launchConfigurator = new LaunchConfigurator(context);
 	context.subscriptions.push(vscode.commands.registerCommand('intelOneAPI.launchConfigurator.generateLaunchJson', () => launchConfigurator.makeLaunchFile()));
 	context.subscriptions.push(vscode.commands.registerCommand('intelOneAPI.launchConfigurator.generateTaskJson', () => launchConfigurator.makeTasksFile()));
 	context.subscriptions.push(vscode.commands.registerCommand('intelOneAPI.launchConfigurator.quickBuild', () => launchConfigurator.quickBuild(false)));
 	context.subscriptions.push(vscode.commands.registerCommand('intelOneAPI.launchConfigurator.quickBuildSycl', () => launchConfigurator.quickBuild(true)));
 
+	// Check that oneapi-environment-variables already installed 
+	const tsExtension = vscode.extensions.getExtension('intel-corporation.oneapi-environment-variables');
+	if (tsExtension) {
+		let GoToInstall = 'Install';
+		vscode.window.showInformationMessage('It is recommended to install Environment configurator for Intel oneAPI Toolkits to simplify oneAPI environment setup', GoToInstall)
+			.then(selection => {
+				if (selection === GoToInstall) {
+					vscode.commands.executeCommand('workbench.extensions.installExtension', 'intel-corporation.oneapi-environment-variables');
+
+	}
 }

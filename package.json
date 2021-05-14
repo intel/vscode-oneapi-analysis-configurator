@@ -1,9 +1,9 @@
 {
-	"name": "oneapi-analyzers-launcher",
+	"name": "oneapi-launch-configurator",
 	"displayName": "Launcher for Intel oneAPI Analyzers",
 	"description": "Launch Intel® VTune™ Profiler or Intel® Advisor while passing project specific parameters to the tool",
 	"publisher": "intel-corporation",
-	"version": "0.0.12",
+	"version": "0.0.13",
 	"license": "MIT",
 	"icon": "media/oneapi-logo.png",
 	"keywords": [

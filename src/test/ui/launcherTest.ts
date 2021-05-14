@@ -58,8 +58,8 @@ describe("Launcher Extension basic tests", () => {
         await dialog.confirm(); // Confirm project path
 
         await browser.driver.sleep(1500);
-        expect(execSync("ps -a | grep advixe-gui").includes("advixe-gui")).to.be.true;
-        execSync("killall -9 advixe-gui");
+        expect(execSync("ps -a | grep advisor-gui").includes("advisor-gui")).to.be.true;
+        execSync("killall -9 advisor-gui");
     });
 
     after(() => {

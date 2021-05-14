@@ -36,11 +36,11 @@
 			},
 			{
 				"command": "intelOneAPI.launchConfigurator.quickBuild",
-				"title": "Intel oneAPI: Quick build current file with ICX"
+				"title": "Intel oneAPI: Quick build current file with ICPX"
 			},
 			{
 				"command": "intelOneAPI.launchConfigurator.quickBuildSycl",
-				"title": "Intel oneAPI: Quick build current file with ICX and SYCL enabled"
+				"title": "Intel oneAPI: Quick build current file with ICPX and SYCL enabled"
 			},
 			{
 				"command": "intelOneAPI.analysis.launchAdvisor",

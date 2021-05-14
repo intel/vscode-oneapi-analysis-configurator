@@ -30,8 +30,8 @@ Please visit https://software.intel.com/oneapi for details. For more information
 - Building a single cpp file:
     * Open the cpp file you want to build
     * Press `Ctrl+Shift+P` ( or `View -> Command Palette…` ) to open VS Code's Command Palette.
-    * Choose the option `Intel oneAPI: Quick build current file with ICX`
-    * If you want to build a file with SYCL enabled, choose the option `Intel oneAPI: Quick build current file with ICX and SYCL enabled`
+    * Choose the option `Intel oneAPI: Quick build current file with ICPX`
+    * If you want to build a file with SYCL enabled, choose the option `Intel oneAPI: Quick build current file with ICPX and SYCL enabled`
 - Using Intel analysis tools
     You need to have at least one of the above Intel analysis tools installed for this extension to work and be useful. 
     * Open a Visual Studio Code project.

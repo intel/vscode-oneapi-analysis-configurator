@@ -27,6 +27,11 @@ Please visit https://software.intel.com/oneapi for details. For more information
 - Preparing launch configuration for running/debugging oneAPI projects:
     * Choose the option `Intel oneAPI: Generate launch configurations` and follow the prompts.
     * The result is a configuration for debugging and running that uses the gdb-oneapi debugger and is available in the Run tab ( or `Ctrl+Shift+D` ).
+- Building a single cpp file:
+    * Open the cpp file you want to build
+    * Press `Ctrl+Shift+P` ( or `View -> Command Palette…` ) to open VS Code's Command Palette.
+    * Choose the option `Intel oneAPI: Quick build current file with ICX`
+    * If you want to build a file with SYCL enabled, choose the option `Intel oneAPI: Quick build current file with ICX and SYCL enabled`
 - Using Intel analysis tools
     You need to have at least one of the above Intel analysis tools installed for this extension to work and be useful. 
     * Open a Visual Studio Code project.

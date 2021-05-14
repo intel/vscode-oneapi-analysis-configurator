@@ -3,6 +3,7 @@
 ## 0.0.13
 
 - Added functions for generating tasks and launch configuration
+- Added a function for quick build the currently open cpp file
 
 ## 0.0.12
 

@@ -5,6 +5,7 @@
 - Added functions for generating tasks and launch configuration
 - Added a functions for quick build the currently open cpp file
 - Added tip on installing Environment configurator for Intel oneAPI Toolkits
+- Added instructions for configuring IntelliSense
 
 ## 0.0.12
 

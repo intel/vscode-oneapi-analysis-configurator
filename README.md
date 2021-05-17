@@ -1,4 +1,4 @@
-# Launcher for Intel oneAPI Analyzers
+# Launch & Intellisense Configurator for Intel oneAPI Toolkits
 
 This is an extension for seamless integration with Intel® analysis tools including the Intel® VTune™ Profiler and Intel® Advisor.
 

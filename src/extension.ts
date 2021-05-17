@@ -95,5 +95,7 @@ export function activate(context: vscode.ExtensionContext): void {
 				if (selection === GoToInstall) {
 					vscode.commands.executeCommand('workbench.extensions.installExtension', 'intel-corporation.oneapi-environment-variables');
 
-	}
+				}
+			});
+		}
 }

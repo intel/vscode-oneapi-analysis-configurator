@@ -44,6 +44,32 @@ Please visit https://software.intel.com/oneapi for details. For more information
     * Enter the name of the tool`s project folder, or press enter to accept the default. This needs to be done once for a workspace.
     * The extension will open the analyser tool and pass the appropriate project parameters to the tool.
 
+## How to use IntelliSense for oneAPI code
+ 1. Make sure that the [C/C++ extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode.cpptools) is already installed.
+ 2. Press `Ctrl+Shift+P` and choose the option `C/C++ Edit Configurations (JSON)`. As a result, a c_cpp_properties.json file will be created in .vscode folder.
+ 3. Edit the file so that it looks like in the example:
+ ```
+    {
+    "configurations": [
+            {
+                "name": "Linux",
+                "includePath": [
+                    "${workspaceFolder}/**",
+                    "/opt/intel/oneapi/**"
+                ],
+                "defines": [],
+                "compilerPath": /opt/intel/oneapi/compiler/latest/linux/bin/dpcpp",
+                "cStandard": "c17",
+                "cppStandard": "c++17",
+                "intelliSenseMode": "linux-clang-x64"
+            }
+        ],
+        "version": 4
+            }
+```
+4. If necessary, replace the path to the oneAPI components with the one that is relevant for your installation folder.
+5. IntelliSense for oneAPI is ready.
+
 ## Contributing 
 Install Visual Studio Code (at least version 1.42) and open this project within it. You also need `node + npm`.
 - Switch to project root folder

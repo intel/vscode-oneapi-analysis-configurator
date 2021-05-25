@@ -18,7 +18,7 @@
 ## 0.0.10
 
 - Change default location of VTune Profiler on macOS
-- Change Advisor GUI executable.
+- Change Advisor GUI executable
 
 ##  0.0.9
 

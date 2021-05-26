@@ -38,18 +38,25 @@ const debugConfig = {
 export class LaunchConfigurator {
 
     async makeTasksFile(): Promise<boolean> {
-        let buildSystem = 'cmake';
         const workspaceFolder = await getworkspaceFolder();
         if (!workspaceFolder) {
             return false; // for unit tests
         }
         const projectRootDir = `${workspaceFolder?.uri.fsPath}`;
+        let buildSystem = '';
         if (existsSync(`${projectRootDir}/Makefile`)) {
             if (process.platform === 'win32') {
                 vscode.window.showInformationMessage(`Working with makefile project is not available for Windows.`, { modal: true });
                 return false;
             }
             buildSystem = 'make';
+        }
+        if (existsSync(`${projectRootDir}/CMakeLists.txt`)) {
+            buildSystem = 'cmake';
+        }
+        if (buildSystem === '') {
+            vscode.window.showErrorMessage('Generating tasks failed. The project does not contain CMakeLists.txt or MakeFile.', { modal: true });
+            return false;
         }
         const buildTargets = await this.getTargets(projectRootDir, buildSystem);
         let isContinue = true;
@@ -73,9 +80,7 @@ export class LaunchConfigurator {
             };
             switch (buildSystem) {
                 case 'make': {
-                    const cmd = process.platform === 'win32' ?
-                        `nmake ${selection} /F ${projectRootDir}/Makefile` :
-                        `make ${selection} -f ${projectRootDir}/Makefile`;
+                    const cmd = `make ${selection} -f ${projectRootDir}/Makefile`;
                     taskConfigValue.command += cmd;
                     break;
                 }
@@ -109,14 +114,21 @@ export class LaunchConfigurator {
     }
 
     async makeLaunchFile(): Promise<boolean> {
-        let buildSystem = 'cmake';
         const workspaceFolder = await getworkspaceFolder();
         if (!workspaceFolder) {
             return false; // for unit tests
         }
         const projectRootDir = `${workspaceFolder?.uri.fsPath}`;
+        let buildSystem = '';
         if (existsSync(`${projectRootDir}/Makefile`)) {
             buildSystem = 'make';
+        }
+        if (existsSync(`${projectRootDir}/CMakeLists.txt`)) {
+            buildSystem = 'cmake';
+        }
+        if (buildSystem === '') {
+            vscode.window.showErrorMessage('Generating launch configurations failed. The project does not contain CMakeLists.txt or MakeFile.', { modal: true });
+            return false;
         }
         let execFiles: string[] = [];
         let execFile;

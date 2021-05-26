@@ -230,6 +230,7 @@ export class LaunchConfigurator {
         return true;
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     private async checkTaskItem(listItems: any, newItem: any): Promise<boolean> {
         if (listItems.length === 0) {
             return true; // for tests
@@ -258,6 +259,7 @@ export class LaunchConfigurator {
         return true;
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     private async checkLaunchItem(listItems: any, newItem: any): Promise<boolean> {
         if (listItems.length === 0) {
             return true; // for tests

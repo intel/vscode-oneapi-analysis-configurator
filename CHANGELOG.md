@@ -9,7 +9,7 @@
 
 ## 0.0.12
 
-- Update Readme wiht extra doc link
+- Update Readme with extra doc link
 
 ## 0.0.11
 

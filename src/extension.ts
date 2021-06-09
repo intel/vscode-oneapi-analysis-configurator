@@ -88,7 +88,7 @@ export function activate(context: vscode.ExtensionContext): void {
 
 	// Check that oneapi-environment-variables already installed 
 	const tsExtension = vscode.extensions.getExtension('intel-corporation.oneapi-environment-variables');
-	if (tsExtension) {
+	if (!tsExtension) {
 		const GoToInstall = 'Install';
 		vscode.window.showInformationMessage('It is recommended to install Environment configurator for Intel oneAPI Toolkits to simplify oneAPI environment setup', GoToInstall)
 			.then(selection => {

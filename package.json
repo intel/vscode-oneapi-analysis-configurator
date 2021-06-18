@@ -62,22 +62,22 @@
 					},
 					"intelOneAPI.analysis.advisor.install-root": {
 						"type": "string",
-						"description": "Root install location for Intel® Advisor",
+						"description": "Root install location for Intel(R) Advisor",
 						"scope": "window"
 					},
 					"intelOneAPI.analysis.vtune.install-root": {
 						"type": "string",
-						"description": "Root install location for Intel® VTune™ Profiler",
+						"description": "Root install location for Intel(R) VTune™ Profiler",
 						"scope": "window"
 					},
 					"intelOneAPI.analysis.advisor.project-folder": {
 						"type": "string",
-						"description": "Path of the Intel® Advisor project folder",
+						"description": "Path of the Intel(R) Advisor project folder",
 						"scope": "resource"
 					},
 					"intelOneAPI.analysis.vtune.project-folder": {
 						"type": "string",
-						"description": "Path of the Intel® VTune™ Profiler project folder",
+						"description": "Path of the Intel(R) VTune™ Profiler project folder",
 						"scope": "resource"
 					}
 				}

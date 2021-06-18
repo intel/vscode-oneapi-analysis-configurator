@@ -40,7 +40,7 @@ export function activate(context: vscode.ExtensionContext): void {
 
 	// Register the commands that will interact with the user and write the launcher scripts.
 	vscode.commands.registerCommand('intelOneAPI.analysis.launchAdvisor', async (selectedNode: vscode.Uri) => {
-		const settings = new ProjectSettings('advisor', 'Intel® Advisor', getBaseUri(selectedNode));
+		const settings = new ProjectSettings('advisor', 'Intel(R) Advisor', getBaseUri(selectedNode));
 		await settings.getProjectSettings();
 
 		const writer = new AdvisorLaunchScriptWriter();
@@ -52,7 +52,7 @@ export function activate(context: vscode.ExtensionContext): void {
 			// On MacOS, the vtune tool is installed in a different folder.
 			vtuneName = "vtune_profiler";
 		}
-		const settings = new ProjectSettings(vtuneName, 'Intel® VTune™ Profiler', getBaseUri(selectedNode));
+		const settings = new ProjectSettings(vtuneName, 'Intel(R) VTune™ Profiler', getBaseUri(selectedNode));
 		await settings.getProjectSettings();
 
 		const writer = new VtuneLaunchScriptWriter();
@@ -69,9 +69,9 @@ export function activate(context: vscode.ExtensionContext): void {
 
 			return [
 				new vscode.Task({ type: type }, vscode.TaskScope.Workspace,
-					'Launch Advisor', 'Intel® oneAPI', new vscode.ShellExecution(advisor.getLauncherScriptPath())),
+					'Launch Advisor', 'Intel(R) oneAPI', new vscode.ShellExecution(advisor.getLauncherScriptPath())),
 				new vscode.Task({ type: type }, vscode.TaskScope.Workspace,
-					'Launch VTune Profiler', 'Intel® oneAPI', new vscode.ShellExecution(vtune.getLauncherScriptPath()))
+					'Launch VTune Profiler', 'Intel(R) oneAPI', new vscode.ShellExecution(vtune.getLauncherScriptPath()))
 			];
 		},
 		// eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -88,7 +88,7 @@ export function activate(context: vscode.ExtensionContext): void {
 
 	// Check that oneapi-environment-variables already installed 
 	const tsExtension = vscode.extensions.getExtension('intel-corporation.oneapi-environment-variables');
-	if (tsExtension) {
+	if (!tsExtension) {
 		const GoToInstall = 'Install';
 		vscode.window.showInformationMessage('It is recommended to install Environment configurator for Intel oneAPI Toolkits to simplify oneAPI environment setup', GoToInstall)
 			.then(selection => {

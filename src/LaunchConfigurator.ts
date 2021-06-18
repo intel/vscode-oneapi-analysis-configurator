@@ -32,6 +32,11 @@ const debugConfig = {
                 description: 'Enable pretty-printing for gdb',
                 text: '-enable-pretty-printing',
                 ignoreFailures: true
+            },
+            {
+                description: 'Disable target async',
+                text: 'set target-async off',
+                ignoreFailures: true
             }
         ]
 };
@@ -302,7 +307,7 @@ export class LaunchConfigurator {
 
     private async addTasksToLaunchConfig(): Promise<boolean> {
         const taskConfig = vscode.workspace.getConfiguration('tasks');
-        const existTasks  = taskConfig['tasks'];
+        const existTasks = taskConfig['tasks'];
         const tasksList: string[] = [];
         for (const task in existTasks) {
             tasksList.push(existTasks[task].label);

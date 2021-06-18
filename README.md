@@ -5,7 +5,7 @@ This is an extension for seamless integration with Intel(R) analysis tools inclu
 
 - [Intel(R) VTune™ Profiler](https://software.intel.com/oneapi/vtune-profiler) is a performance profiling tool that provides advanced
     sampling and profiling techniques to quickly analyze code, isolate issues and deliver insights for optimizing performance on modern
-    processors. 
+    processors.
 
 
 - [Intel(R) Advisor](https://software.intel.com/oneapi/advisor) is for software architects and developers who need the right
@@ -42,14 +42,14 @@ This extension enables the ability to prepare launch configurations for running 
 7. The configuration is now available to debug and run using the gdb-oneapi debugger. To debug and run, click on the **Run** icon or press `Ctrl+Shift+D`.
 
 ## Building a single cpp file:
-1. Open the cpp file you want to build
-2. Press `Ctrl+Shift+P` ( or `View -> Command Palette...` ) to open VS Code's Command Palette.
-3. Type **Intel oneAPI** and select `Intel oneAPI: Quick build current file with ICPX`
-4. If you want to build a file with SYCL enabled, choose the option `Intel oneAPI: Quick build current file with ICPX and SYCL enabled`
+1. Open the cpp file you want to build.
+2. Press `Ctrl+Shift+P` ( or `View -> Command Palette...` ) to open the Command Palette.
+3. Type **Intel oneAPI** and select `Intel oneAPI: Quick build current file with ICPX`.
+4. If you want to build a file with SYCL enabled, choose the option `Intel oneAPI: Quick build current file with ICPX and SYCL enabled`.
 
 
 ## Using Intel analysis tools
-You need to have at least one of the above Intel analysis tools installed for this extension to work and be useful. 
+You need to have at least one of the above Intel analysis tools installed for this extension to work and be useful.
 1. Open a Visual Studio Code project.
 2. Build your project to create the executable you plan to analyze.
 3. Press `Ctrl+Shift+P` ( or `View -> Command Palette...` ) to open VS Code's Command Palette.

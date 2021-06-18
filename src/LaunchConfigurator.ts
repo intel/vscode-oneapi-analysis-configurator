@@ -210,7 +210,6 @@ export class LaunchConfigurator {
                 return false;
             }
         } while (isContinue);
-        vscode.window.showWarningMessage(`At the moment, debugging is only available on the CPU and FPGA_Emu accelerators.\nOperation on other types of accelerators is not guaranteed.`, { modal: true });
         return true;
     }
 

@@ -32,6 +32,11 @@ const debugConfig = {
                 description: 'Enable pretty-printing for gdb',
                 text: '-enable-pretty-printing',
                 ignoreFailures: true
+            },
+            {
+                description: 'Disable target async',
+                text: 'set target-async off',
+                ignoreFailures: true
             }
         ]
 };
@@ -205,7 +210,6 @@ export class LaunchConfigurator {
                 return false;
             }
         } while (isContinue);
-        vscode.window.showWarningMessage(`At the moment, debugging is only available on the CPU and FPGA_Emu accelerators.\nOperation on other types of accelerators is not guaranteed.`, { modal: true });
         return true;
     }
 
@@ -302,7 +306,7 @@ export class LaunchConfigurator {
 
     private async addTasksToLaunchConfig(): Promise<boolean> {
         const taskConfig = vscode.workspace.getConfiguration('tasks');
-        const existTasks  = taskConfig['tasks'];
+        const existTasks = taskConfig['tasks'];
         const tasksList: string[] = [];
         for (const task in existTasks) {
             tasksList.push(existTasks[task].label);

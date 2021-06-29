@@ -3,6 +3,7 @@
 ## 0.0.14
 
 - Updated launch configuration for GPU debugging compatibility
+
 ## 0.0.13
 
 - Added functions for generating tasks and launch configuration

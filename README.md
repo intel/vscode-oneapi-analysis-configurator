@@ -73,7 +73,7 @@ You need to have at least one of the above Intel analysis tools installed for th
                     "/opt/intel/oneapi/**"
                 ],
                 "defines": [],
-                "compilerPath": /opt/intel/oneapi/compiler/latest/linux/bin/dpcpp",
+                "compilerPath": "/opt/intel/oneapi/compiler/latest/linux/bin/dpcpp",
                 "cStandard": "c17",
                 "cppStandard": "c++17",
                 "intelliSenseMode": "linux-clang-x64"

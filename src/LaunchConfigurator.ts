@@ -378,7 +378,7 @@ export class LaunchConfigurator {
         }
     }
 
-    private async getTargets(projectRootDir: string, buildSystem: string): Promise<string[]> {
+    private async getTargets(projectRootDir: string, buildSystem: string): Promise<vscode.QuickPickItem[]> {
         try {
             let targets: string[];
             switch (buildSystem) {
@@ -387,7 +387,12 @@ export class LaunchConfigurator {
                         `make -pRrq : 2>/dev/null | awk -v RS= -F: '/^# File/,/^# Finished Make data base/ {if ($1 !~ "^[#.]") {print $1}}' | egrep -v '^[^[:alnum:]]' | sort`,
                         { cwd: projectRootDir }).toString().split('\n');
                     targets.pop();
-                    return targets;
+
+                    return targets.map(oneTarget=>{
+                        return {
+                        label: oneTarget,
+                        description: `path: ${projectRootDir}/Makefile`
+                    }});
                 }
                 case 'cmake': {
                     targets = ['all', 'clean'];
@@ -396,6 +401,8 @@ export class LaunchConfigurator {
                         `where /r ${projectRootDir} CMakeLists.txt` :
                         `find ${projectRootDir} -name 'CMakeLists.txt'`;
                     const pathsToCmakeLists = execSync(cmd).toString().split('\n');
+                    const optinosItems: vscode.QuickPickItem[] = [];
+                    
                     pathsToCmakeLists.pop();
                     pathsToCmakeLists.forEach(async (onePath) => {
                         const normalizedPath = normalize(onePath.replace(`\r`, "")).split(/[\\\/]/g).join(posix.sep);
@@ -404,11 +411,14 @@ export class LaunchConfigurator {
                             `awk '/^ *add_custom_target/' ${normalizedPath} | sed -e's/add_custom_target *(/ /; s/\\r/ /' | awk '{print $1}' | uniq`;
                         targets = targets.concat(execSync(cmd, { cwd: projectRootDir }).toString().split('\n'));
                         targets.pop();
-                        targets.forEach(async function (oneTarget, index, targetList) {
-                            targetList[index] = posix.normalize(oneTarget.replace(`\r`, ""));
+                        targets.forEach((oneTarget) => {
+                            optinosItems.push({
+                                label: posix.normalize(oneTarget.replace(`\r`, "")),
+                                description: `path: ${normalizedPath}`
+                            });                        
                         });
                     });
-                    return targets;
+                    return optinosItems;
                 }
                 default: {
                     break;

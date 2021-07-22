@@ -9,7 +9,7 @@ describe("Launcher Extension basic tests", () => {
     let browser: VSBrowser;
     let workbench: Workbench;
     let executablePath: string;
-    let workspacePath = path.join(process.cwd(), "test-data", "launchers-workspace");
+    const workspacePath = path.join(process.cwd(), "test-data", "launchers-workspace");
 
     before(() => {
         mkdirSync(workspacePath, { recursive: true });
@@ -135,8 +135,8 @@ describe("Generating tasks and launch configuration", async function () {
 
         it('Quick pick contain command', async function () {
             this.timeout(10000);
-            let workbench = new Workbench();
-            let input = await workbench.openCommandPrompt() as InputBox;
+            const workbench = new Workbench();
+            const input = await workbench.openCommandPrompt() as InputBox;
             await input.setText('>Intel oneAPI: Generate launch configurations');
             const pick = await input.findQuickPick('Intel oneAPI: Generate launch configurations');
             expect(pick).not.undefined;
@@ -144,11 +144,11 @@ describe("Generating tasks and launch configuration", async function () {
 
         it('Quick pick contain fake executable', async function () {
             this.timeout(10000);
-            let workbench = new Workbench();
+            const workbench = new Workbench();
             await workbench.executeCommand('Intel oneAPI: Generate launch configurations');
             await driver.sleep(1000);
-            let input = new InputBox();
-            let pick = await input.findQuickPick('Put temporal target path "a.out" to replace it later with correct path manually');
+            const input = new InputBox();
+            const pick = await input.findQuickPick('Put temporal target path "a.out" to replace it later with correct path manually');
             await input.cancel();
 
             // close warning about debugging
@@ -160,10 +160,10 @@ describe("Generating tasks and launch configuration", async function () {
 
         it('Command shows a notification with the correct text', async function () {
             this.timeout(10000);
-            let workbench = new Workbench();
+            const workbench = new Workbench();
             workbench.executeCommand('Intel oneAPI: Generate launch configurations');
             await driver.sleep(1000);
-            let input = new InputBox();
+            const input = new InputBox();
             await input.selectQuickPick('Put temporal target path "a.out" to replace it later with correct path manually');
 
             // close note about debugging launch template

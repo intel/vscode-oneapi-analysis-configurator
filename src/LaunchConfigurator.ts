@@ -11,6 +11,14 @@ import { execSync } from 'child_process';
 import { posix, join, parse, normalize } from 'path';
 import { existsSync, writeFileSync } from 'fs';
 
+interface TaskConfigValue{
+    label: string;
+    command: string;
+    type: string;
+    options: {
+        cwd: string;
+}}
+
 const debugConfig = {
     name: '(gdb-oneapi) ${workspaceFolderBasename} Launch',
     type: 'cppdbg',
@@ -75,8 +83,8 @@ export class LaunchConfigurator {
                 return true;
             }
             const taskConfig = vscode.workspace.getConfiguration('tasks');
-            const taskConfigValue = {
-                label: selection,
+            const taskConfigValue: TaskConfigValue = {
+                label: selection.label,
                 command: ``,
                 type: 'shell',
                 options: {
@@ -247,7 +255,7 @@ export class LaunchConfigurator {
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    private async checkTaskItem(listItems: any, newItem: any): Promise<boolean> {
+    private async checkTaskItem(listItems: any, newItem: TaskConfigValue): Promise<boolean> {
         if (listItems.length === 0) {
             return true; // for tests
         }
@@ -267,7 +275,9 @@ export class LaunchConfigurator {
                         placeHolder: "Please provide new task name:"
                     };
                     const inputLabel = await vscode.window.showInputBox(inputBoxText);
-                    newItem.label = inputLabel;
+                    if (inputLabel) {
+                        newItem.label = inputLabel;
+                    }
                     continue restartcheck;
                 }
             }
@@ -388,11 +398,15 @@ export class LaunchConfigurator {
                         { cwd: projectRootDir }).toString().split('\n');
                     targets.pop();
 
-                    return targets.map(oneTarget=>{
+                    const workspaceFolderName = vscode.workspace.workspaceFolders?.find(folder => projectRootDir.split('/').find(el => el === folder.name));
+                    const path = workspaceFolderName ? projectRootDir.slice(projectRootDir.indexOf(workspaceFolderName.name)) : projectRootDir;
+                    
+                    return targets.map(oneTarget => {
                         return {
                         label: oneTarget,
-                        description: `path: ${projectRootDir}/Makefile`
-                    }});
+                        description: `target from ${path}/Makefile`
+                        };
+                    });
                 }
                 case 'cmake': {
                     targets = ['all', 'clean'];
@@ -402,10 +416,11 @@ export class LaunchConfigurator {
                         `find ${projectRootDir} -name 'CMakeLists.txt'`;
                     const pathsToCmakeLists = execSync(cmd).toString().split('\n');
                     const optinosItems: vscode.QuickPickItem[] = [];
-                    
                     pathsToCmakeLists.pop();
                     pathsToCmakeLists.forEach(async (onePath) => {
                         const normalizedPath = normalize(onePath.replace(`\r`, "")).split(/[\\\/]/g).join(posix.sep);
+                        const workspaceFolderName = vscode.workspace.workspaceFolders?.find(folder => normalizedPath.split('/').find(el => el === folder.name));
+                        const path = workspaceFolderName ? normalizedPath.slice(normalizedPath.indexOf(workspaceFolderName.name)) : normalizedPath;
                         const cmd = process.platform === 'win32' ?
                             `pwsh -Command "$targets=(gc ${normalizedPath}) | Select-String -Pattern '\\s*add_custom_target\\s*\\(\\s*(\\w*)' ; $targets.Matches | ForEach-Object -Process {echo $_.Groups[1].Value} | Select-Object -Unique | ? {$_.trim() -ne '' } "` :
                             `awk '/^ *add_custom_target/' ${normalizedPath} | sed -e's/add_custom_target *(/ /; s/\\r/ /' | awk '{print $1}' | uniq`;
@@ -414,8 +429,8 @@ export class LaunchConfigurator {
                         targets.forEach((oneTarget) => {
                             optinosItems.push({
                                 label: posix.normalize(oneTarget.replace(`\r`, "")),
-                                description: `path: ${normalizedPath}`
-                            });                        
+                                description: `target from ${path}`
+                            });
                         });
                     });
                     return optinosItems;

@@ -75,7 +75,7 @@ export class LaunchConfigurator {
     const optionsForChoose: vscode.InputBoxOptions = {
       placeHolder: `Choose target from ${buildSystem} or push ESC for exit`
     };
-    const dialogOptions: string[] = ['Select a new task', 'Close'];
+    const dialogOptions: string[] = ['Select a new target', 'Close'];
     const options: vscode.QuickPickOptions = {
       placeHolder: 'Do you want to create a new task?'
     };

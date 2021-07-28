@@ -73,58 +73,70 @@ export class LaunchConfigurator {
         }
         const buildTargets = await this.getTargets(projectRootDir, buildSystem);
         let isContinue = true;
-        const options: vscode.InputBoxOptions = {
+        const optionsForChoose: vscode.InputBoxOptions = {
             placeHolder: `Choose target from ${buildSystem} or push ESC for exit`
         };
+        const dialogOptions: string[] = ['Select a new target', 'Close'];
+        const options: vscode.QuickPickOptions = {
+            placeHolder: 'Do you want to create a new task?'
+        };
         do {
-            const selection = await vscode.window.showQuickPick(buildTargets, options);
-            if (!selection) {
-                isContinue = false;
-                return true;
+            const selection = await vscode.window.showQuickPick(dialogOptions, options);
+            if (!selection || selection === 'Close') {
+              isContinue = false;
+              return true;
             }
-            const taskConfig = vscode.workspace.getConfiguration('tasks');
-            const taskConfigValue: TaskConfigValue = {
-                label: selection.label,
-                command: ``,
-                type: 'shell',
-                options: {
-                    cwd: `${projectRootDir}`.split(/[\\\/]/g).join(posix.sep)
-                }
-            };
-            switch (buildSystem) {
-                case 'make': {
-                    const cmd = `make ${selection} -f ${projectRootDir}/Makefile`;
-                    taskConfigValue.command += cmd;
-                    break;
-                }
-                case 'cmake': {
-                    const cmd = process.platform === 'win32' ?
-                        `$val=Test-Path -Path 'build'; if($val -ne $true) {New-Item -ItemType directory -Path 'build'}; cmake  -S . -B 'build' -G 'NMake Makefiles'; cd build; nmake ${selection}` :
-                        `mkdir -p build && cmake  -S . -B build && cmake --build build && cmake --build build --target ${selection}`;
-                    taskConfigValue.command += cmd;
-                    break;
-                }
-                default: {
-                    isContinue = false;
-                    break;
-                }
-            }
-            let config = taskConfig['tasks'];
-            if (!config) {
-                config = [taskConfigValue];
-            } else {
-                const isUniq: boolean = await this.checkTaskItem(config, taskConfigValue);
-                if (!isUniq) {
-                    vscode.window.showInformationMessage(`Task for "${taskConfigValue.label}" was skipped as duplicate`);
-                    return false;
-                }
-                config.push(taskConfigValue);
-            }
-            taskConfig.update('tasks', config, false);
-            vscode.window.showInformationMessage(`Task for "${taskConfigValue.label}" was added`);
-        } while (isContinue);
-        return true;
+            await this.showChooseTaskWindow(buildTargets, optionsForChoose, projectRootDir, buildSystem);
+          } while (isContinue);
+          return true;
+        }
+
+    async showChooseTaskWindow(buildTargets: vscode.QuickPickItem[], options: vscode.InputBoxOptions, projectRootDir: string, buildSystem: string): Promise<boolean> {
+    const selection = await vscode.window.showQuickPick(buildTargets, options);
+    if (!selection) {
+      return true;
     }
+    const taskConfig = vscode.workspace.getConfiguration('tasks');
+    const taskConfigValue: TaskConfigValue = {
+      label: selection.label,
+      command: '',
+      type: 'shell',
+      options: {
+        cwd: `${projectRootDir}`.split(/[\\/]/g).join(posix.sep)
+      }
+    };
+    switch (buildSystem) {
+      case 'make': {
+        const cmd = `make ${selection} -f ${projectRootDir}/Makefile`;
+        taskConfigValue.command += cmd;
+        break;
+      }
+      case 'cmake': {
+        const cmd = process.platform === 'win32'
+          ? `$val=Test-Path -Path 'build'; if($val -ne $true) {New-Item -ItemType directory -Path 'build'}; cmake  -S . -B 'build' -G 'NMake Makefiles'; cd build; nmake ${selection}`
+          : `mkdir -p build && cmake  -S . -B build && cmake --build build && cmake --build build --target ${selection}`;
+        taskConfigValue.command += cmd;
+        break;
+      }
+      default: {
+        break;
+      }
+    }
+    let config = taskConfig.tasks;
+    if (!config) {
+      config = [taskConfigValue];
+    } else {
+      const isUniq: boolean = await this.checkTaskItem(config, taskConfigValue);
+      if (!isUniq) {
+        vscode.window.showInformationMessage(`Task for "${taskConfigValue.label}" was skipped as duplicate`);
+        return false;
+      }
+      config.push(taskConfigValue);
+    }
+    taskConfig.update('tasks', config, false);
+    vscode.window.showInformationMessage(`Task for "${taskConfigValue.label}" was added`);
+    return true;
+  }
 
     async makeLaunchFile(): Promise<boolean> {
         const workspaceFolder = await getworkspaceFolder();

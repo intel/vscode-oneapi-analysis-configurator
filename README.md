@@ -28,6 +28,7 @@ Please visit https://software.intel.com/oneapi for details. For more information
 5.	Follow the prompts to add targets from your make/cmake oneAPI project.
 6.	Run the target by selecting `Terminal > Run task...`
 7.	Select the task to run.
+8.	Select a new target or close the window.
 
 
 

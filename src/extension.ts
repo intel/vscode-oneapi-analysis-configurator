@@ -85,6 +85,7 @@ export function activate(context: vscode.ExtensionContext): void {
   context.subscriptions.push(vscode.commands.registerCommand('intelOneAPI.launchConfigurator.generateTaskJson', () => launchConfigurator.makeTasksFile()));
   context.subscriptions.push(vscode.commands.registerCommand('intelOneAPI.launchConfigurator.quickBuild', () => launchConfigurator.quickBuild(false)));
   context.subscriptions.push(vscode.commands.registerCommand('intelOneAPI.launchConfigurator.quickBuildSycl', () => launchConfigurator.quickBuild(true)));
+  context.subscriptions.push(vscode.commands.registerCommand('intelOneAPI.launchConfigurator.editCppProperties', () => launchConfigurator.editCppProperties()));
 
   // Check that oneapi-environment-variables already installed
   const tsExtension = vscode.extensions.getExtension('intel-corporation.oneapi-environment-variables');

@@ -49,6 +49,10 @@
 			{
 				"command": "intelOneAPI.analysis.launchVTune",
 				"title": "Intel oneAPI: Launch VTune Profiler"
+			},
+			{
+				"command": "intelOneAPI.launchConfigurator.editCppProperties",
+				"title": "Intel oneAPI: Edit cpp properties configuration"
 			}
 		],
 		"configuration": [

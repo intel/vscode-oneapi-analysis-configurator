@@ -59,6 +59,23 @@ export function activate(context: vscode.ExtensionContext): void {
     writer.writeLauncherScript(settings);
   });
 
+  // Updating parameters when they are changed in Setting.json
+  context.subscriptions.push(vscode.workspace.onDidChangeConfiguration(e => {
+    if (e.affectsConfiguration('intel-corporation.oneapi-environment-variables.ONEAPI_ROOT')) {
+      const ONEAPI_ROOT = vscode.workspace.getConfiguration().get<string>('intel-corporation.oneapi-environment-variables.ONEAPI_ROOT');
+      if (vscode.workspace.workspaceFolders) {
+        for (const folder of vscode.workspace.workspaceFolders) {
+          const cppConfiguration = vscode.workspace.getConfiguration('C_Cpp', folder);
+          cppConfiguration.update('default.includePath', [
+            '${workspaceFolder}/**',
+        `${ONEAPI_ROOT}/**`
+          ]);
+          cppConfiguration.update('default.compilerPath', `${ONEAPI_ROOT}/compiler/latest/linux/bin/dpcpp`);
+        }
+      }
+    }
+  }));
+
   // Register the tasks that will invoke the launcher scripts.
   const type = 'toolProvider';
   vscode.tasks.registerTaskProvider(type, {

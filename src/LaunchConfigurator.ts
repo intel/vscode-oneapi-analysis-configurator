@@ -138,8 +138,9 @@ export class LaunchConfigurator {
   }
 
   async editCppProperties(): Promise<void> {
-    if (!process.env.ONEAPI_ROOT) {
-      vscode.window.showInformationMessage('Working with makefile project is not available for Windows.', { modal: true });
+    const ONEAPI_ROOT = vscode.workspace.getConfiguration().get<string>('intel-corporation.oneapi-environment-variables.ONEAPI_ROOT');
+    if (!process.env.ONEAPI_ROOT && !ONEAPI_ROOT) {
+      vscode.window.showInformationMessage('Please add ONEAPI_ROOT path in settings.', { modal: true });
       vscode.commands.executeCommand('workbench.action.openSettings', 'ONEAPI_ROOT');
       return;
     }
@@ -149,18 +150,15 @@ export class LaunchConfigurator {
       return;
     }
 
-    const cppStandard = await vscode.window.showQuickPick(['c++98', 'c++03', 'c++11', 'c++14', 'c++17', 'c++20', 'gnu++98', 'gnu++03', 'gnu++11', 'gnu++14', 'gnu++17', 'gnu++20']);
-    const cStandard = await vscode.window.showQuickPick(['c89', 'c99', 'c11', 'c17', 'gnu89', 'gnu99', 'gnu11', 'gnu17']);
-
     const cppConfiguration = vscode.workspace.getConfiguration('C_Cpp', workspaceFolder);
-    cppConfiguration.update('default.cppStandard', cppStandard);
+    cppConfiguration.update('default.cppStandard', 'c++17');
     cppConfiguration.update('default.includePath', [
       '${workspaceFolder}/**',
-      `${process.env.ONEAPI_ROOT}/**`
+      `${process.env.ONEAPI_ROOT || ONEAPI_ROOT}/**`
     ]);
     cppConfiguration.update('default.defines', []);
-    cppConfiguration.update('default.compilerPath', `${process.env.ONEAPI_ROOT}/compiler/latest/linux/bin/dpcpp`);
-    cppConfiguration.update('default.cStandard', cStandard);
+    cppConfiguration.update('default.compilerPath', `${process.env.ONEAPI_ROOT || ONEAPI_ROOT}`);
+    cppConfiguration.update('default.cStandard', 'c17');
     cppConfiguration.update('default.intelliSenseMode', 'linux-clang-x64');
 
     vscode.window.showInformationMessage('C++ properties are successfully edited. Please check .vscode/settings.json for more details.');

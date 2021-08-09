@@ -52,7 +52,7 @@
 			},
 			{
 				"command": "intelOneAPI.launchConfigurator.editCppProperties",
-				"title": "Intel oneAPI: Edit cpp properties configuration"
+				"title": "Intel oneAPI: Configure cpp properties configuration"
 			}
 		],
 		"configuration": [

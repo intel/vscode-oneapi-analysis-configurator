@@ -138,8 +138,9 @@ export class LaunchConfigurator {
   }
 
   async editCppProperties(): Promise<void> {
-    const ONEAPI_ROOT = vscode.workspace.getConfiguration().get<string>('intel-corporation.oneapi-environment-variables.ONEAPI_ROOT');
-    if (!process.env.ONEAPI_ROOT && !ONEAPI_ROOT) {
+    const ONEAPI_ROOT = vscode.workspace.getConfiguration().get<string>('intel-corporation.oneapi-launch-configurator.ONEAPI_ROOT');
+    const ONEAPI_ROOT_ENV = vscode.workspace.getConfiguration().get<string>('intel-corporation.oneapi-environment-variables.ONEAPI_ROOT');
+    if (!ONEAPI_ROOT_ENV && !process.env.ONEAPI_ROOT && !ONEAPI_ROOT) {
       vscode.window.showInformationMessage('Please add ONEAPI_ROOT path in settings.', { modal: true });
       vscode.commands.executeCommand('workbench.action.openSettings', 'ONEAPI_ROOT');
       return;
@@ -150,16 +151,18 @@ export class LaunchConfigurator {
       return;
     }
 
+    const cppStandard = await vscode.window.showQuickPick(['c++17']);
+    const cStandard = await vscode.window.showQuickPick(['c17']);
+
     const cppConfiguration = vscode.workspace.getConfiguration('C_Cpp', workspaceFolder);
-    cppConfiguration.update('default.cppStandard', 'c++17');
+    cppConfiguration.update('default.cppStandard', cppStandard);
     cppConfiguration.update('default.includePath', [
       '${workspaceFolder}/**',
-      `${process.env.ONEAPI_ROOT || ONEAPI_ROOT}/**`
+      `${ONEAPI_ROOT || process.env.ONEAPI_ROOT || ONEAPI_ROOT_ENV}/**`
     ]);
     cppConfiguration.update('default.defines', []);
-    cppConfiguration.update('default.compilerPath', `${process.env.ONEAPI_ROOT || ONEAPI_ROOT}`);
-    cppConfiguration.update('default.cStandard', 'c17');
-    cppConfiguration.update('default.intelliSenseMode', 'linux-clang-x64');
+    cppConfiguration.update('default.compilerPath', `${ONEAPI_ROOT || process.env.ONEAPI_ROOT || ONEAPI_ROOT_ENV}`);
+    cppConfiguration.update('default.cStandard', cStandard);
 
     vscode.window.showInformationMessage('C++ properties are successfully edited. Please check .vscode/settings.json for more details.');
   }

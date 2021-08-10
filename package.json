@@ -59,6 +59,10 @@
 			{
 				"title": "Launcher for Intel oneAPI Analyzers",
 				"properties": {
+					"intel-corporation.oneapi-launch-configurator.ONEAPI_ROOT": {
+						"type": "string",
+						"description": "%capabilities.ONEAPI_ROOT.description%"
+					},
 					"intelOneAPI.analysis.binary-path": {
 						"type": "string",
 						"description": "Path of the executable to analyze",

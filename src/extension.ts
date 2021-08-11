@@ -11,6 +11,8 @@ import { AdvisorLaunchScriptWriter } from './AdvisorLaunchScriptWriter';
 import { VtuneLaunchScriptWriter } from './VtuneLaunchScriptWriter';
 import { LaunchConfigurator } from './LaunchConfigurator';
 
+const fs = require('fs');
+
 // Return the uri corresponding to the base folder of the item currently selected in the explorer.
 // If the node is not given, ask the user to select the base folder.
 function getBaseUri(node: vscode.Uri): vscode.Uri | undefined {
@@ -61,16 +63,33 @@ export function activate(context: vscode.ExtensionContext): void {
 
   // Updating parameters when they are changed in Setting.json
   context.subscriptions.push(vscode.workspace.onDidChangeConfiguration(e => {
-    if (e.affectsConfiguration('intel-corporation.oneapi-environment-variables.ONEAPI_ROOT')) {
-      const ONEAPI_ROOT = vscode.workspace.getConfiguration().get<string>('intel-corporation.oneapi-environment-variables.ONEAPI_ROOT');
+    if (e.affectsConfiguration('intel-corporation.oneapi-launch-configurator.ONEAPI_ROOT')) {
+      const ONEAPI_ROOT = vscode.workspace.getConfiguration().get<string>('intel-corporation.oneapi-launch-configurator.ONEAPI_ROOT');
       if (vscode.workspace.workspaceFolders) {
         for (const folder of vscode.workspace.workspaceFolders) {
-          const cppConfiguration = vscode.workspace.getConfiguration('C_Cpp', folder);
-          cppConfiguration.update('default.includePath', [
-            '${workspaceFolder}/**',
-        `${ONEAPI_ROOT}/**`
-          ]);
-          cppConfiguration.update('default.compilerPath', `${ONEAPI_ROOT}/compiler/latest/linux/bin/dpcpp`);
+          fs.access(`${folder.uri.path}/.vscode/settings.json`, fs.F_OK, (err: any) => {
+            if (!err) {
+              fs.readFile(`${folder.uri.path}/.vscode/settings.json`, function(err: any, data: string) {
+                if (!err) {
+                  if (data.includes('C_Cpp.default.compilerPath')) {
+                    const update = 'Update';
+                    const skip = 'Skip';
+                    vscode.window.showInformationMessage(`Should this ONEAPI_ROOT update change the setting.json file in ${folder.name} folder?`, update, skip)
+                      .then((selection) => {
+                        if (selection === update) {
+                          const cppConfiguration = vscode.workspace.getConfiguration('C_Cpp', folder);
+                          cppConfiguration.update('default.includePath', [
+                            '${workspaceFolder}/**',
+          `${ONEAPI_ROOT}/**`
+                          ], vscode.ConfigurationTarget.WorkspaceFolder);
+                          cppConfiguration.update('default.compilerPath', `${ONEAPI_ROOT}/compiler/latest/linux/bin/dpcpp`, vscode.ConfigurationTarget.WorkspaceFolder);
+                        }
+                      });
+                  }
+                }
+              });
+            }
+          });
         }
       }
     }

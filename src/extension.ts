@@ -12,6 +12,7 @@ import { VtuneLaunchScriptWriter } from './VtuneLaunchScriptWriter';
 import { LaunchConfigurator } from './LaunchConfigurator';
 
 const fs = require('fs');
+const path = require('path');
 
 // Return the uri corresponding to the base folder of the item currently selected in the explorer.
 // If the node is not given, ask the user to select the base folder.
@@ -65,9 +66,11 @@ export function activate(context: vscode.ExtensionContext): void {
   context.subscriptions.push(vscode.workspace.onDidChangeConfiguration(e => {
     if (e.affectsConfiguration('intel-corporation.oneapi-launch-configurator.ONEAPI_ROOT')) {
       const ONEAPI_ROOT = vscode.workspace.getConfiguration().get<string>('intel-corporation.oneapi-launch-configurator.ONEAPI_ROOT');
-      fs.access(`${ONEAPI_ROOT}/compiler/latest/linux/bin/dpcpp`, fs.F_OK, (err: any) => {
+      const compilerPath = path.normalize(process.platform === 'win32' ? `${ONEAPI_ROOT}/compiler/latest/windows/bin/dpcpp.exe` : `${ONEAPI_ROOT}/compiler/latest/linux/bin/dpcpp`);
+
+      fs.access(compilerPath, fs.F_OK, (err: any) => {
         if (err) {
-          vscode.window.showErrorMessage(`Compiler is not found by path ${ONEAPI_ROOT}/compiler/latest/linux/bin/dpcpp.exe. Check the right file path.`);
+          vscode.window.showErrorMessage(`Compiler is not found by path ${compilerPath}. Check the right file path.`);
         }
       });
       if (vscode.workspace.workspaceFolders) {
@@ -85,9 +88,9 @@ export function activate(context: vscode.ExtensionContext): void {
                           const cppConfiguration = vscode.workspace.getConfiguration('C_Cpp', folder);
                           cppConfiguration.update('default.includePath', [
                             '${workspaceFolder}/**',
-          `${ONEAPI_ROOT}/**`
+          `${path.normalize(ONEAPI_ROOT)}/**`
                           ], vscode.ConfigurationTarget.WorkspaceFolder);
-                          cppConfiguration.update('default.compilerPath', `${ONEAPI_ROOT}/compiler/latest/linux/bin/dpcpp`, vscode.ConfigurationTarget.WorkspaceFolder);
+                          cppConfiguration.update('default.compilerPath', compilerPath, vscode.ConfigurationTarget.WorkspaceFolder);
                         }
                       });
                   }

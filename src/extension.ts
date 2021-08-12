@@ -65,6 +65,11 @@ export function activate(context: vscode.ExtensionContext): void {
   context.subscriptions.push(vscode.workspace.onDidChangeConfiguration(e => {
     if (e.affectsConfiguration('intel-corporation.oneapi-launch-configurator.ONEAPI_ROOT')) {
       const ONEAPI_ROOT = vscode.workspace.getConfiguration().get<string>('intel-corporation.oneapi-launch-configurator.ONEAPI_ROOT');
+      fs.access(`${ONEAPI_ROOT}/compiler/latest/linux/bin/dpcpp`, fs.F_OK, (err: any) => {
+        if (err) {
+          vscode.window.showErrorMessage(`Compiler is not found by path ${ONEAPI_ROOT}/compiler/latest/linux/bin/dpcpp.exe. Check the right file path.`);
+        }
+      });
       if (vscode.workspace.workspaceFolders) {
         for (const folder of vscode.workspace.workspaceFolders) {
           fs.access(`${folder.uri.path}/.vscode/settings.json`, fs.F_OK, (err: any) => {

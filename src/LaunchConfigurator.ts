@@ -163,14 +163,15 @@ export class LaunchConfigurator {
 
     const cppConfiguration = vscode.workspace.getConfiguration('C_Cpp', workspaceFolder);
     const oneapiPath = path.normalize(ONEAPI_ROOT || process.env.ONEAPI_ROOT || ONEAPI_ROOT_ENV);
+    const compilerPath = path.normalize(process.platform === 'win32' ? `${oneapiPath}/compiler/latest/windows/bin/dpcpp.exe` : `${oneapiPath}/compiler/latest/linux/bin/dpcpp`);
 
     cppConfiguration.update('default.cppStandard', cppStandard, vscode.ConfigurationTarget.WorkspaceFolder);
     cppConfiguration.update('default.includePath', [
       '${workspaceFolder}/**',
-      `${oneapiPath}/**`
+      `${path.normalize(ONEAPI_ROOT)}/**`
     ], vscode.ConfigurationTarget.WorkspaceFolder);
     cppConfiguration.update('default.defines', [], vscode.ConfigurationTarget.WorkspaceFolder);
-    cppConfiguration.update('default.compilerPath', `${oneapiPath}/compiler/latest/linux/bin/dpcpp`, vscode.ConfigurationTarget.WorkspaceFolder);
+    cppConfiguration.update('default.compilerPath', compilerPath, vscode.ConfigurationTarget.WorkspaceFolder);
     cppConfiguration.update('default.cStandard', cStandard, vscode.ConfigurationTarget.WorkspaceFolder);
     vscode.window.showInformationMessage('C++ properties are successfully edited. Please check .vscode/settings.json for more details.');
   }

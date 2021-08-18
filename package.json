@@ -17,6 +17,7 @@
 		"vscode": "^1.56.0"
 	},
 	"categories": [
+		"Snippets",
 		"Other"
 	],
 	"activationEvents": [
@@ -25,6 +26,12 @@
 	],
 	"main": "./out/extension.js",
 	"contributes": {
+		"snippets": [
+			{
+			  "language": "cpp",
+			  "path": "./snippets.json"
+			}
+		],
 		"commands": [
 			{
 				"command": "intelOneAPI.launchConfigurator.generateLaunchJson",

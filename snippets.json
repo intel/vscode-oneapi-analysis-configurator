@@ -1,85 +1,85 @@
 {    
     " " : {
-      "prefix": "intell", 
+      "prefix": "intel", 
       "body": [
-        "intell::"
+        "intel::"
       ],
       "description": " "
     },
     "fpga_register" : {
-        "prefix": "intell::fpga_register",
+        "prefix": "intel::fpga_register",
         "body": [
-          "intell::fpga_register"
+          "intel::fpga_register"
         ],
         "description": "Forces a variable or array to be carried through the pipeline in registers."
     },
     "fpga_memory('impl_type')" : {
-        "prefix": "intell::fpga_memory",
+        "prefix": "intel::fpga_memory",
         "body": [
-          "intell::fpga_memory"
+          "intel::fpga_memory"
         ],
         "description": "Forces a variable or array to be implemented as embedded memory. The optional string parameter impl_type can be BLOCK_RAM or MLAB."
     },
     "numbanks(N)" : {
-        "prefix": "intell::numbanks",
+        "prefix": "intel::numbanks",
         "body": [
-          "intell::numbanks"
+          "intel::numbanks"
         ],
         "description": "Specifies that the memory implementing the variable or array must have N memory banks."
     },
     "bankwidth(W)" : {
-        "prefix": "intell::bankwidth",
+        "prefix": "intel::bankwidth",
         "body": [
-          "intell::bankwidth"
+          "intel::bankwidth"
         ],
         "description": "Specifies that the memory implementing the variable or array must be W bytes wide."
     },
     "singlepump" : {
-        "prefix": "intell::singlepump",
+        "prefix": "intel::singlepump",
         "body": [
-          "intell::singlepump"
+          "intel::singlepump"
         ],
         "description": "Specifies that the memory implementing the variable or array should be clocked at the same rate as the accesses to it."
     },
     "doublepump" : {
-        "prefix": "intell::doublepump",
+        "prefix": "intel::doublepump",
         "body": [
-          "intell::doublepump"
+          "intel::doublepump"
         ],
         "description": "Specifies that the memory implementing the variable or array should be clocked at twice the rate as the accesses to it."
     },
     "max_replicates(N)" : {
-        "prefix": "intell::max_replicates",
+        "prefix": "intel::max_replicates",
         "body": [
-          "intell::max_replicates"
+          "intel::max_replicates"
         ],
         "description": "Specifies that a maximum of N replicates should be created to enable simultaneous reads from the datapath."
     },
     "private_copies(N)" : {
-        "prefix": "intell::private_copies",
+        "prefix": "intel::private_copies",
         "body": [
-          "intell::private_copies"
+          "intel::private_copies"
         ],
         "description": "Specifies that a maximum of N private copies should be created to enable concurrent execution of N pipelined threads."
     },
     "simple_dual_port" : {
-        "prefix": "intell::simple_dual_port",
+        "prefix": "intel::simple_dual_port",
         "body": [
-          "intell::simple_dual_port"
+          "intel::simple_dual_port"
         ],
         "description": "Specifies that the memory implementing the variable or array should have no port that services both reads and writes."
     },
     "merge('key', 'type')" : {
-        "prefix": "intell::merge",
+        "prefix": "intel::merge",
         "body": [
-          "intell::merge"
+          "intel::merge"
         ],
         "description": "Merge two or more variables or arrays in the same scope width-wise or depth-wise. All variables with the same key string are merged into the same memory system. The string type can be either width or depth."
     },
     "bank_bits(b0, b1,..., bn)" : {
-        "prefix": "intell::bank_bits",
+        "prefix": "intel::bank_bits",
         "body": [
-          "intell::bank_bits"
+          "intel::bank_bits"
         ],
         "description": "Specifies that the local memory addresses should use bits (b0, b1,..., bn) for bank-selection, where (b0, b1,..., bn) are indicated in terms of word-addressing. The bits of the local memory address not included in (b0, b1,..., bn) will be used for word-selection in each bank."
     }

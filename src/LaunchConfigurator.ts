@@ -11,6 +11,7 @@ import { execSync } from 'child_process';
 import { posix, join, parse, normalize } from 'path';
 import { existsSync, writeFileSync } from 'fs';
 
+const path = require('path');
 interface TaskConfigValue{
     label: string;
     command: string;
@@ -135,6 +136,44 @@ export class LaunchConfigurator {
     taskConfig.update('tasks', config, false);
     vscode.window.showInformationMessage(`Task for "${taskConfigValue.label}" was added`);
     return true;
+  }
+
+  async editCppProperties(): Promise<void> {
+    const ONEAPI_ROOT = vscode.workspace.getConfiguration().get<string>('intel-corporation.oneapi-launch-configurator.ONEAPI_ROOT');
+    const ONEAPI_ROOT_ENV = vscode.workspace.getConfiguration().get<string>('intel-corporation.oneapi-environment-variables.ONEAPI_ROOT');
+    if (!ONEAPI_ROOT_ENV && !process.env.ONEAPI_ROOT && !ONEAPI_ROOT) {
+      const tmp = await vscode.window.showInformationMessage('Please add ONEAPI_ROOT path in settings.', 'Open settings', 'Skip');
+      if (tmp === 'Open settings') {
+        await vscode.commands.executeCommand('workbench.action.openSettings', '@ext:intel-corporation.oneapi-launch-configurator ONEAPI_ROOT');
+      }
+      return;
+    }
+
+    const workspaceFolder = await getworkspaceFolder();
+    if (!workspaceFolder) {
+      return;
+    }
+
+    const cppStandard = await vscode.window.showQuickPick(['c++17']);
+    const cStandard = await vscode.window.showQuickPick(['c17']);
+
+    if (!cppStandard || !cStandard) {
+      return;
+    }
+
+    const cppConfiguration = vscode.workspace.getConfiguration('C_Cpp', workspaceFolder);
+    const oneapiPath = path.normalize(ONEAPI_ROOT || process.env.ONEAPI_ROOT || ONEAPI_ROOT_ENV);
+    const compilerPath = path.normalize(process.platform === 'win32' ? `${oneapiPath}/compiler/latest/windows/bin/dpcpp.exe` : `${oneapiPath}/compiler/latest/linux/bin/dpcpp`);
+
+    cppConfiguration.update('default.cppStandard', cppStandard, vscode.ConfigurationTarget.WorkspaceFolder);
+    cppConfiguration.update('default.includePath', [
+      '${workspaceFolder}/**',
+      `${path.normalize(ONEAPI_ROOT)}/**`
+    ], vscode.ConfigurationTarget.WorkspaceFolder);
+    cppConfiguration.update('default.defines', [], vscode.ConfigurationTarget.WorkspaceFolder);
+    cppConfiguration.update('default.compilerPath', compilerPath, vscode.ConfigurationTarget.WorkspaceFolder);
+    cppConfiguration.update('default.cStandard', cStandard, vscode.ConfigurationTarget.WorkspaceFolder);
+    vscode.window.showInformationMessage('C++ properties are successfully edited. Please check .vscode/settings.json for more details.');
   }
 
   async makeLaunchFile(): Promise<boolean> {

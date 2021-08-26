@@ -114,14 +114,14 @@ export class LaunchConfigurator {
     };
     switch (buildSystem) {
       case 'make': {
-        const cmd = `make ${selection} -f ${projectRootDir}/${makeFileName}`;
+        const cmd = `make ${selection.label} -f ${projectRootDir}/${makeFileName}`;
         taskConfigValue.command += cmd;
         break;
       }
       case 'cmake': {
         const cmd = process.platform === 'win32'
           ? `$val=Test-Path -Path 'build'; if($val -ne $true) {New-Item -ItemType directory -Path 'build'}; cmake  -S . -B 'build' -G 'NMake Makefiles'; cd build; nmake ${selection}`
-          : `mkdir -p build && cmake  -S . -B build && cmake --build build && cmake --build build --target ${selection}`;
+          : `mkdir -p build && cmake  -S . -B build && cmake --build build && cmake --build build --target ${selection.label}`;
         taskConfigValue.command += cmd;
         break;
       }

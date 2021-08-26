@@ -10,6 +10,7 @@ import { ProjectSettings } from './ProjectSettings';
 import { AdvisorLaunchScriptWriter } from './AdvisorLaunchScriptWriter';
 import { VtuneLaunchScriptWriter } from './VtuneLaunchScriptWriter';
 import { LaunchConfigurator } from './LaunchConfigurator';
+import FPGAMemoryHoverProvider from './hoverProvider';
 
 const fs = require('fs');
 const path = require('path');
@@ -40,6 +41,8 @@ function getBaseUri(node: vscode.Uri): vscode.Uri | undefined {
 export function activate(context: vscode.ExtensionContext): void {
   // Todo: The extension is currently activated at startup, as activationEvents in package.json uses '*'.
   // Find the viewID for explorer so it could be activated via 'onView:viewId'.
+
+  context.subscriptions.push(vscode.languages.registerHoverProvider('cpp', new FPGAMemoryHoverProvider()));
 
   // Register the commands that will interact with the user and write the launcher scripts.
   vscode.commands.registerCommand('intelOneAPI.analysis.launchAdvisor', async(selectedNode: vscode.Uri) => {

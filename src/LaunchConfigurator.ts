@@ -12,13 +12,14 @@ import { posix, join, parse, normalize } from 'path';
 import { existsSync, writeFileSync } from 'fs';
 
 const path = require('path');
-interface TaskConfigValue{
-    label: string;
-    command: string;
-    type: string;
-    options: {
-        cwd: string;
-}}
+interface TaskConfigValue {
+  label: string;
+  command: string;
+  type: string;
+  options: {
+    cwd: string;
+  }
+}
 
 const debugConfig = {
   name: '(gdb-oneapi) ${workspaceFolderBasename} Launch',
@@ -36,18 +37,18 @@ const debugConfig = {
   MIMode: 'gdb',
   miDebuggerPath: 'gdb-oneapi',
   setupCommands:
-        [
-          {
-            description: 'Enable pretty-printing for gdb',
-            text: '-enable-pretty-printing',
-            ignoreFailures: true
-          },
-          {
-            description: 'Disable target async',
-            text: 'set target-async off',
-            ignoreFailures: true
-          }
-        ]
+    [
+      {
+        description: 'Enable pretty-printing for gdb',
+        text: '-enable-pretty-printing',
+        ignoreFailures: true
+      },
+      {
+        description: 'Disable target async',
+        text: 'set target-async off',
+        ignoreFailures: true
+      }
+    ]
 };
 export class LaunchConfigurator {
   async makeTasksFile(): Promise<boolean> {
@@ -57,7 +58,13 @@ export class LaunchConfigurator {
     }
     const projectRootDir = `${workspaceFolder?.uri.fsPath}`;
     let buildSystem = '';
+    let makeFileName = undefined;
     if (existsSync(`${projectRootDir}/Makefile`)) {
+      makeFileName = 'Makefile';
+    } else if (existsSync(`${projectRootDir}/makefile`)) {
+      makeFileName = 'makefile';
+    }
+    if (makeFileName !== undefined) {
       if (process.platform === 'win32') {
         vscode.window.showInformationMessage('Working with makefile project is not available for Windows.', { modal: true });
         return false;
@@ -71,7 +78,7 @@ export class LaunchConfigurator {
       vscode.window.showErrorMessage('Generating tasks failed. The project does not contain CMakeLists.txt or MakeFile.', { modal: true });
       return false;
     }
-    const buildTargets = await this.getTargets(projectRootDir, buildSystem);
+    const buildTargets = await this.getTargets(projectRootDir, buildSystem, makeFileName);
     let isContinue = true;
     const optionsForChoose: vscode.InputBoxOptions = {
       placeHolder: `Choose target from ${buildSystem} or push ESC for exit`
@@ -86,12 +93,12 @@ export class LaunchConfigurator {
         isContinue = false;
         return true;
       }
-      await this.showChooseTaskWindow(buildTargets, optionsForChoose, projectRootDir, buildSystem);
+      await this.showChooseTaskWindow(buildTargets, optionsForChoose, projectRootDir, buildSystem, makeFileName);
     } while (isContinue);
     return true;
   }
 
-  async showChooseTaskWindow(buildTargets: vscode.QuickPickItem[], options: vscode.InputBoxOptions, projectRootDir: string, buildSystem: string): Promise<boolean> {
+  async showChooseTaskWindow(buildTargets: vscode.QuickPickItem[], options: vscode.InputBoxOptions, projectRootDir: string, buildSystem: string, makeFileName: string| undefined): Promise<boolean> {
     const selection = await vscode.window.showQuickPick(buildTargets, options);
     if (!selection) {
       return true;
@@ -107,7 +114,7 @@ export class LaunchConfigurator {
     };
     switch (buildSystem) {
       case 'make': {
-        const cmd = `make ${selection} -f ${projectRootDir}/Makefile`;
+        const cmd = `make ${selection} -f ${projectRootDir}/${makeFileName}`;
         taskConfigValue.command += cmd;
         break;
       }
@@ -237,7 +244,7 @@ export class LaunchConfigurator {
     return true;
   }
 
-  private async getTargets(projectRootDir: string, buildSystem: string): Promise<vscode.QuickPickItem[]> {
+  private async getTargets(projectRootDir: string, buildSystem: string, makeFileName: string | undefined): Promise<vscode.QuickPickItem[]> {
     try {
       let targets: string[];
       switch (buildSystem) {
@@ -253,7 +260,7 @@ export class LaunchConfigurator {
           return targets.map((oneTarget) => {
             return {
               label: oneTarget,
-              description: `target from ${path}/Makefile`
+              description: `target from ${path}/${makeFileName}`
             };
           });
         }
@@ -266,7 +273,7 @@ export class LaunchConfigurator {
           const pathsToCmakeLists = execSync(cmd).toString().split('\n');
           const optinosItems: vscode.QuickPickItem[] = [];
           pathsToCmakeLists.pop();
-          pathsToCmakeLists.forEach(async(onePath) => {
+          pathsToCmakeLists.forEach(async (onePath) => {
             const normalizedPath = normalize(onePath.replace('\r', '')).split(/[\\/]/g).join(posix.sep);
             const workspaceFolderName = vscode.workspace.workspaceFolders?.find((folder) => normalizedPath.split('/').find((el) => el === folder.name));
             const path = workspaceFolderName ? normalizedPath.slice(normalizedPath.indexOf(workspaceFolderName.name)) : normalizedPath;

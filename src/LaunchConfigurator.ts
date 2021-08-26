@@ -20,36 +20,6 @@ interface TaskConfigValue {
     cwd: string;
   }
 }
-
-const debugConfig = {
-  name: '(gdb-oneapi) ${workspaceFolderBasename} Launch',
-  type: 'cppdbg',
-  request: 'launch',
-  preLaunchTask: '',
-  postDebugTask: '',
-  program: '',
-  args: [],
-  stopAtEntry: false,
-  cwd: '${workspaceFolder}',
-  environment: [],
-  externalConsole: false,
-  // eslint-disable-next-line @typescript-eslint/naming-convention
-  MIMode: 'gdb',
-  miDebuggerPath: 'gdb-oneapi',
-  setupCommands:
-    [
-      {
-        description: 'Enable pretty-printing for gdb',
-        text: '-enable-pretty-printing',
-        ignoreFailures: true
-      },
-      {
-        description: 'Disable target async',
-        text: 'set target-async off',
-        ignoreFailures: true
-      }
-    ]
-};
 export class LaunchConfigurator {
   async makeTasksFile(): Promise<boolean> {
     const workspaceFolder = await getworkspaceFolder();
@@ -58,7 +28,7 @@ export class LaunchConfigurator {
     }
     const projectRootDir = `${workspaceFolder?.uri.fsPath}`;
     let buildSystem = '';
-    let makeFileName = undefined;
+    let makeFileName;
     if (existsSync(`${projectRootDir}/Makefile`)) {
       makeFileName = 'Makefile';
     } else if (existsSync(`${projectRootDir}/makefile`)) {
@@ -183,7 +153,6 @@ export class LaunchConfigurator {
     vscode.window.showInformationMessage('C++ properties are successfully edited. Please check .vscode/settings.json for more details.');
   }
 
-
   async quickBuild(isSyclEnabled: boolean): Promise<boolean> {
     if (!process.env.SETVARS_COMPLETED) {
       vscode.window.showErrorMessage('Quick build failed. Initialize the oneAPI environment.', { modal: true });
@@ -273,7 +242,7 @@ export class LaunchConfigurator {
           const pathsToCmakeLists = execSync(cmd).toString().split('\n');
           const optinosItems: vscode.QuickPickItem[] = [];
           pathsToCmakeLists.pop();
-          pathsToCmakeLists.forEach(async (onePath) => {
+          pathsToCmakeLists.forEach(async(onePath) => {
             const normalizedPath = normalize(onePath.replace('\r', '')).split(/[\\/]/g).join(posix.sep);
             const workspaceFolderName = vscode.workspace.workspaceFolders?.find((folder) => normalizedPath.split('/').find((el) => el === folder.name));
             const path = workspaceFolderName ? normalizedPath.slice(normalizedPath.indexOf(workspaceFolderName.name)) : normalizedPath;

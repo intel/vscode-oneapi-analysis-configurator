@@ -86,10 +86,6 @@ You need to have at least one of the above Intel analysis tools installed for th
 4. If necessary, replace the path to the oneAPI components with the one that is relevant for your installation folder.
 5. IntelliSense for oneAPI is ready.
 
-## IntelliSense for basic code hints for FPGA Memory Attributes
-While typing some of FPGA Memory Attributes there will be suggestions with description what function should you use.
-More about Memory Attributes: [The oneAPI samples README](https://github.com/oneapi-src/oneAPI-samples/blob/master/DirectProgramming/DPC%2B%2BFPGA/Tutorials/Features/memory_attributes/README.md)
-
 ## Contributing
 Install Visual Studio Code (at least version 1.42) and open this project within it. You also need `node + npm`.
 - Switch to project root folder

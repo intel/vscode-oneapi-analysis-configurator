@@ -3,7 +3,7 @@
 	"displayName": "Launch & Intellisense Configurator for Intel oneAPI Toolkits",
 	"description": "Manage VSCode launch and configuration files to assist with debug, build and performance analysis of your Intel oneAPI applications.",
 	"publisher": "intel-corporation",
-	"version": "0.0.14",
+	"version": "0.0.15",
 	"license": "MIT",
 	"icon": "media/oneapi-logo.png",
 	"keywords": [
@@ -27,10 +27,6 @@
 	"main": "./out/extension.js",
 	"contributes": {
 		"commands": [
-			{
-				"command": "intelOneAPI.launchConfigurator.generateLaunchJson",
-				"title": "Intel oneAPI: Generate launch configurations"
-			},
 			{
 				"command": "intelOneAPI.launchConfigurator.generateTaskJson",
 				"title": "Intel oneAPI: Generate tasks"

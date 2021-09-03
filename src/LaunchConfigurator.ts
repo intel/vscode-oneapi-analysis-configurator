@@ -12,43 +12,14 @@ import { posix, join, parse, normalize } from 'path';
 import { existsSync, writeFileSync } from 'fs';
 
 const path = require('path');
-interface TaskConfigValue{
-    label: string;
-    command: string;
-    type: string;
-    options: {
-        cwd: string;
-}}
-
-const debugConfig = {
-  name: '(gdb-oneapi) ${workspaceFolderBasename} Launch',
-  type: 'cppdbg',
-  request: 'launch',
-  preLaunchTask: '',
-  postDebugTask: '',
-  program: '',
-  args: [],
-  stopAtEntry: false,
-  cwd: '${workspaceFolder}',
-  environment: [],
-  externalConsole: false,
-  // eslint-disable-next-line @typescript-eslint/naming-convention
-  MIMode: 'gdb',
-  miDebuggerPath: 'gdb-oneapi',
-  setupCommands:
-        [
-          {
-            description: 'Enable pretty-printing for gdb',
-            text: '-enable-pretty-printing',
-            ignoreFailures: true
-          },
-          {
-            description: 'Disable target async',
-            text: 'set target-async off',
-            ignoreFailures: true
-          }
-        ]
-};
+interface TaskConfigValue {
+  label: string;
+  command: string;
+  type: string;
+  options: {
+    cwd: string;
+  }
+}
 export class LaunchConfigurator {
   async makeTasksFile(): Promise<boolean> {
     const workspaceFolder = await getworkspaceFolder();
@@ -57,7 +28,13 @@ export class LaunchConfigurator {
     }
     const projectRootDir = `${workspaceFolder?.uri.fsPath}`;
     let buildSystem = '';
+    let makeFileName;
     if (existsSync(`${projectRootDir}/Makefile`)) {
+      makeFileName = 'Makefile';
+    } else if (existsSync(`${projectRootDir}/makefile`)) {
+      makeFileName = 'makefile';
+    }
+    if (makeFileName) {
       if (process.platform === 'win32') {
         vscode.window.showInformationMessage('Working with makefile project is not available for Windows.', { modal: true });
         return false;
@@ -71,7 +48,7 @@ export class LaunchConfigurator {
       vscode.window.showErrorMessage('Generating tasks failed. The project does not contain CMakeLists.txt or MakeFile.', { modal: true });
       return false;
     }
-    const buildTargets = await this.getTargets(projectRootDir, buildSystem);
+    const buildTargets = await this.getTargets(projectRootDir, buildSystem, makeFileName);
     let isContinue = true;
     const optionsForChoose: vscode.InputBoxOptions = {
       placeHolder: `Choose target from ${buildSystem} or push ESC for exit`
@@ -86,12 +63,12 @@ export class LaunchConfigurator {
         isContinue = false;
         return true;
       }
-      await this.showChooseTaskWindow(buildTargets, optionsForChoose, projectRootDir, buildSystem);
+      await this.showChooseTaskWindow(buildTargets, optionsForChoose, projectRootDir, buildSystem, makeFileName);
     } while (isContinue);
     return true;
   }
 
-  async showChooseTaskWindow(buildTargets: vscode.QuickPickItem[], options: vscode.InputBoxOptions, projectRootDir: string, buildSystem: string): Promise<boolean> {
+  async showChooseTaskWindow(buildTargets: vscode.QuickPickItem[], options: vscode.InputBoxOptions, projectRootDir: string, buildSystem: string, makeFileName: string| undefined): Promise<boolean> {
     const selection = await vscode.window.showQuickPick(buildTargets, options);
     if (!selection) {
       return true;
@@ -107,14 +84,14 @@ export class LaunchConfigurator {
     };
     switch (buildSystem) {
       case 'make': {
-        const cmd = `make ${selection} -f ${projectRootDir}/Makefile`;
+        const cmd = `make ${selection.label} -f ${projectRootDir}/${makeFileName}`;
         taskConfigValue.command += cmd;
         break;
       }
       case 'cmake': {
         const cmd = process.platform === 'win32'
           ? `$val=Test-Path -Path 'build'; if($val -ne $true) {New-Item -ItemType directory -Path 'build'}; cmake  -S . -B 'build' -G 'NMake Makefiles'; cd build; nmake ${selection}`
-          : `mkdir -p build && cmake  -S . -B build && cmake --build build && cmake --build build --target ${selection}`;
+          : `mkdir -p build && cmake  -S . -B build && cmake --build build && cmake --build build --target ${selection.label}`;
         taskConfigValue.command += cmd;
         break;
       }
@@ -174,100 +151,6 @@ export class LaunchConfigurator {
     cppConfiguration.update('default.compilerPath', compilerPath, vscode.ConfigurationTarget.WorkspaceFolder);
     cppConfiguration.update('default.cStandard', cStandard, vscode.ConfigurationTarget.WorkspaceFolder);
     vscode.window.showInformationMessage('C++ properties are successfully edited. Please check .vscode/settings.json for more details.');
-  }
-
-  async makeLaunchFile(): Promise<boolean> {
-    const workspaceFolder = await getworkspaceFolder();
-    if (!workspaceFolder) {
-      return false; // for unit tests
-    }
-    const projectRootDir = `${workspaceFolder?.uri.fsPath}`;
-    let buildSystem = '';
-    if (existsSync(`${projectRootDir}/Makefile`)) {
-      buildSystem = 'make';
-    }
-    if (existsSync(`${projectRootDir}/CMakeLists.txt`)) {
-      buildSystem = 'cmake';
-    }
-    if (buildSystem === '') {
-      vscode.window.showErrorMessage('Generating launch configurations failed. The project does not contain CMakeLists.txt or MakeFile.', { modal: true });
-      return false;
-    }
-    let execFiles: string[] = [];
-    let execFile;
-    switch (buildSystem) {
-      case 'make': {
-        execFiles = await this.findExecutables(projectRootDir);
-        break;
-      }
-      case 'cmake': {
-        execFiles = await this.findExecutables(projectRootDir);
-        if (execFiles.length === 0) {
-          const execNames = await this.getExecNameFromCmake(projectRootDir);
-          execNames.forEach(async(name: string) => {
-            execFiles.push(join(`${projectRootDir}`, 'build', 'src', name));
-          });
-          if (execFiles.length !== 0) {
-            vscode.window.showInformationMessage('Could not find executable files.\nThe name of the executable will be taken from CMakeLists.txt, and the executable is expected to be located in /build/src.');
-          }
-        }
-
-        break;
-      }
-      default: {
-        break;
-      }
-    }
-    execFiles.push('Put temporal target path "a.out" to replace it later with correct path manually');
-    execFiles.push('Provide path to the executable file manually');
-    let isContinue = true;
-    const options: vscode.InputBoxOptions = {
-      placeHolder: 'Choose executable target or push ESC for exit'
-    };
-    do {
-      let selection = await vscode.window.showQuickPick(execFiles, options);
-      if (!selection) {
-        isContinue = false;
-        break;
-      }
-      if (selection === 'Put temporal target path "a.out" to replace it later with correct path manually') {
-        selection = 'a.out';
-        await vscode.window.showInformationMessage('Note: Launch template cannot be launched immediately after creation.\nPlease edit the launch.json file according to your needs before run.', { modal: true });
-      }
-      if (selection === 'Provide path to the executable file manually') {
-        const options: vscode.OpenDialogOptions = {
-          canSelectMany: false
-        };
-        const pathToExecFile = await vscode.window.showOpenDialog(options);
-        if (pathToExecFile && pathToExecFile[0]) {
-          execFile = pathToExecFile[0].fsPath;
-        } else {
-          await vscode.window.showErrorMessage('Path to the executable file invalid.\nPlease check path and name and try again.', { modal: true });
-          return false;
-        }
-      } else {
-        execFile = selection;
-      }
-
-      const launchConfig = vscode.workspace.getConfiguration('launch');
-      const configurations = launchConfig.configurations;
-
-      debugConfig.name = selection === 'a.out'
-        ? 'Launch_template'
-        : `(gdb-oneapi) ${parse(execFile).base} Launch`;
-      debugConfig.program = `${execFile}`.split(/[\\/]/g).join(posix.sep);
-      await this.addTasksToLaunchConfig();
-      const isUniq: boolean = await this.checkLaunchItem(configurations, debugConfig);
-      if (isUniq) {
-        configurations.push(debugConfig);
-        launchConfig.update('configurations', configurations, false);
-        vscode.window.showInformationMessage(`Launch configuration "${debugConfig.name}" for "${debugConfig.program}" was added`);
-      } else {
-        vscode.window.showInformationMessage(`Launch configuration "${debugConfig.name}" for "${debugConfig.program}" was skipped as duplicate`);
-        return false;
-      }
-    } while (isContinue);
-    return true;
   }
 
   async quickBuild(isSyclEnabled: boolean): Promise<boolean> {
@@ -330,105 +213,7 @@ export class LaunchConfigurator {
     return true;
   }
 
-  private async checkLaunchItem(listItems: any, newItem: any): Promise<boolean> {
-    if (listItems.length === 0) {
-      return true; // for tests
-    }
-
-    const existItem = listItems.find((item: { label: any; }) => item.label === newItem.label);
-    const dialogOptions: string[] = ['Skip target', 'Rename configuration'];
-
-    if (existItem) {
-      const options: vscode.InputBoxOptions = {
-        placeHolder: `Launch configuration for target "${newItem.name}" already exist. Do you want to rename current configuration or skip target?`
-      };
-      const selection = await vscode.window.showQuickPick(dialogOptions, options);
-      if (!selection || selection === 'Skip target ') {
-        return false;
-      } else {
-        const inputBoxText: vscode.InputBoxOptions = {
-          placeHolder: 'Please provide new configuration name:'
-        };
-        const inputName = await vscode.window.showInputBox(inputBoxText);
-        newItem.name = inputName;
-      }
-    }
-    return true;
-  }
-
-  private async addTasksToLaunchConfig(): Promise<boolean> {
-    const taskConfig = vscode.workspace.getConfiguration('tasks');
-    const existTasks = taskConfig.tasks;
-    const tasksList: string[] = [];
-    for (const task in existTasks) {
-      tasksList.push(existTasks[task].label);
-    }
-    tasksList.push('Skip adding preLaunchTask');
-    const preLaunchTaskOptions: vscode.InputBoxOptions = {
-      placeHolder: 'Choose task for adding to preLaunchTask'
-    };
-    const preLaunchTask = await vscode.window.showQuickPick(tasksList, preLaunchTaskOptions);
-    if (preLaunchTask && preLaunchTask !== 'Skip adding preLaunchTask') {
-      debugConfig.preLaunchTask = preLaunchTask;
-    }
-    tasksList.pop();
-    const postDebugTaskOptions: vscode.InputBoxOptions = {
-      placeHolder: 'Choose task for adding to postDebugTask'
-    };
-    tasksList.push('Skip adding postDebugTask');
-    const postDebugTask = await vscode.window.showQuickPick(tasksList, postDebugTaskOptions);
-    if (postDebugTask && postDebugTask !== 'Skip adding postDebugTask') {
-      debugConfig.postDebugTask = postDebugTask;
-    }
-    return true;
-  }
-
-  private async findExecutables(projectRootDir: string): Promise<string[]> {
-    try {
-      const cmd = process.platform === 'win32'
-        ? `pwsh -command "Get-ChildItem '${projectRootDir}' -recurse -Depth 3 -include '*.exe' -Name | ForEach-Object -Process {$execPath='${projectRootDir}' +'\\'+ $_;echo $execPath}"`
-        : `find ${projectRootDir} -maxdepth 3 -exec file {} \\; | grep -i elf | cut -f1 -d ':'`;
-      const pathsToExecutables = execSync(cmd).toString().split('\n');
-      pathsToExecutables.pop();
-      pathsToExecutables.forEach(async function(onePath, index, execList) {
-        // This is the only known way to replace \\ with /
-        execList[index] = posix.normalize(onePath.replace('\r', '')).split(/[\\/]/g).join(posix.sep);
-      });
-      return pathsToExecutables;
-    } catch (err) {
-      console.log(err);
-      return [];
-    }
-  }
-
-  private async getExecNameFromCmake(projectRootDir: string): Promise<string[]> {
-    try {
-      let execNames: string[] = [];
-      const cmd = process.platform === 'win32'
-        ? `where /r ${projectRootDir} CMakeLists.txt`
-        : `find ${projectRootDir} -name 'CMakeLists.txt'`;
-      const pathsToCmakeLists = execSync(cmd).toString().split('\n');
-      pathsToCmakeLists.pop();
-      pathsToCmakeLists.forEach(async(onePath) => {
-        const normalizedPath = normalize(onePath.replace('\r', '')).split(/[\\/]/g).join(posix.sep);
-        const cmd = process.platform === 'win32'
-          ? `pwsh -Command "$execNames=(gc ${normalizedPath}) | Select-String -Pattern '\\s*add_executable\\s*\\(\\s*(\\w*)' ; $execNames.Matches | ForEach-Object -Process {echo $_.Groups[1].Value} | Select-Object -Unique | ? {$_.trim() -ne '' } "`
-          : `awk '/^ *add_executable *\\( *[^$]/' ${normalizedPath} | sed -e's/add_executable *(/ /; s/\\r/ /' | awk '{print $1}' | uniq`;
-        execNames = execNames.concat(execSync(cmd, { cwd: projectRootDir }).toString().split('\n'));
-        execNames.pop();
-        execNames.forEach(async function(oneExec, index, execList) {
-          execList[index] = normalize(oneExec.replace('\r', '')).split(/[\\/]/g).join(posix.sep);
-        });
-      });
-
-      return execNames;
-    } catch (err) {
-      console.error(err);
-      return [];
-    }
-  }
-
-  private async getTargets(projectRootDir: string, buildSystem: string): Promise<vscode.QuickPickItem[]> {
+  private async getTargets(projectRootDir: string, buildSystem: string, makeFileName: string | undefined): Promise<vscode.QuickPickItem[]> {
     try {
       let targets: string[];
       switch (buildSystem) {
@@ -444,7 +229,7 @@ export class LaunchConfigurator {
           return targets.map((oneTarget) => {
             return {
               label: oneTarget,
-              description: `target from ${path}/Makefile`
+              description: `target from ${path}/${makeFileName}`
             };
           });
         }

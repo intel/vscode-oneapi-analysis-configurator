@@ -34,7 +34,7 @@ export class LaunchConfigurator {
     } else if (existsSync(`${projectRootDir}/makefile`)) {
       makeFileName = 'makefile';
     }
-    if (makeFileName !== undefined) {
+    if (makeFileName) {
       if (process.platform === 'win32') {
         vscode.window.showInformationMessage('Working with makefile project is not available for Windows.', { modal: true });
         return false;

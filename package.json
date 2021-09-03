@@ -26,12 +26,6 @@
 	],
 	"main": "./out/extension.js",
 	"contributes": {
-		"snippets": [
-			{
-				"language": "cpp",
-				"path": "./snippets.json"
-			}
-		],
 		"commands": [
 			{
 				"command": "intelOneAPI.launchConfigurator.generateTaskJson",

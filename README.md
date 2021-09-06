@@ -1,4 +1,4 @@
-# Launch & Intellisense Configurator for Intel(R) oneAPI Toolkits
+# Analysis Configurator for Intel(R) oneAPI Toolkits
 
 This is an extension for seamless integration with Intel(R) analysis tools including the Intel(R) VTune™ Profiler, Intel(R) Advisor and makes it easier to configure oneAPI projects for build, run, and debug in Visual Studio Code* (VS Code).
 

@@ -1,6 +1,6 @@
 {
 	"name": "oneapi-launch-configurator",
-	"displayName": "Launch & Intellisense Configurator for Intel oneAPI Toolkits",
+	"displayName": "Analysis Configurator for Intel(R) oneAPI Toolkits",
 	"description": "Manage VSCode launch and configuration files to assist with debug, build and performance analysis of your Intel oneAPI applications.",
 	"publisher": "intel-corporation",
 	"version": "0.0.15",

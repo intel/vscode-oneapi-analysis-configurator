@@ -62,10 +62,10 @@ You need to have at least one of the above Intel analysis tools installed for th
 
 ## How to Use IntelliSense for Code Developed with Intel oneAPI Toolkits. Configure C++ Properties
 This extension provides the ability to configure the cpp properties includePath, defines, and compilerPath. 
- 1. Press Ctrl+Shift+P ( or View -> Command Palette… ) to open the Command Palette. 
+ 1. Press `Ctrl+Shift+P` ( or `View -> Command Palette...` ) to open the Command Palette. 
  2. Type Intel oneAPI: configure cpp properties configuration and select it from the palette.
- 3. Select cpp standard .
- 4. Select c standard .
+ 3. Select cpp standard.
+ 4. Select c standard.
  5. A message will appear in the lower right corner to confirm the properties have been configured.
 
 To view or change the properties, open settings.json from the VS Code Explorer.

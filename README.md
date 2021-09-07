@@ -30,18 +30,6 @@ Please visit https://software.intel.com/oneapi for details. For more information
 7.	Select the task to run.
 8.	Select a new target or close the window.
 
-
-
-## Prepare Launch Configuration
-This extension enables the ability to prepare launch configurations for running and debugging projects created using Intel oneAPI toolkits:
-1. Using the VS Code explorer, click `File -> Open Folder`.
-2. Navigate to the folder where your project is located and click `OK`.
-3. Press `Ctrl+Shift+P ( or View -> Command Palette... )` to open the Command Palette.
-4. Type **Intel oneAPI** and select `Intel oneAPI: Generate launch configurations`.
-5. Follow the prompts to add launch configurations.
-6. Using the VS Code Explorer, open the C++ file for your project.
-7. The configuration is now available to debug and run using the gdb-oneapi debugger. To debug and run, click on the **Run** icon or press `Ctrl+Shift+D`.
-
 ## Building a single cpp file:
 1. Open the cpp file you want to build.
 2. Press `Ctrl+Shift+P` ( or `View -> Command Palette...` ) to open the Command Palette.

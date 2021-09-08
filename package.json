@@ -22,7 +22,7 @@
 	],
 	"activationEvents": [
 		"onCommand:workbench.action.tasks.runTask",
-		"*"
+		"onStartupFinished"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
@@ -54,7 +54,7 @@
 		],
 		"configuration": [
 			{
-				"title": "Launcher for Intel oneAPI Analyzers",
+				"title": "Analysis Configurator for Intel(R) oneAPI Toolkits",
 				"properties": {
 					"intel-corporation.oneapi-launch-configurator.ONEAPI_ROOT": {
 						"type": "string",

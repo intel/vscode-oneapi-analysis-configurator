@@ -1,3 +1,3 @@
 {
-    "capabilities.ONEAPI_ROOT.description" : "Absolute path to oneAPI installation folder.\n\nSpecifies the absolute pathname to your oneAPI installation. This path is useful for automatically configure your cpp properties . If ONEAPI_ROOT variable is not set, it takes existing ONEAPI_ROOT variable from oneapi-environment-variables extention.\n\n"
+    "capabilities.ONEAPI_ROOT.description" : "Absolute path to oneAPI installation folder.\n\nSpecifies the absolute pathname to your oneAPI installation. This path is useful for automatically configure your cpp properties . If ONEAPI_ROOT variable is not set, it takes existing ONEAPI_ROOT variable from oneapi-environment-configurator extention.\n\n"
 }

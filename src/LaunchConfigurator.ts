@@ -116,12 +116,12 @@ export class LaunchConfigurator {
   }
 
   async editCppProperties(): Promise<void> {
-    const ONEAPI_ROOT = vscode.workspace.getConfiguration().get<string>('intel-corporation.oneapi-launch-configurator.ONEAPI_ROOT');
-    const ONEAPI_ROOT_ENV = vscode.workspace.getConfiguration().get<string>('intel-corporation.oneapi-environment-variables.ONEAPI_ROOT');
+    const ONEAPI_ROOT = vscode.workspace.getConfiguration().get<string>('intel-corporation.oneapi-analysis-configurator.ONEAPI_ROOT');
+    const ONEAPI_ROOT_ENV = vscode.workspace.getConfiguration().get<string>('intel-corporation.oneapi-environment-configurator.ONEAPI_ROOT');
     if (!ONEAPI_ROOT_ENV && !process.env.ONEAPI_ROOT && !ONEAPI_ROOT) {
       const tmp = await vscode.window.showInformationMessage('Please add ONEAPI_ROOT path in settings.', 'Open settings', 'Skip');
       if (tmp === 'Open settings') {
-        await vscode.commands.executeCommand('workbench.action.openSettings', '@ext:intel-corporation.oneapi-launch-configurator ONEAPI_ROOT');
+        await vscode.commands.executeCommand('workbench.action.openSettings', '@ext:intel-corporation.oneapi-analysis-configurator ONEAPI_ROOT');
       }
       return;
     }

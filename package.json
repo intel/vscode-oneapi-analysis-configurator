@@ -1,5 +1,5 @@
 {
-	"name": "oneapi-launch-configurator",
+	"name": "oneapi-analysis-configurator",
 	"displayName": "Analysis Configurator for Intel(R) oneAPI Toolkits",
 	"description": "Build and performance analysis of your Intel(R) oneAPI applications.",
 	"publisher": "intel-corporation",
@@ -56,7 +56,7 @@
 			{
 				"title": "Analysis Configurator for Intel(R) oneAPI Toolkits",
 				"properties": {
-					"intel-corporation.oneapi-launch-configurator.ONEAPI_ROOT": {
+					"intel-corporation.oneapi-analysis-configurator.ONEAPI_ROOT": {
 						"type": "string",
 						"description": "%capabilities.ONEAPI_ROOT.description%"
 					},

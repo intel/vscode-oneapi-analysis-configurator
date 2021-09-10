@@ -64,8 +64,8 @@ export function activate(context: vscode.ExtensionContext): void {
 
   // Updating parameters when they are changed in Setting.json
   context.subscriptions.push(vscode.workspace.onDidChangeConfiguration(e => {
-    if (e.affectsConfiguration('intel-corporation.oneapi-launch-configurator.ONEAPI_ROOT')) {
-      const ONEAPI_ROOT = vscode.workspace.getConfiguration().get<string>('intel-corporation.oneapi-launch-configurator.ONEAPI_ROOT');
+    if (e.affectsConfiguration('intel-corporation.oneapi-analysis-configurator.ONEAPI_ROOT')) {
+      const ONEAPI_ROOT = vscode.workspace.getConfiguration().get<string>('intel-corporation.oneapi-analysis-configurator.ONEAPI_ROOT');
       const compilerPath = path.normalize(process.platform === 'win32' ? `${ONEAPI_ROOT}/compiler/latest/windows/bin/dpcpp.exe` : `${ONEAPI_ROOT}/compiler/latest/linux/bin/dpcpp`);
 
       fs.access(compilerPath, fs.F_OK, (err: any) => {
@@ -130,14 +130,14 @@ export function activate(context: vscode.ExtensionContext): void {
   context.subscriptions.push(vscode.commands.registerCommand('intelOneAPI.launchConfigurator.quickBuildSycl', () => launchConfigurator.quickBuild(true)));
   context.subscriptions.push(vscode.commands.registerCommand('intelOneAPI.launchConfigurator.editCppProperties', () => launchConfigurator.editCppProperties()));
 
-  // Check that oneapi-environment-variables already installed
-  const tsExtension = vscode.extensions.getExtension('intel-corporation.oneapi-environment-variables');
+  // Check that oneapi-environment-configurator already installed
+  const tsExtension = vscode.extensions.getExtension('intel-corporation.oneapi-environment-configurator');
   if (!tsExtension) {
     const GoToInstall = 'Install';
     vscode.window.showInformationMessage('It is recommended to install Environment configurator for Intel oneAPI Toolkits to simplify oneAPI environment setup', GoToInstall)
       .then((selection) => {
         if (selection === GoToInstall) {
-          vscode.commands.executeCommand('workbench.extensions.installExtension', 'intel-corporation.oneapi-environment-variables');
+          vscode.commands.executeCommand('workbench.extensions.installExtension', 'intel-corporation.oneapi-environment-configurator');
         }
       });
   }

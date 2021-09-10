@@ -134,6 +134,6 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/intel/vscode-analyzers.git"
+		"url": "https://github.com/intel/vscode-oneapi-extension-pack.git"
 	}
 }

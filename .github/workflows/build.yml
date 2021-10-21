@@ -1,0 +1,24 @@
+name: Pre-commit
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build-extensions:
+    runs-on: self-hosted
+    container: node:14
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v2
+      - name: Build the package
+        run: yarn install  && yarn package
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: launcher-extension
+          path: ./*.vsix

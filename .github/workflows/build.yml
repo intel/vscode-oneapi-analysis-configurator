@@ -3,9 +3,11 @@ on:
   push:
     branches:
       - main
+      - 2022.1_new_features
   pull_request:
     branches:
       - main
+      - 2022.1_new_features
   workflow_dispatch:
 
 jobs:

@@ -12,7 +12,7 @@ on:
 
 jobs:
   build-extensions:
-    runs-on: self-hosted
+    runs-on: [self-hosted,linux]
     container: node:14
     steps:
       - name: Check out repository code

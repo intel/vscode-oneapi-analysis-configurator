@@ -1,0 +1,166 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE concept PUBLIC "-//OASIS//DTD DITA Concept//EN" "concept.dtd">
+<concept id="GUID-9A762FAD-6682-4920-8BE9-6B81B3C1633E" xml:lang="en-US"> 
+  <title>FPGA Loop Directives</title> 
+  <conbody> 
+    <p>The following table summarizes loop directives: 
+    </p> 
+    <table frame="all" rowsep="1" colsep="1" id="GUID-3CD1DEFA-B599-45BC-9B8B-5A3EEE35AA9E"> 
+    <title>FPGA Loop Directives</title> 
+    <tgroup cols="3"> 
+      <colspec colname="col1" colwidth="1.00*"/> 
+      <colspec colname="col2" colwidth="1.22*"/> 
+      <colspec colname="col3" colwidth="2.43*"/> 
+      <thead> 
+        <row> 
+          <entry> 
+            <p>Pragma or Attribute 
+            </p> 
+          </entry> 
+          <entry> 
+            <p>Description 
+            </p> 
+          </entry> 
+          <entry> 
+            <p>Example 
+            </p> 
+          </entry> 
+        </row> 
+      </thead> 
+      <tbody> 
+        <row> 
+          <entry><codeph>disable_loop_pipelining</codeph> 
+          </entry> 
+          <entry> 
+            <p>Directs the 
+              <ph conref="GUID-B78BEE23-C729-4F00-A65A-B7695E37B9E3#GUID-B78BEE23-C729-4F00-A65A-B7695E37B9E3/DPCPP_CPP_COMPILER"></ph> to disable pipelining of a loop. 
+            </p> 
+          </entry> 
+          <entry> 
+            <codeblock ishcondition="otherprops='lang(cpp)'">[[intel::disable_loop_pipelining]]
+for (int i = 1; i &lt; N; i++) {
+  int j = a[i-1];
+  // Memory dependency induces a high-latency loop feedback path
+  a[i] = foo(j)
+}</codeblock> 
+          </entry> 
+        </row> 
+        <row> 
+          <entry> 
+            <codeph>initiation_interval</codeph> 
+          </entry> 
+          <entry> 
+            <p>Forces a loop to have a loop initialization interval (II) of a specified value. 
+            </p> 
+          </entry> 
+          <entry> 
+            <codeblock ishcondition="otherprops='lang(cpp)'">// ii set to 5
+[[intel::initiation_interval(5)]]
+  for (int i = 0; i &lt; N; ++i){
+}</codeblock> 
+          </entry> 
+        </row> 
+        <row> 
+          <entry> 
+            <codeph>ivdep</codeph> 
+          </entry> 
+          <entry> 
+            <p>Ignores memory dependencies between iterations of this loop 
+            </p> 
+          </entry> 
+          <entry> 
+            <codeblock ishcondition="otherprops='lang(cpp)'">// ivdep loop
+[[intel::ivdep]] for (…) {}</codeblock> 
+            <codeblock ishcondition="otherprops='lang(cpp)'">//ivdep safelen 
+[[intel::ivdep(safelen)]] for (;;) {} </codeblock> 
+            <codeblock ishcondition="otherprops='lang(cpp)'">// ivdep accessor
+[[intel::ivdep(accessorA)]] for (;;) {}</codeblock> 
+            <codeblock ishcondition="otherprops='lang(cpp)'">//ivdep array safelen
+[[intel::ivdep(accessorA, safelen)]]
+for (;;){}</codeblock> 
+          </entry> 
+        </row> 
+        <row> 
+          <entry><codeph>loop_coalesce</codeph> 
+          </entry> 
+          <entry> 
+            <p>Coalesces nested loops into a single loop without affecting the loop functionality. 
+            </p> 
+          </entry> 
+          <entry> 
+            <codeblock ishcondition="otherprops='lang(cpp)'">[[intel::loop_coalesce(2)]] 
+for (int i = 0; i &lt; N; i++)
+  for (int j = 0; j &lt; M; j++)
+    sum[i][j] += i+j;</codeblock> 
+          </entry> 
+        </row> 
+        <row> 
+          <entry> 
+            <codeph>max_concurrency</codeph> 
+          </entry> 
+          <entry> 
+            <p>Limits the number of iterations of a loop that can simultaneously execute at any time. 
+            </p> 
+          </entry> 
+          <entry> 
+            <codeblock ishcondition="otherprops='lang(cpp)'">//max concurrency set to 1
+[[intel::max_concurrency(1)]] 
+  for (int i = 0; i &lt; c; ++i){
+}</codeblock> 
+          </entry> 
+        </row> 
+        <row> 
+          <entry><codeph>max_interleaving</codeph> 
+          </entry> 
+          <entry> 
+            <p>Maximizes the throughput and hardware resource occupancy of pipelined inner loops in a loop nest. 
+            </p> 
+          </entry> 
+          <entry> 
+            <codeblock ishcondition="otherprops='lang(cpp)'">// Loop j is pipelined with ii=1
+for (int j = 0; j &lt; M; j++) {
+  int a[N];
+  // Loop i is pipelined with ii=2 
+  [[intel::max_interleaving(1)]]
+  for (int i = 1; i &lt; N; i++) {
+    a[i] = foo(i)
+  }
+  …
+}</codeblock> 
+          </entry> 
+        </row> 
+        <row> 
+          <entry><codeph>speculated_iterations</codeph> 
+          </entry> 
+          <entry> 
+            <p>Improves the performance of pipelined loops. 
+            </p> 
+          </entry> 
+          <entry> 
+            <codeblock ishcondition="otherprops='lang(cpp)'">[[intel::speculated_iterations(1)]]
+  while (m*m*m &lt; N) {
+    m += 1;
+  }
+  dst[0] = m;</codeblock> 
+          </entry> 
+        </row> 
+        <row> 
+          <entry colname="col1"><codeph>unroll</codeph> 
+          </entry> 
+          <entry colname="col2"> 
+            <p>Unrolls a loop in the kernel code. 
+            </p> 
+          </entry> 
+          <entry colname="col3"> 
+            <codeblock ishcondition="otherprops='lang(cpp)'">// unroll factor N set to 2
+#pragma unroll 2
+for(size_t k = 0; k &lt; 4; k++){
+  mac += data_in[(gid * 4) + k] * coeff[k];
+}</codeblock> 
+          </entry> 
+        </row> 
+      </tbody> 
+    </tgroup> 
+    </table> 
+  </conbody> 
+</concept> 

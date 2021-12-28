@@ -10,6 +10,7 @@ import * as vscode from 'vscode';
 import { execSync } from 'child_process';
 import { posix, join, parse, normalize } from 'path';
 import { existsSync, writeFileSync } from 'fs';
+import { getPSexecutableName } from './utils/terminal_utils';
 
 const path = require('path');
 interface TaskConfigValue {
@@ -68,7 +69,7 @@ export class LaunchConfigurator {
     return true;
   }
 
-  async showChooseTaskWindow(buildTargets: vscode.QuickPickItem[], options: vscode.InputBoxOptions, projectRootDir: string, buildSystem: string, makeFileName: string| undefined): Promise<boolean> {
+  async showChooseTaskWindow(buildTargets: vscode.QuickPickItem[], options: vscode.InputBoxOptions, projectRootDir: string, buildSystem: string, makeFileName: string | undefined): Promise<boolean> {
     const selection = await vscode.window.showQuickPick(buildTargets, options);
     if (!selection) {
       return true;
@@ -90,7 +91,7 @@ export class LaunchConfigurator {
       }
       case 'cmake': {
         const cmd = process.platform === 'win32'
-          ? `$val=Test-Path -Path 'build'; if($val -ne $true) {New-Item -ItemType directory -Path 'build'}; cmake  -S . -B 'build' -G 'NMake Makefiles'; cd build; nmake ${selection}`
+          ? `$val=Test-Path -Path 'build'; if($val -ne $true) {New-Item -ItemType directory -Path 'build'}; cmake  -S . -B 'build' -G 'NMake Makefiles'; cd build; nmake ${selection.label}`
           : `mkdir -p build && cmake  -S . -B build && cmake --build build && cmake --build build --target ${selection.label}`;
         taskConfigValue.command += cmd;
         break;
@@ -175,7 +176,7 @@ export class LaunchConfigurator {
     const cmd = isSyclEnabled ? `icpx -fsycl -fsycl-unnamed-lambda ${source} -o ${dest} -v` : `icpx ${source} -o ${dest} -v`;
     try {
       execSync(cmd);
-    } catch (err) {
+    } catch (err: any) {
       const logPath = join(parsedPath.dir, 'compile_log');
       writeFileSync(logPath, err.message);
       vscode.window.showErrorMessage(`Quick build failed. See compile log: ${logPath}`, { modal: true });
@@ -235,22 +236,27 @@ export class LaunchConfigurator {
         }
         case 'cmake': {
           targets = ['all', 'clean'];
-
+          const powerShellExecName = getPSexecutableName();
           const cmd = process.platform === 'win32'
             ? `where /r ${projectRootDir} CMakeLists.txt`
             : `find ${projectRootDir} -name 'CMakeLists.txt'`;
           const pathsToCmakeLists = execSync(cmd).toString().split('\n');
           const optinosItems: vscode.QuickPickItem[] = [];
           pathsToCmakeLists.pop();
-          pathsToCmakeLists.forEach(async(onePath) => {
+          pathsToCmakeLists.forEach(async (onePath) => {
             const normalizedPath = normalize(onePath.replace('\r', '')).split(/[\\/]/g).join(posix.sep);
             const workspaceFolderName = vscode.workspace.workspaceFolders?.find((folder) => normalizedPath.split('/').find((el) => el === folder.name));
             const path = workspaceFolderName ? normalizedPath.slice(normalizedPath.indexOf(workspaceFolderName.name)) : normalizedPath;
+
             const cmd = process.platform === 'win32'
-              ? `pwsh -Command "$targets=(gc ${normalizedPath}) | Select-String -Pattern '\\s*add_custom_target\\s*\\(\\s*(\\w*)' ; $targets.Matches | ForEach-Object -Process {echo $_.Groups[1].Value} | Select-Object -Unique | ? {$_.trim() -ne '' } "`
+              ? `${powerShellExecName} -Command "$targets=(gc ${normalizedPath}) | Select-String -Pattern '\\s*add_custom_target\\s*\\(\\s*(\\w*)' ; $targets.Matches | ForEach-Object -Process {echo $_.Groups[1].Value} | Select-Object -Unique | ? {$_.trim() -ne '' } "`
               : `awk '/^ *add_custom_target/' ${normalizedPath} | sed -e's/add_custom_target *(/ /; s/\\r/ /' | awk '{print $1}' | uniq`;
-            targets = targets.concat(execSync(cmd, { cwd: projectRootDir }).toString().split('\n'));
-            targets.pop();
+            if (powerShellExecName || process.platform !== 'win32') {
+              targets = targets.concat(execSync(cmd, { cwd: projectRootDir }).toString().split('\n'));
+              targets.pop();
+            } else {
+              vscode.window.showErrorMessage('Failed to determine powershell version. Targets from CmakeLists were not got');
+            }
             targets.forEach((oneTarget) => {
               optinosItems.push({
                 label: posix.normalize(oneTarget.replace('\r', '')),

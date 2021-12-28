@@ -3,7 +3,7 @@
 	"displayName": "Analysis Configurator for Intel(R) oneAPI Toolkits",
 	"description": "Build and performance analysis of your Intel(R) oneAPI applications.",
 	"publisher": "intel-corporation",
-	"version": "0.0.15",
+	"version": "0.1.3",
 	"license": "MIT",
 	"icon": "media/oneapi-logo.png",
 	"keywords": [
@@ -26,6 +26,12 @@
 	],
 	"main": "./out/extension.js",
 	"contributes": {
+		"snippets": [
+			{
+				"language": "cpp",
+				"path": "./snippets.json"
+			}
+		],
 		"commands": [
 			{
 				"command": "intelOneAPI.launchConfigurator.generateTaskJson",
@@ -108,6 +114,7 @@
 		"test": "node ./out/test/runTest.js",
 		"lint": "eslint --ext .ts --fix ./src/*",
 		"package": "vsce package --yarn",
+		"snippets": "npm run compile | node ./out/utils/snippets.js",
 		"ui-test": "extest setup-and-run -o ./src/test/ui/configs/settings.json --yarn out/test/ui/*.js"
 	},
 	"devDependencies": {
@@ -125,7 +132,7 @@
 		"eslint-plugin-import": "^2.23.4",
 		"eslint-plugin-node": "^11.1.0",
 		"eslint-plugin-promise": "^5.1.0",
-		"mocha": "^8.4.0",
+		"mocha": "^9.1.3",
 		"typescript": "^4.2.4",
 		"vsce": "^1.88.0",
 		"vscode-extension-tester": "^4.0.3",
@@ -135,5 +142,8 @@
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/intel/vscode-oneapi-analysis-configurator.git"
+	},
+	"dependencies": {
+		"xml2js": "^0.4.23"
 	}
 }

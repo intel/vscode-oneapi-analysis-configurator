@@ -1,0 +1,198 @@
+{
+  " ": {
+      "prefix": "intel",
+      "body": [
+          "intel::"
+      ],
+      "description": " "
+  },
+  "scheduler_target_fmax_mhz(N)": {
+      "description": " Determines the pipelining effort the scheduler attempts during the scheduling process. \n          ",
+      "prefix": "intel::scheduler_target_fmax_mhz",
+      "body": [
+          "intel::scheduler_target_fmax_mhz"
+      ]
+  },
+  "max_work_group_size(Z, Y, X)": {
+      "description": "Specifies a maximum or the required work-group size for optimizing hardware use of the DPC++ kernel without involving excess logic. \n            ",
+      "prefix": "intel::max_work_group_size",
+      "body": [
+          "intel::max_work_group_size"
+      ]
+  },
+  "max_global_work_dim(0)": {
+      "description": "Omits logic that generates and dispatches global, local, and group IDs into the compiled kernel. \n            ",
+      "prefix": "intel::max_global_work_dim",
+      "body": [
+          "intel::max_global_work_dim"
+      ]
+  },
+  "num_simd_work_items(N)": {
+      "description": "Specifies the number of work items within a work group that the compiler executes in a SIMD or vectorized manner. \n            ",
+      "prefix": "intel::num_simd_work_items",
+      "body": [
+          "intel::num_simd_work_items"
+      ]
+  },
+  "no_global_work_offset(1)": {
+      "description": "Omits generating hardware required to support global work offsets. \n            ",
+      "prefix": "intel::no_global_work_offset",
+      "body": [
+          "intel::no_global_work_offset"
+      ]
+  },
+  " kernel_args_restrict": {
+      "description": " Ignores the dependencies between accessor arguments in a DPC++ kernel. \n            ",
+      "prefix": " intel::kernel_args_restrict",
+      "body": [
+          " intel::kernel_args_restrict"
+      ]
+  },
+  "use_stall_enable_clusters": {
+      "description": "Reduces the area and latency of your kernel. \n            ",
+      "prefix": "intel::use_stall_enable_clusters",
+      "body": [
+          "intel::use_stall_enable_clusters"
+      ]
+  },
+  "disable_loop_pipelining": {
+      "description": "Directs the \r\n               to disable pipelining of a loop. \r\n            ",
+      "prefix": "disable_loop_pipelining",
+      "body": [
+          "disable_loop_pipelining"
+      ]
+  },
+  "initiation_interval": {
+      "description": "Forces a loop to have a loop initialization interval (II) of a specified value. \r\n            ",
+      "prefix": "initiation_interval",
+      "body": [
+          "initiation_interval"
+      ]
+  },
+  "ivdep": {
+      "description": "Ignores memory dependencies between iterations of this loop \r\n            ",
+      "prefix": "ivdep",
+      "body": [
+          "ivdep"
+      ]
+  },
+  "loop_coalesce": {
+      "description": "Coalesces nested loops into a single loop without affecting the loop functionality. \r\n            ",
+      "prefix": "loop_coalesce",
+      "body": [
+          "loop_coalesce"
+      ]
+  },
+  "max_concurrency": {
+      "description": "Limits the number of iterations of a loop that can simultaneously execute at any time. \r\n            ",
+      "prefix": "max_concurrency",
+      "body": [
+          "max_concurrency"
+      ]
+  },
+  "max_interleaving": {
+      "description": "Maximizes the throughput and hardware resource occupancy of pipelined inner loops in a loop nest. \r\n            ",
+      "prefix": "max_interleaving",
+      "body": [
+          "max_interleaving"
+      ]
+  },
+  "speculated_iterations": {
+      "description": "Improves the performance of pipelined loops. \r\n            ",
+      "prefix": "speculated_iterations",
+      "body": [
+          "speculated_iterations"
+      ]
+  },
+  "unroll": {
+      "description": "Unrolls a loop in the kernel code. \r\n            ",
+      "prefix": "unroll",
+      "body": [
+          "unroll"
+      ]
+  },
+  " bank_bits": {
+      "description": "Specifies that the local memory addresses should use bits for bank selection. \r\n            ",
+      "prefix": " bank_bits",
+      "body": [
+          " bank_bits"
+      ]
+  },
+  "bankwidth": {
+      "description": "Specifies that the memory implementing the variable or array must have memory banks of a defined width. \r\n            ",
+      "prefix": "bankwidth",
+      "body": [
+          "bankwidth"
+      ]
+  },
+  "doublepump": {
+      "description": "Specifies that the memory implementing the variable, or an array must be clocked at twice the rate as the kernel accessing it. \r\n            ",
+      "prefix": "doublepump",
+      "body": [
+          "doublepump"
+      ]
+  },
+  " force_pow2_depth": {
+      "description": " Specifies that the memory implementing the variable or array has a power-of-2 depth. \r\n            ",
+      "prefix": " force_pow2_depth",
+      "body": [
+          " force_pow2_depth"
+      ]
+  },
+  "max_replicates \r\n            ": {
+      "description": "Specifies that the memory implementing the variable, or an array has no more than the specified number of replicates to enable simultaneous accesses from the datapath. \r\n            ",
+      "prefix": "max_replicates \r\n            ",
+      "body": [
+          "max_replicates \r\n            "
+      ]
+  },
+  "fpga_memory": {
+      "description": "Forces a variable or an array to be implemented as an embedded memory. \r\n            ",
+      "prefix": "fpga_memory",
+      "body": [
+          "fpga_memory"
+      ]
+  },
+  "merge": {
+      "description": "Allows merging of two or more variables or arrays defined in the same scope with respect to width or depth. \r\n            ",
+      "prefix": "merge",
+      "body": [
+          "merge"
+      ]
+  },
+  "numbanks": {
+      "description": "Specifies that the memory implementing the variable or array must have a defined number of memory banks. \r\n            ",
+      "prefix": "numbanks",
+      "body": [
+          "numbanks"
+      ]
+  },
+  "private_copies": {
+      "description": "Specifies that the memory implementing the variable, or an array has no more than the specified number of independent copies to enable concurrent thread or loop iteration accesses. \r\n            ",
+      "prefix": "private_copies",
+      "body": [
+          "private_copies"
+      ]
+  },
+  "fpga_register": {
+      "description": "Forces a variable or an array to be carried through the pipeline in registers. \r\n            ",
+      "prefix": "fpga_register",
+      "body": [
+          "fpga_register"
+      ]
+  },
+  "simple_dual_port": {
+      "description": "Specifies that the memory implementing the variable or array should have no port that serves both reads and writes. \r\n            ",
+      "prefix": "simple_dual_port",
+      "body": [
+          "simple_dual_port"
+      ]
+  },
+  "singlepump": {
+      "description": "Specifies that the memory implementing the variable or array must be clocked at the same rate as the kernel accessing it. \r\n            ",
+      "prefix": "singlepump",
+      "body": [
+          "singlepump"
+      ]
+  }
+}

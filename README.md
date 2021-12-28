@@ -44,7 +44,7 @@ You need to have at least one of the above Intel analysis tools installed for th
 3. Press `Ctrl+Shift+P` ( or `View -> Command Palette...` ) to open VS Code's Command Palette.
 4. Type **Intel oneAPI** and select `Intel oneAPI:Launch Advisor` or `Intel oneAPI: Launch VTune Profiler`.
 5. Select the executable you want to analyze. This needs to be done once for a workspace unless you want to analyze a different executable.
-6. Select the installation path of the tool * Intel Advisor or Intel Vtune Profiler. This needs to be done once for a workspace.
+6. Select the installation path of the tool * Intel Advisor or Intel VTune Profiler. This needs to be done once for a workspace.
 7. Enter the name of the tool`s project folder, or press enter to accept the default. This needs to be done once for a workspace.
 8. The extension will open the analyser tool and pass the appropriate project parameters to the tool.
 
@@ -59,6 +59,12 @@ This extension provides the ability to configure the cpp properties includePath,
 To view or change the properties, open settings.json from the VS Code Explorer.
 
 To make changes to the configuration, edit the default path in settings.json.
+
+## IntelliSense for basic code hints for FPGA Memory Attributes
+- While typing some of FPGA Attributes there will be suggestions with description what function should you use.
+- The description with the common usage wil be visible when hovering a cursor over some FPGA Attribute in your code.
+
+FPGA Loop Directives, FPGA Memory Attributes and FPGA Kernel Attributes are supported.
 
 ## Contributing
 Install Visual Studio Code (at least version 1.42) and open this project within it. You also need `node + npm`.

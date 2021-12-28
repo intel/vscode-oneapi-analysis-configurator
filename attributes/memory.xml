@@ -1,0 +1,208 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE concept PUBLIC "-//OASIS//DTD DITA Concept//EN" "concept.dtd"[]>
+<concept id="GUID-F16B44A4-60A5-41F9-B75D-32D669865924" xml:lang="en-US"> 
+  <title>FPGA Memory Attributes</title> 
+  <conbody> 
+    <p> The following table summarizes memory attributes: 
+    </p> 
+    <table frame="all" rowsep="1" colsep="1" id="GUID-73F9D139-DEB8-4F1B-BC8B-2A768EB90AD5"> 
+    <title>FPGA Memory Attributes</title> 
+    <tgroup cols="3"> 
+      <colspec colname="col1" colwidth="1.00*" /> 
+      <colspec colname="col2" colwidth="1.06*" /> 
+      <colspec colname="col3" colwidth="2.52*" /> 
+      <thead> 
+        <row> 
+          <entry> 
+            <p>Attribute 
+            </p> 
+          </entry> 
+          <entry> 
+            <p>Description 
+            </p> 
+          </entry> 
+          <entry> 
+            <p>Example 
+            </p> 
+          </entry> 
+        </row> 
+      </thead> 
+      <tbody> 
+        <row> 
+          <entry colname="col1"><codeph> bank_bits</codeph> 
+          </entry> 
+          <entry colname="col2"> 
+            <p>Specifies that the local memory addresses should use bits for bank selection. 
+            </p> 
+          </entry> 
+          <entry colname="col3"> 
+            <codeblock ishcondition="otherprops='lang(cpp)'">// Array is implemented with 4 banks where 
+// bits 6 and 5 of the memory word address 
+// are used to select between the banks
+[[intel::bank_bits(6,5)]] int array[128];
+</codeblock> 
+          </entry> 
+        </row> 
+        <row> 
+          <entry> 
+            <codeph>bankwidth</codeph> 
+          </entry> 
+          <entry> 
+            <p>Specifies that the memory implementing the variable or array must have memory banks of a defined width. 
+            </p> 
+          </entry> 
+          <entry> 
+            <codeblock ishcondition="otherprops='lang(cpp)'">// Each  memory bank  is 8 bytes (64-bits) wide
+[[intel::bankwidth(8)]] int array[128];</codeblock> 
+          </entry> 
+        </row> 
+        <row> 
+          <entry> 
+            <codeph>doublepump</codeph> 
+          </entry> 
+          <entry> 
+            <p>Specifies that the memory implementing the variable, or an array must be clocked at twice the rate as the kernel accessing it. 
+            </p> 
+          </entry> 
+          <entry> 
+            <codeblock ishcondition="otherprops='lang(cpp)'">// Array is implemented in a memory that operates at 
+// twice the clock frequency of the kernel
+[[intel::doublepump, bankwidth(128)]] int array[128];</codeblock> 
+          </entry> 
+        </row> 
+        <row> 
+          <entry><codeph> force_pow2_depth</codeph> 
+          </entry> 
+          <entry> 
+            <p> Specifies that the memory implementing the variable or array has a power-of-2 depth. 
+            </p> 
+          </entry> 
+          <entry> 
+            <codeblock ishcondition="otherprops='lang(cpp)'">// array1 is implemented in a memory with depth 1536
+[[intel::force_pow2_depth(0)]] int array1[1536];</codeblock> 
+          </entry> 
+        </row> 
+        <row> 
+          <entry> 
+            <codeph>max_replicates 
+            </codeph> 
+          </entry> 
+          <entry> 
+            <p>Specifies that the memory implementing the variable, or an array has no more than the specified number of replicates to enable simultaneous accesses from the datapath. 
+            </p> 
+          </entry> 
+          <entry> 
+            <codeblock ishcondition="otherprops='lang(cpp)'">// Array is implemented in a memory with maximum four 
+// replicates
+[[intel::max_replicates(4)]] int array[128];</codeblock> 
+          </entry> 
+        </row> 
+        <row> 
+          <entry> 
+            <codeph>fpga_memory</codeph> 
+          </entry> 
+          <entry> 
+            <p>Forces a variable or an array to be implemented as an embedded memory. 
+            </p> 
+          </entry> 
+          <entry> 
+            <codeblock ishcondition="otherprops='lang(cpp)'">// Array is implemented in memory (MLAB/M20K), 
+// the actual implementation is automatically decided 
+// by the compiler
+[[intel::fpga_memory]] int array1[128];
+
+// Array is implemented in M20K
+[[intel::fpga_memory("BLOCK_RAM")]] int array2[64];
+
+// Array is implemented in MLAB
+[[intel::fpga_memory("MLAB")]] int array3[64];</codeblock> 
+          </entry> 
+        </row> 
+        <row> 
+          <entry> 
+            <codeph>merge</codeph> 
+          </entry> 
+          <entry> 
+            <p>Allows merging of two or more variables or arrays defined in the same scope with respect to width or depth. 
+            </p> 
+          </entry> 
+          <entry> 
+            <codeblock ishcondition="otherprops='lang(cpp)'">// Both arrays are merged width-wise and implemented 
+// in the same memory system
+[[intel::merge("mem", "width")]] short arrayA[128];
+[[intel::merge("mem", "width")]] short arrayB[128];</codeblock> 
+          </entry> 
+        </row> 
+        <row> 
+          <entry> 
+            <codeph>numbanks</codeph> 
+          </entry> 
+          <entry> 
+            <p>Specifies that the memory implementing the variable or array must have a defined number of memory banks. 
+            </p> 
+          </entry> 
+          <entry> 
+            <codeblock ishcondition="otherprops='lang(cpp)'">// Array is implemented with 2 banks
+[[intel::numbanks(2)]] int array[128];</codeblock> 
+          </entry> 
+        </row> 
+        <row> 
+          <entry> 
+            <codeph>private_copies</codeph> 
+          </entry> 
+          <entry> 
+            <p>Specifies that the memory implementing the variable, or an array has no more than the specified number of independent copies to enable concurrent thread or loop iteration accesses. 
+            </p> 
+          </entry> 
+          <entry> 
+            <codeblock ishcondition="otherprops='lang(cpp)'">// Array is implemented in a memory with two 
+// private copies
+[[intel::private_copies(2)]] int array[128];</codeblock> 
+          </entry> 
+        </row> 
+        <row> 
+          <entry> 
+            <codeph>fpga_register</codeph> 
+          </entry> 
+          <entry> 
+            <p>Forces a variable or an array to be carried through the pipeline in registers. 
+            </p> 
+          </entry> 
+          <entry> 
+            <codeblock ishcondition="otherprops='lang(cpp)'">// Array is implemented in register
+[[intel::fpga_register]] int array[128];</codeblock> 
+          </entry> 
+        </row> 
+        <row> 
+          <entry> 
+            <codeph>simple_dual_port</codeph> 
+          </entry> 
+          <entry> 
+            <p>Specifies that the memory implementing the variable or array should have no port that serves both reads and writes. 
+            </p> 
+          </entry> 
+          <entry> 
+            <codeblock ishcondition="otherprops='lang(cpp)'">// Array is implemented in a memory such that no 
+// single port serves both a read and a write
+[[intel::simple_dual_port]] int array[128];</codeblock> 
+          </entry> 
+        </row> 
+        <row> 
+          <entry> 
+            <codeph>singlepump</codeph> 
+          </entry> 
+          <entry> 
+            <p>Specifies that the memory implementing the variable or array must be clocked at the same rate as the kernel accessing it. 
+            </p> 
+          </entry> 
+          <entry> 
+            <codeblock ishcondition="otherprops='lang(cpp)'">// Array is implemented in a memory that operates 
+// at the same clock frequency as the kernel
+[[intel::singlepump]] int array[128];</codeblock> 
+          </entry> 
+        </row> 
+      </tbody> 
+    </tgroup> 
+    </table> 
+  </conbody> 
+</concept> 

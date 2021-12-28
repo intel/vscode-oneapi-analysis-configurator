@@ -1,10 +1,15 @@
 # Change Log
 
+## 0.1.3
+
+- Added check for avoiding conflicts with deprecated versions of extensions.
+- Code completion snippents & tooltips for FPGA attributes.
+- Fixed bugs.
+
 ## 0.0.15
 
 - Function for generating launch configuration moved to GDB with GPU Debug Support for Intel oneAPI Toolkits extension;
 - Fixed several minor bugs.
-
 
 ## 0.0.14
 

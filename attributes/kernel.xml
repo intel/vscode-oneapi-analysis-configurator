@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE reference PUBLIC "-//OASIS//DTD DITA Reference//EN" "reference.dtd">
+<reference id="GUID-C2EB761C-CEA4-4B9C-AB02-6E50BDA888E6" xml:lang="en-US"> 
+  <title>FPGA Kernel Attributes</title> 
+  <refbody> 
+    <section id="SECTION_856F0253E3974FCC8D0238A9CB918260"> 
+      <p>The following table summarizes kernel attributes: 
+      </p> 
+    </section> 
+    <table id="GUID-18B7E23A-E527-49E1-8F4B-CC078BA10C3F" frame="all"> 
+    <title>FPGA Kernel Attributes</title> 
+    <tgroup cols="3" colsep="1" rowsep="1"> 
+      <colspec colnum="1" colname="col1" colwidth="1.33*"/> 
+      <colspec colnum="2" colname="col2" colwidth="1.00*" colsep="1" rowsep="1"/><colspec colname="col3" colnum="3" colwidth="2.97*"/> 
+      <thead> 
+        <row> 
+          <entry colname="col1">Attribute 
+          </entry> 
+          <entry colname="col2">Description 
+          </entry> 
+          <entry colname="col3">Example 
+          </entry> 
+        </row> 
+      </thead> 
+      <tbody> 
+        <row rowsep="1"> 
+          <entry colname="col1"><codeph>[[intel::scheduler_target_fmax_mhz(N)]]</codeph> 
+          </entry> 
+          <entry colname="col2"> Determines the pipelining effort the scheduler attempts during the scheduling process. 
+          </entry> 
+          <entry colname="col3"> 
+            <codeblock ishcondition="otherprops='lang(cpp)'">[[intel::scheduler_target_fmax_mhz(SCHEDULER_TARGET_FMAX)]] {
+  for (unsigned i = 0; i &lt; SIZE; i++) {
+    accessorRes[0] += accessorIdx[i] * 2;
+  }
+});</codeblock> 
+          </entry> 
+        </row> 
+        <row rowsep="1"> 
+          <entry colname="col1"><codeph>[[intel::max_work_group_size(Z, Y, X)]]</codeph> 
+          </entry> 
+          <entry colname="col2"> 
+            <p>Specifies a maximum or the required work-group size for optimizing hardware use of the DPC++ kernel without involving excess logic. 
+            </p> 
+          </entry> 
+          <entry colname="col3"> 
+            <codeblock ishcondition="otherprops='lang(cpp)'">[[intel::max_work_group_size(1,1,MAX_WG_SIZE)]] {
+  accessorRes[wiID] = accessorIdx[wiID] * 2;
+});</codeblock> 
+          </entry> 
+        </row> 
+        <row> 
+          <entry colname="col1"><codeph>[[intel::max_global_work_dim(0)]]</codeph> 
+          </entry> 
+          <entry colname="col2"> 
+            <p>Omits logic that generates and dispatches global, local, and group IDs into the compiled kernel. 
+            </p> 
+          </entry> 
+          <entry colname="col3"> 
+            <codeblock ishcondition="otherprops='lang(cpp)'">[[intel::max_global_work_dim(0)]] {
+  for (unsigned i = 0; i &lt; SIZE; i++) {
+    accessorRes[i] = accessorIdx[i] * 2;
+  }
+}</codeblock> 
+          </entry> 
+        </row> 
+        <row> 
+          <entry colname="col1"><codeph>[[intel::num_simd_work_items(N)]</codeph> 
+          </entry> 
+          <entry colname="col2"> 
+            <p>Specifies the number of work items within a work group that the compiler executes in a SIMD or vectorized manner. 
+            </p> 
+          </entry> 
+          <entry colname="col3"> 
+            <codeblock ishcondition="otherprops='lang(cpp)'">[[intel::num_simd_work_items(NUM_SIMD_WORK_ITEMS),
+cl::reqd_work_group_size(1,1,REQD_WORK_GROUP_SIZE)]] {
+  accessorRes[wiID] = sqrt(accessorIdx[wiID]);
+});</codeblock> 
+          </entry> 
+        </row> 
+        <row> 
+          <entry colname="col1"><codeph>[[intel::no_global_work_offset(1)]]</codeph> 
+          </entry> 
+          <entry colname="col2"> 
+            <p>Omits generating hardware required to support global work offsets. 
+            </p> 
+          </entry> 
+          <entry colname="col3"> 
+            <codeblock ishcondition="otherprops='lang(cpp)'">[[intel::no_global_work_offset(1))]] {
+  accessorRes[wiID] = accessorIdx[wiID] * 2;
+}</codeblock> 
+          </entry> 
+        </row> 
+        <row> 
+          <entry colname="col1"><codeph> [[intel::kernel_args_restrict]]</codeph> 
+          </entry> 
+          <entry colname="col2"> 
+            <p> Ignores the dependencies between accessor arguments in a DPC++ kernel. 
+            </p> 
+          </entry> 
+          <entry colname="col3"> 
+            <codeblock ishcondition="otherprops='lang(cpp)'">[[intel::kernel_args_restrict]] {
+  for (unsigned i = 0; i &lt; size; i++) {
+    out_accessor[i] = in_accessor[i];
+  }
+});</codeblock> 
+          </entry> 
+        </row> 
+        <row> 
+          <entry colname="col1"><codeph>[[intel::use_stall_enable_clusters]]</codeph> 
+          </entry> 
+          <entry colname="col2"> 
+            <p>Reduces the area and latency of your kernel. 
+            </p> 
+          </entry> 
+          <entry colname="col3"> 
+            <codeblock ishcondition="otherprops='lang(cpp)'">h.single_task&lt;class KernelComputeStallFree&gt;( [=]() [[intel::use_stall_enable_clusters]] {
+  // The computations in this device kernel uses Stall Enable Clusters
+  Work(accessor_vec_a, accessor_vec_b, accessor_res);
+});
+});</codeblock> 
+          </entry> 
+        </row> 
+      </tbody> 
+    </tgroup> 
+    </table> 
+  </refbody> 
+</reference>

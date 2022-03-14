@@ -3,16 +3,14 @@ on:
   push:
     branches:
       - main
-      - 2022.1_new_features
   pull_request:
     branches:
       - main
-      - 2022.1_new_features
   workflow_dispatch:
 
 jobs:
   build-extensions:
-    runs-on: [self-hosted,linux]
+    runs-on: self-hosted
     container: node:14-buster
     steps:
       - name: Check out repository code

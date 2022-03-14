@@ -10,7 +10,8 @@ import * as vscode from 'vscode';
 import { execSync } from 'child_process';
 import { posix, join, parse, normalize } from 'path';
 import { existsSync, writeFileSync } from 'fs';
-import { getPSexecutableName } from './utils/terminal_utils';
+import { getPSexecutableName, getworkspaceFolder } from './utils/utils';
+import messages from './messages';
 
 const path = require('path');
 interface TaskConfigValue {
@@ -46,21 +47,21 @@ export class LaunchConfigurator {
       buildSystem = 'cmake';
     }
     if (buildSystem === '') {
-      vscode.window.showErrorMessage('Generating tasks failed. The project does not contain CMakeLists.txt or MakeFile.', { modal: true });
+      vscode.window.showErrorMessage(messages.failedGenerateTasks, { modal: true });
       return false;
     }
     const buildTargets = await this.getTargets(projectRootDir, buildSystem, makeFileName);
     let isContinue = true;
     const optionsForChoose: vscode.InputBoxOptions = {
-      placeHolder: `Choose target from ${buildSystem} or push ESC for exit`
+      placeHolder: messages.chooseTask(buildSystem)
     };
-    const dialogOptions: string[] = ['Select a new target', 'Close'];
+    const dialogOptions: string[] = [messages.selectNewTarget, messages.choiceClose];
     const options: vscode.QuickPickOptions = {
-      placeHolder: 'Do you want to create a new task?'
+      placeHolder: messages.createNewTask
     };
     do {
       const selection = await vscode.window.showQuickPick(dialogOptions, options);
-      if (!selection || selection === 'Close') {
+      if (!selection || selection === messages.choiceClose) {
         isContinue = false;
         return true;
       }
@@ -106,13 +107,13 @@ export class LaunchConfigurator {
     } else {
       const isUniq: boolean = await this.checkTaskItem(config, taskConfigValue);
       if (!isUniq) {
-        vscode.window.showInformationMessage(`Task for "${taskConfigValue.label}" was skipped as duplicate`);
+        vscode.window.showInformationMessage(messages.duplicatedTask(taskConfigValue.label));
         return false;
       }
       config.push(taskConfigValue);
     }
     taskConfig.update('tasks', config, false);
-    vscode.window.showInformationMessage(`Task for "${taskConfigValue.label}" was added`);
+    vscode.window.showInformationMessage(messages.addedTask(taskConfigValue.label));
     return true;
   }
 
@@ -120,11 +121,17 @@ export class LaunchConfigurator {
     const ONEAPI_ROOT = vscode.workspace.getConfiguration().get<string>('intel-corporation.oneapi-analysis-configurator.ONEAPI_ROOT');
     const ONEAPI_ROOT_ENV = vscode.workspace.getConfiguration().get<string>('intel-corporation.oneapi-environment-configurator.ONEAPI_ROOT');
     if (!ONEAPI_ROOT_ENV && !process.env.ONEAPI_ROOT && !ONEAPI_ROOT) {
-      const tmp = await vscode.window.showInformationMessage('Please add ONEAPI_ROOT path in settings.', 'Open settings', 'Skip');
-      if (tmp === 'Open settings') {
+      const tmp = await vscode.window.showInformationMessage(messages.specifyOneApi, messages.openSettings, messages.choiceSkip);
+      if (tmp === messages.openSettings) {
         await vscode.commands.executeCommand('workbench.action.openSettings', '@ext:intel-corporation.oneapi-analysis-configurator ONEAPI_ROOT');
       }
       return;
+    } else if (ONEAPI_ROOT) {
+      await vscode.window.showInformationMessage(messages.oneApiFromConfigurator);
+    } else if (process.env.ONEAPI_ROOT) {
+      await vscode.window.showInformationMessage(messages.oneApiFromProcEnv);
+    } else {
+      await vscode.window.showInformationMessage(messages.oneApiFromEnvConf);
     }
 
     const workspaceFolder = await getworkspaceFolder();
@@ -151,23 +158,23 @@ export class LaunchConfigurator {
     cppConfiguration.update('default.defines', [], vscode.ConfigurationTarget.WorkspaceFolder);
     cppConfiguration.update('default.compilerPath', compilerPath, vscode.ConfigurationTarget.WorkspaceFolder);
     cppConfiguration.update('default.cStandard', cStandard, vscode.ConfigurationTarget.WorkspaceFolder);
-    vscode.window.showInformationMessage('C++ properties are successfully edited. Please check .vscode/settings.json for more details.');
+    vscode.window.showInformationMessage(messages.editCppProperties);
   }
 
   async quickBuild(isSyclEnabled: boolean): Promise<boolean> {
     if (!process.env.SETVARS_COMPLETED) {
-      vscode.window.showErrorMessage('Quick build failed. Initialize the oneAPI environment.', { modal: true });
+      vscode.window.showErrorMessage(messages.errInitEnvVars, { modal: true });
       return false;
     }
     const textEditor = vscode.window.activeTextEditor;
     if (!textEditor) {
-      vscode.window.showErrorMessage('Quick build failed. No open file.', { modal: true });
+      vscode.window.showErrorMessage(messages.errNoOpenFile, { modal: true });
       return false;
     }
     const document = textEditor.document;
     const language = document.languageId;
     if (language !== 'cpp') {
-      vscode.window.showErrorMessage('Quick build failed. The open file must be a cpp file.', { modal: true });
+      vscode.window.showErrorMessage(messages.errCppFile, { modal: true });
       return false;
     }
     const parsedPath = parse(document.fileName);
@@ -179,10 +186,10 @@ export class LaunchConfigurator {
     } catch (err: any) {
       const logPath = join(parsedPath.dir, 'compile_log');
       writeFileSync(logPath, err.message);
-      vscode.window.showErrorMessage(`Quick build failed. See compile log: ${logPath}`, { modal: true });
+      vscode.window.showErrorMessage(messages.errLog(logPath), { modal: true });
       return false;
     }
-    vscode.window.showInformationMessage(`File ${dest} was builded.`);
+    vscode.window.showInformationMessage(`File ${dest} was built.`);
     return true;
   }
 
@@ -192,18 +199,18 @@ export class LaunchConfigurator {
     }
 
     const existItem = listItems.find(item => item.label === newItem.label);
-    const dialogOptions: string[] = ['Skip target', 'Rename task'];
+    const dialogOptions: string[] = [messages.skipTarget, messages.renameTask];
 
     if (existItem) {
       const options: vscode.InputBoxOptions = {
-        placeHolder: `Task for target "${newItem.label}" already exist. Do you want to rename current task or skip target?`
+        placeHolder: messages.existedTask(newItem.label)
       };
       const selection = await vscode.window.showQuickPick(dialogOptions, options);
-      if (!selection || selection === 'Skip target') {
+      if (!selection || selection === messages.skipTarget) {
         return false;
       } else {
         const inputBoxText: vscode.InputBoxOptions = {
-          placeHolder: 'Please provide new task name:'
+          placeHolder: messages.newTaskName
         };
         const inputLabel = await vscode.window.showInputBox(inputBoxText);
         if (inputLabel) {
@@ -235,27 +242,28 @@ export class LaunchConfigurator {
           });
         }
         case 'cmake': {
+          const projectRootDirParced = `"${projectRootDir}"`;
           targets = ['all', 'clean'];
           const powerShellExecName = getPSexecutableName();
           const cmd = process.platform === 'win32'
-            ? `where /r ${projectRootDir} CMakeLists.txt`
-            : `find ${projectRootDir} -name 'CMakeLists.txt'`;
+            ? `where /r ${projectRootDirParced} CMakeLists.txt`
+            : `find ${projectRootDirParced} -name 'CMakeLists.txt'`;
           const pathsToCmakeLists = execSync(cmd).toString().split('\n');
           const optinosItems: vscode.QuickPickItem[] = [];
           pathsToCmakeLists.pop();
-          pathsToCmakeLists.forEach(async (onePath) => {
+          pathsToCmakeLists.forEach(async(onePath) => {
             const normalizedPath = normalize(onePath.replace('\r', '')).split(/[\\/]/g).join(posix.sep);
             const workspaceFolderName = vscode.workspace.workspaceFolders?.find((folder) => normalizedPath.split('/').find((el) => el === folder.name));
             const path = workspaceFolderName ? normalizedPath.slice(normalizedPath.indexOf(workspaceFolderName.name)) : normalizedPath;
 
             const cmd = process.platform === 'win32'
-              ? `${powerShellExecName} -Command "$targets=(gc ${normalizedPath}) | Select-String -Pattern '\\s*add_custom_target\\s*\\(\\s*(\\w*)' ; $targets.Matches | ForEach-Object -Process {echo $_.Groups[1].Value} | Select-Object -Unique | ? {$_.trim() -ne '' } "`
-              : `awk '/^ *add_custom_target/' ${normalizedPath} | sed -e's/add_custom_target *(/ /; s/\\r/ /' | awk '{print $1}' | uniq`;
+              ? `${powerShellExecName} -Command "$targets=(gc ${`"${normalizedPath.replace(/ /g, '` ')}"`}) | Select-String -Pattern '\\s*add_custom_target\\s*\\(\\s*(\\w*)' ; $targets.Matches | ForEach-Object -Process {echo $_.Groups[1].Value} | Select-Object -Unique | ? {$_.trim() -ne '' } "`
+              : `awk '/^ *add_custom_target/' '${normalizedPath}' | sed -e's/add_custom_target *(/ /; s/\\r/ /' | awk '{print $1}' | uniq`;
             if (powerShellExecName || process.platform !== 'win32') {
               targets = targets.concat(execSync(cmd, { cwd: projectRootDir }).toString().split('\n'));
               targets.pop();
             } else {
-              vscode.window.showErrorMessage('Failed to determine powershell version. Targets from CmakeLists were not got');
+              vscode.window.showErrorMessage(messages.errPowerShell);
             }
             targets.forEach((oneTarget) => {
               optinosItems.push({
@@ -272,21 +280,8 @@ export class LaunchConfigurator {
       }
       return [];
     } catch (err) {
-      console.error(err);
+      vscode.window.showErrorMessage(messages.errGetTargets(err));
       return [];
     }
   }
-}
-
-async function getworkspaceFolder(): Promise<vscode.WorkspaceFolder | undefined> {
-  if (vscode.workspace.workspaceFolders?.length === 1) {
-    return vscode.workspace.workspaceFolders[0];
-  }
-  const selection = await vscode.window.showWorkspaceFolderPick();
-  if (!selection) {
-    vscode.window.showErrorMessage('Cannot find the working directory!', { modal: true });
-    vscode.window.showInformationMessage('Please add one or more working directories and try again.');
-    return undefined; // for unit tests
-  }
-  return selection;
 }

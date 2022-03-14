@@ -1,198 +1,394 @@
 {
-  " ": {
-      "prefix": "intel",
-      "body": [
-          "intel::"
-      ],
-      "description": " "
-  },
-  "scheduler_target_fmax_mhz(N)": {
-      "description": " Determines the pipelining effort the scheduler attempts during the scheduling process. \n          ",
-      "prefix": "intel::scheduler_target_fmax_mhz",
-      "body": [
-          "intel::scheduler_target_fmax_mhz"
-      ]
-  },
-  "max_work_group_size(Z, Y, X)": {
-      "description": "Specifies a maximum or the required work-group size for optimizing hardware use of the DPC++ kernel without involving excess logic. \n            ",
-      "prefix": "intel::max_work_group_size",
-      "body": [
-          "intel::max_work_group_size"
-      ]
-  },
-  "max_global_work_dim(0)": {
-      "description": "Omits logic that generates and dispatches global, local, and group IDs into the compiled kernel. \n            ",
-      "prefix": "intel::max_global_work_dim",
-      "body": [
-          "intel::max_global_work_dim"
-      ]
-  },
-  "num_simd_work_items(N)": {
-      "description": "Specifies the number of work items within a work group that the compiler executes in a SIMD or vectorized manner. \n            ",
-      "prefix": "intel::num_simd_work_items",
-      "body": [
-          "intel::num_simd_work_items"
-      ]
-  },
-  "no_global_work_offset(1)": {
-      "description": "Omits generating hardware required to support global work offsets. \n            ",
-      "prefix": "intel::no_global_work_offset",
-      "body": [
-          "intel::no_global_work_offset"
-      ]
-  },
-  " kernel_args_restrict": {
-      "description": " Ignores the dependencies between accessor arguments in a DPC++ kernel. \n            ",
-      "prefix": " intel::kernel_args_restrict",
-      "body": [
-          " intel::kernel_args_restrict"
-      ]
-  },
-  "use_stall_enable_clusters": {
-      "description": "Reduces the area and latency of your kernel. \n            ",
-      "prefix": "intel::use_stall_enable_clusters",
-      "body": [
-          "intel::use_stall_enable_clusters"
-      ]
-  },
-  "disable_loop_pipelining": {
-      "description": "Directs the \r\n               to disable pipelining of a loop. \r\n            ",
-      "prefix": "disable_loop_pipelining",
-      "body": [
-          "disable_loop_pipelining"
-      ]
-  },
-  "initiation_interval": {
-      "description": "Forces a loop to have a loop initialization interval (II) of a specified value. \r\n            ",
-      "prefix": "initiation_interval",
-      "body": [
-          "initiation_interval"
-      ]
-  },
-  "ivdep": {
-      "description": "Ignores memory dependencies between iterations of this loop \r\n            ",
-      "prefix": "ivdep",
-      "body": [
-          "ivdep"
-      ]
-  },
-  "loop_coalesce": {
-      "description": "Coalesces nested loops into a single loop without affecting the loop functionality. \r\n            ",
-      "prefix": "loop_coalesce",
-      "body": [
-          "loop_coalesce"
-      ]
-  },
-  "max_concurrency": {
-      "description": "Limits the number of iterations of a loop that can simultaneously execute at any time. \r\n            ",
-      "prefix": "max_concurrency",
-      "body": [
-          "max_concurrency"
-      ]
-  },
-  "max_interleaving": {
-      "description": "Maximizes the throughput and hardware resource occupancy of pipelined inner loops in a loop nest. \r\n            ",
-      "prefix": "max_interleaving",
-      "body": [
-          "max_interleaving"
-      ]
-  },
-  "speculated_iterations": {
-      "description": "Improves the performance of pipelined loops. \r\n            ",
-      "prefix": "speculated_iterations",
-      "body": [
-          "speculated_iterations"
-      ]
-  },
-  "unroll": {
-      "description": "Unrolls a loop in the kernel code. \r\n            ",
-      "prefix": "unroll",
-      "body": [
-          "unroll"
-      ]
-  },
-  " bank_bits": {
-      "description": "Specifies that the local memory addresses should use bits for bank selection. \r\n            ",
-      "prefix": " bank_bits",
-      "body": [
-          " bank_bits"
-      ]
-  },
-  "bankwidth": {
-      "description": "Specifies that the memory implementing the variable or array must have memory banks of a defined width. \r\n            ",
-      "prefix": "bankwidth",
-      "body": [
-          "bankwidth"
-      ]
-  },
-  "doublepump": {
-      "description": "Specifies that the memory implementing the variable, or an array must be clocked at twice the rate as the kernel accessing it. \r\n            ",
-      "prefix": "doublepump",
-      "body": [
-          "doublepump"
-      ]
-  },
-  " force_pow2_depth": {
-      "description": " Specifies that the memory implementing the variable or array has a power-of-2 depth. \r\n            ",
-      "prefix": " force_pow2_depth",
-      "body": [
-          " force_pow2_depth"
-      ]
-  },
-  "max_replicates \r\n            ": {
-      "description": "Specifies that the memory implementing the variable, or an array has no more than the specified number of replicates to enable simultaneous accesses from the datapath. \r\n            ",
-      "prefix": "max_replicates \r\n            ",
-      "body": [
-          "max_replicates \r\n            "
-      ]
-  },
-  "fpga_memory": {
-      "description": "Forces a variable or an array to be implemented as an embedded memory. \r\n            ",
-      "prefix": "fpga_memory",
-      "body": [
-          "fpga_memory"
-      ]
-  },
-  "merge": {
-      "description": "Allows merging of two or more variables or arrays defined in the same scope with respect to width or depth. \r\n            ",
-      "prefix": "merge",
-      "body": [
-          "merge"
-      ]
-  },
-  "numbanks": {
-      "description": "Specifies that the memory implementing the variable or array must have a defined number of memory banks. \r\n            ",
-      "prefix": "numbanks",
-      "body": [
-          "numbanks"
-      ]
-  },
-  "private_copies": {
-      "description": "Specifies that the memory implementing the variable, or an array has no more than the specified number of independent copies to enable concurrent thread or loop iteration accesses. \r\n            ",
-      "prefix": "private_copies",
-      "body": [
-          "private_copies"
-      ]
-  },
-  "fpga_register": {
-      "description": "Forces a variable or an array to be carried through the pipeline in registers. \r\n            ",
-      "prefix": "fpga_register",
-      "body": [
-          "fpga_register"
-      ]
-  },
-  "simple_dual_port": {
-      "description": "Specifies that the memory implementing the variable or array should have no port that serves both reads and writes. \r\n            ",
-      "prefix": "simple_dual_port",
-      "body": [
-          "simple_dual_port"
-      ]
-  },
-  "singlepump": {
-      "description": "Specifies that the memory implementing the variable or array must be clocked at the same rate as the kernel accessing it. \r\n            ",
-      "prefix": "singlepump",
-      "body": [
-          "singlepump"
-      ]
-  }
+    " ": {
+        "prefix": "intel",
+        "body": [
+            "intel::"
+        ],
+        "description": " "
+    },
+    "scheduler_target_fmax_mhz(N)": {
+        "description": "The schedule fmax target determines the pipelining effort the scheduler attempts during the scheduling process.",
+        "prefix": "intel::scheduler_target_fmax_mhz",
+        "body": [
+            "intel::scheduler_target_fmax_mhz"
+        ]
+    },
+    "max_work_group_size(Z, Y, X)": {
+        "description": "Specifies a maximum or the required work-group size for optimizing hardware use of the DPC++ kernel without involving excess logic.",
+        "prefix": "intel::max_work_group_size",
+        "body": [
+            "intel::max_work_group_size"
+        ]
+    },
+    "max_global_work_dim(0)": {
+        "description": "Omits logic that generates and dispatches global, local, and group IDs into the compiled kernel.",
+        "prefix": "intel::max_global_work_dim",
+        "body": [
+            "intel::max_global_work_dim"
+        ]
+    },
+    "num_simd_work_items(N)": {
+        "description": "Specifies the number of work items within a work group that the compiler executes in a SIMD or vectorized manner.",
+        "prefix": "intel::num_simd_work_items",
+        "body": [
+            "intel::num_simd_work_items"
+        ]
+    },
+    "no_global_work_offset(1)": {
+        "description": "Omits generating hardware required to support global work offsets.",
+        "prefix": "intel::no_global_work_offset",
+        "body": [
+            "intel::no_global_work_offset"
+        ]
+    },
+    "kernel_args_restrict": {
+        "description": "Ignores the dependencies between accessor arguments in a DPC++ kernel.",
+        "prefix": "intel::kernel_args_restrict",
+        "body": [
+            "intel::kernel_args_restrict"
+        ]
+    },
+    "use_stall_enable_clusters": {
+        "description": "Reduces the area and latency of your kernel.",
+        "prefix": "intel::use_stall_enable_clusters",
+        "body": [
+            "intel::use_stall_enable_clusters"
+        ]
+    },
+    "disable_loop_pipelining": {
+        "description": "Directs the to disable pipelining of a loop.",
+        "prefix": "disable_loop_pipelining",
+        "body": [
+            "disable_loop_pipelining"
+        ]
+    },
+    "initiation_interval": {
+        "description": "Forces a loop to have a loop initialization interval (II) of a specified value.",
+        "prefix": "initiation_interval",
+        "body": [
+            "initiation_interval"
+        ]
+    },
+    "ivdep": {
+        "description": "Ignores memory dependencies between iterations of this loop",
+        "prefix": "ivdep",
+        "body": [
+            "ivdep"
+        ]
+    },
+    "loop_coalesce": {
+        "description": "Coalesces nested loops into a single loop without affecting the loop functionality.",
+        "prefix": "loop_coalesce",
+        "body": [
+            "loop_coalesce"
+        ]
+    },
+    "max_concurrency": {
+        "description": "Limits the number of iterations of a loop that can simultaneously execute at any time.",
+        "prefix": "max_concurrency",
+        "body": [
+            "max_concurrency"
+        ]
+    },
+    "max_interleaving": {
+        "description": "Maximizes the throughput and hardware resource occupancy of pipelined inner loops in a loop nest.",
+        "prefix": "max_interleaving",
+        "body": [
+            "max_interleaving"
+        ]
+    },
+    "speculated_iterations": {
+        "description": "Improves the performance of pipelined loops.",
+        "prefix": "speculated_iterations",
+        "body": [
+            "speculated_iterations"
+        ]
+    },
+    "unroll": {
+        "description": "Unrolls a loop in the kernel code.",
+        "prefix": "unroll",
+        "body": [
+            "unroll"
+        ]
+    },
+    "bank_bits": {
+        "description": "Specifies that the local memory addresses should use bits for bank selection.",
+        "prefix": "bank_bits",
+        "body": [
+            "bank_bits"
+        ]
+    },
+    "bankwidth": {
+        "description": "Specifies that the memory implementing the variable or array must have memory banks of a defined width.",
+        "prefix": "bankwidth",
+        "body": [
+            "bankwidth"
+        ]
+    },
+    "doublepump": {
+        "description": "Specifies that the memory implementing the variable, or an array must be clocked at twice the rate as the kernel accessing it.",
+        "prefix": "doublepump",
+        "body": [
+            "doublepump"
+        ]
+    },
+    "force_pow2_depth": {
+        "description": "Specifies that the memory implementing the variable or array has a power-of-2 depth.",
+        "prefix": "force_pow2_depth",
+        "body": [
+            "force_pow2_depth"
+        ]
+    },
+    "max_replicates": {
+        "description": "Specifies that the memory implementing the variable, or an array has no more than the specified number of replicates to enable simultaneous accesses from the datapath.",
+        "prefix": "max_replicates",
+        "body": [
+            "max_replicates"
+        ]
+    },
+    "fpga_memory": {
+        "description": "Forces a variable or an array to be implemented as an embedded memory.",
+        "prefix": "fpga_memory",
+        "body": [
+            "fpga_memory"
+        ]
+    },
+    "merge": {
+        "description": "Allows merging of two or more variables or arrays defined in the same scope with respect to width or depth.",
+        "prefix": "merge",
+        "body": [
+            "merge"
+        ]
+    },
+    "numbanks": {
+        "description": "Specifies that the memory implementing the variable or array must have a defined number of memory banks.",
+        "prefix": "numbanks",
+        "body": [
+            "numbanks"
+        ]
+    },
+    "private_copies": {
+        "description": "Specifies that the memory implementing the variable, or an array has no more than the specified number of independent copies to enable concurrent thread or loop iteration accesses.",
+        "prefix": "private_copies",
+        "body": [
+            "private_copies"
+        ]
+    },
+    "fpga_register": {
+        "description": "Forces a variable or an array to be carried through the pipeline in registers.",
+        "prefix": "fpga_register",
+        "body": [
+            "fpga_register"
+        ]
+    },
+    "simple_dual_port": {
+        "description": "Specifies that the memory implementing the variable or array should have no port that serves both reads and writes.",
+        "prefix": "simple_dual_port",
+        "body": [
+            "simple_dual_port"
+        ]
+    },
+    "singlepump": {
+        "description": "Specifies that the memory implementing the variable or array must be clocked at the same rate as the kernel accessing it.",
+        "prefix": "singlepump",
+        "body": [
+            "singlepump"
+        ]
+    },
+    "alloc_section(var1,var2,..., 'r;attribute-list')": {
+        "description": "Allocates one or more variables in the specified section. Controls section attribute specification for variables.",
+        "prefix": "#pragma alloc_section",
+        "body": [
+            "#pragma alloc_section"
+        ]
+    },
+    "block_loop [clause[,clause]...]": {
+        "description": "Enables loop blocking for the immediately following nested loops. block_loop enables loop blocking for the nested loops. noblock_loop disables loop blocking for the nested loops.",
+        "prefix": "#pragma block_loop",
+        "body": [
+            "#pragma block_loop"
+        ]
+    },
+    "noblock_loop": {
+        "description": "Disables loop blocking for the immediately following nested loops. block_loop enables loop blocking for the nested loops. noblock_loop disables loop blocking for the nested loops.",
+        "prefix": "#pragma noblock_loop",
+        "body": [
+            "#pragma noblock_loop"
+        ]
+    },
+    "code_align(n)": {
+        "description": "Specifies the byte alignment for a loop",
+        "prefix": "#pragma code_align",
+        "body": [
+            "#pragma code_align"
+        ]
+    },
+    "distribute_point": {
+        "description": "Instructs the compiler to prefer loop distribution at the location indicated.",
+        "prefix": "#pragma distribute_point",
+        "body": [
+            "#pragma distribute_point"
+        ]
+    },
+    "inline [recursive]": {
+        "description": "The inline pragma is a hint to the compiler that the user prefers that the calls in question be inlined, but expects the compiler not to inline them if its heuristics determine that the inlining would be overly aggressive and might slow down the compilation of the source code excessively, create too large of an executable, or degrade performance.",
+        "prefix": "#pragma inline",
+        "body": [
+            "#pragma inline"
+        ]
+    },
+    "forceinline [recursive]": {
+        "description": "The forceinline pragma indicates that the calls in question should be inlined whenever the compiler is capable of doing so.",
+        "prefix": "#pragma forceinline",
+        "body": [
+            "#pragma forceinline"
+        ]
+    },
+    "noinline": {
+        "description": "The noinline pragma indicates that the calls in question should not be inlined.",
+        "prefix": "#pragma noinline",
+        "body": [
+            "#pragma noinline"
+        ]
+    },
+    "intel_omp_task [clause[[,]clause]...]": {
+        "description": "For Intel legacy tasking, specifies a unit of work, potentially executed by a different thread.",
+        "prefix": "#pragma intel_omp_task",
+        "body": [
+            "#pragma intel_omp_task"
+        ]
+    },
+    "intel_omp_taskq[clause[[,]clause]...]": {
+        "description": "For Intel legacy tasking, specifies an environment for the while loop in which to queue the units of work specified by the enclosed task pragma.",
+        "prefix": "#pragma intel_omp_taskq",
+        "body": [
+            "#pragma intel_omp_taskq"
+        ]
+    },
+    "loop_count": {
+        "description": "Specifies the iterations for a for loop.",
+        "prefix": "#pragma loop_count",
+        "body": [
+            "#pragma loop_count"
+        ]
+    },
+    "nofusion": {
+        "description": "Prevents a loop from fusing with adjacent loops.",
+        "prefix": "#pragma nofusion",
+        "body": [
+            "#pragma nofusion"
+        ]
+    },
+    "novector": {
+        "description": "Specifies that a particular loop should never be vectorized.",
+        "prefix": "#pragma novector",
+        "body": [
+            "#pragma novector"
+        ]
+    },
+    "omp simd early_exit": {
+        "description": "Extends #pragma omp simd, allowing vectorization of multiple exit loops.",
+        "prefix": "#pragma omp simd early_exit",
+        "body": [
+            "#pragma omp simd early_exit"
+        ]
+    },
+    "optimize('', on|off)": {
+        "description": "Enables or disables optimizations for code after this pragma until another optimize pragma or end of the translation unit.",
+        "prefix": "#pragma optimize",
+        "body": [
+            "#pragma optimize"
+        ]
+    },
+    "optimization_level n": {
+        "description": "Controls optimization for one function or all functions after its first occurrence.",
+        "prefix": "#pragma optimization_level",
+        "body": [
+            "#pragma optimization_level"
+        ]
+    },
+    "optimization_parameter": {
+        "description": "Passes certain information about a function to the optimizer.",
+        "prefix": "#pragma intel optimization_parameter",
+        "body": [
+            "#pragma intel optimization_parameter"
+        ]
+    },
+    "parallel [clause[ [,]clause]...]": {
+        "description": "Resolves dependencies to facilitate auto-parallelization of the immediately following loop",
+        "prefix": "#pragma parallel",
+        "body": [
+            "#pragma parallel"
+        ]
+    },
+    "noparallel": {
+        "description": "Prevents auto-parallelization of the immediately following loop",
+        "prefix": "#pragma noparallel",
+        "body": [
+            "#pragma noparallel"
+        ]
+    },
+    "prefetch": {
+        "description": "This pragma hints to the compiler to generate data prefetches for some memory references. These hints affect the heuristics used in the compiler. Prefetching data can minimize the effects of memory latency.",
+        "prefix": "#pragma prefetch",
+        "body": [
+            "#pragma prefetch"
+        ]
+    },
+    "noprefetch [var1 [, var2]...]": {
+        "description": "The noprefetch pragma hints to the compiler not to generate data prefetches for some memory references. This affects the heuristics used in the compiler.",
+        "prefix": "#pragma noprefetch",
+        "body": [
+            "#pragma noprefetch"
+        ]
+    },
+    "simd [clause[ [,] clause]...]": {
+        "description": "The simd pragma is used to guide the compiler to vectorize more loops. Vectorization using the simd pragma complements (but does not replace) the fully automatic approach.",
+        "prefix": "#pragma simd",
+        "body": [
+            "#pragma simd"
+        ]
+    },
+    "simdoff": {
+        "description": "Specifies a block of code in the SIMD loop or SIMD-enabled function that should be executed serially, in a logical order of SIMD lanes.",
+        "prefix": "#pragma simdoff",
+        "body": [
+            "#pragma simdoff"
+        ]
+    },
+    "unroll(n)": {
+        "description": "The unroll[n] pragma tells the compiler how many times to unroll a counted loop.",
+        "prefix": "#pragma unroll",
+        "body": [
+            "#pragma unroll"
+        ]
+    },
+    "nounroll": {
+        "description": "The nounroll pragma instructs the compiler not to unroll a specified loop.",
+        "prefix": "#pragma nounroll",
+        "body": [
+            "#pragma nounroll"
+        ]
+    },
+    "unroll_and_jam (n)": {
+        "description": "The unroll_and_jam pragma partially unrolls one or more loops higher in the nest than the innermost loop and fuses/jams the resulting loops back together. This transformation allows more reuses in the loop.",
+        "prefix": "#pragma unroll_and_jam (n)",
+        "body": [
+            "#pragma unroll_and_jam (n)"
+        ]
+    },
+    "nounroll_and_jam": {
+        "description": "When unrolling a loop increases register pressure and code size it may be necessary to prevent unrolling of a nested loop or an imperfect nested loop. In such cases, use the nounroll_and_jam pragma. The nounroll_and_jam pragma hints to the compiler not to unroll a specified loop.",
+        "prefix": "#pragma nounroll_and_jam",
+        "body": [
+            "#pragma nounroll_and_jam"
+        ]
+    },
+    "vector": {
+        "description": "Tells the compiler that the loop should be vectorized according to the argument keywords.",
+        "prefix": "#pragma vector",
+        "body": [
+            "#pragma vector"
+        ]
+    }
 }

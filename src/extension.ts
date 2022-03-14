@@ -12,13 +12,22 @@ import { AdvisorLaunchScriptWriter } from './AdvisorLaunchScriptWriter';
 import { VtuneLaunchScriptWriter } from './VtuneLaunchScriptWriter';
 import { LaunchConfigurator } from './LaunchConfigurator';
 import FPGAMemoryHoverProvider from './hoverProvider';
+import { cpuAttributesTooltips } from './utils/CPUAttributes';
+import messages from './messages';
+import { getBaseUri, updateAnalyzersRoot, wait } from './utils/utils';
 
 const fs = require('fs');
 const path = require('path');
 const xml2js = require('xml2js');
+const readFile = fs.promises.readFile;
+let advisorProjRoot = '';
+let vtuneProjRoot = '';
 
+// eslint-disable-next-line no-unused-vars
 enum ExtensionState {
+  // eslint-disable-next-line no-unused-vars
   deprecated,
+  // eslint-disable-next-line no-unused-vars
   actual,
 }
 // This feature will help to avoid conflicts with deprecated versions of extensions.
@@ -32,17 +41,15 @@ function checkExtensionsConflict(id: string) {
     const deprecatedExtension = vscode.extensions.getExtension(Extension[ExtensionState.deprecated]);
     if (actualExtension?.id === id) {
       if (deprecatedExtension) {
-        const GoToUninstall = 'Uninstall deprecated';
         const deprExtName = deprecatedExtension.packageJSON.displayName;
         const actualExtName = actualExtension.packageJSON.displayName;
-        vscode.window.showInformationMessage(`${deprExtName} is an deprecated version of the ${actualExtName}! This may lead to the unavailability of overlapping functions.`, GoToUninstall, 'Ignore')
+        vscode.window.showInformationMessage(messages.deprecatedExtension(deprExtName, actualExtName), messages.goToUninstall, messages.choiceIgnore)
           .then((selection) => {
-            if (selection === GoToUninstall) {
+            if (selection === messages.goToUninstall) {
               vscode.commands.executeCommand('workbench.extensions.uninstallExtension', deprecatedExtension.id).then(function() {
-                const Reload = 'Reload';
-                vscode.window.showInformationMessage(`Completed uninstalling ${deprExtName} extension. Please reload Visual Studio Code.`, Reload)
+                vscode.window.showInformationMessage(messages.completedUninstalling(deprExtName), messages.choiceReload)
                   .then((selection) => {
-                    if (selection === Reload) { vscode.commands.executeCommand('workbench.action.reloadWindow'); }
+                    if (selection === messages.choiceReload) { vscode.commands.executeCommand('workbench.action.reloadWindow'); }
                   });
               });
             }
@@ -52,34 +59,36 @@ function checkExtensionsConflict(id: string) {
   });
 }
 
-// Return the uri corresponding to the base folder of the item currently selected in the explorer.
-// If the node is not given, ask the user to select the base folder.
-function getBaseUri(node: vscode.Uri): vscode.Uri | undefined {
-  let baseUri: vscode.Uri | undefined;
+function updateSettingsJSON(ONEAPI_ROOT: string) {
+  if (!vscode.workspace.workspaceFolders) return;
+  for (const folder of vscode.workspace.workspaceFolders) {
+    fs.access(`${folder.uri.path}/.vscode/settings.json`, fs.F_OK, (err: any) => {
+      if (err) return;
 
-  // If only one folder, just return its uri
-  const folders = vscode.workspace.workspaceFolders;
-  if (folders && folders.length === 1) {
-    baseUri = folders[0].uri;
+      readFile(`${folder.uri.path}/.vscode/settings.json`, function(err: any, data: string) {
+        if (err) return;
+        if (!data.includes('C_Cpp.default.compilerPath')) return;
+
+        vscode.window.showInformationMessage(messages.updateSettingJson(folder.name), messages.choiceUpdate, messages.choiceSkip)
+          .then((selection) => {
+            if (selection !== messages.choiceUpdate) return;
+
+            const cppConfiguration = vscode.workspace.getConfiguration('C_Cpp', folder);
+
+            cppConfiguration.update('default.includePath', [
+              '${workspaceFolder}/**',
+              `${path.normalize(ONEAPI_ROOT)}/**`
+            ], vscode.ConfigurationTarget.WorkspaceFolder);
+
+            const compilerPath = path.normalize(process.platform === 'win32'
+              ? `${ONEAPI_ROOT}/compiler/latest/windows/bin/dpcpp.exe`
+              : `${ONEAPI_ROOT}/compiler/latest/linux/bin/dpcpp`);
+
+            cppConfiguration.update('default.compilerPath', compilerPath, vscode.ConfigurationTarget.WorkspaceFolder);
+          });
+      });
+    });
   }
-
-  // Get the folder corresponding to the selected node
-  if (node) {
-    const folder: vscode.WorkspaceFolder | undefined = vscode.workspace.getWorkspaceFolder(node);
-    if (folder) {
-      baseUri = folder.uri;
-    }
-  }
-
-  return baseUri;
-}
-
-function checkIfPathExist(path: string | undefined, name?: string) {
-  fs.access(path, (err: Error) => {
-    if (err) {
-      vscode.window.showErrorMessage(`${name || 'Path'} is not found by ${path}.`);
-    }
-  });
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -88,32 +97,31 @@ export function activate(context: vscode.ExtensionContext): void {
   // Find the viewID for explorer so it could be activated via 'onView:viewId'.
 
   const parser = new xml2js.Parser();
-  const fpgaMemoryAttributes: any = {};
-
-  const readFile = fs.promises.readFile;
+  let fpgaMemoryAttributes: any = {};
 
   readFile(path.join(__dirname, '/../attributes/kernel.xml')).then((data: any) => {
     parser.parseStringPromise(data).then((result: any) => {
       const attributes = result.reference.refbody[0].table[0].tgroup[0].tbody[0].row;
       for (const att of attributes) {
-        const name = att.entry[0].codeph[0].replace(/\(.*\)/, '').replace(/[[\]']+/g, '').replace('intel::', '');
-        const description = att.entry[1]._ || att.entry[1].p[0];
+        const name = att.entry[0].codeph[0].replace(/\(.*\)/, '').replace(/[[\]']+/g, '').replace('intel::', '').replace(/\r\n/g, '').trim();
+        const description = `${(att.entry[1]._ || att.entry[1].p[0])?.replace(/\s+/g, ' ')}\n\n${messages.kernelAttrLearnMore}`;
         fpgaMemoryAttributes[name] = {
           description,
-          signature: att.entry[0].codeph[0].replace(/[[\]']+/g, '')
+          signature: att.entry[0].codeph[0].replace(/[[\]']+/g, '').replace(/\r\n/g, '').trim()
         };
       }
     });
   }).then(() => {
     readFile(path.join(__dirname, '/../attributes/loop.xml')).then((data: any) => {
       parser.parseStringPromise(data).then((result: any) => {
+        console.log('result', result);
         const attributes = result.concept.conbody[0].table[0].tgroup[0].tbody[0].row;
         for (const att of attributes) {
-          const name = att.entry[0].codeph[0].replace(/\(.*\)/, '').replace(/[[\]']+/g, '').replace('intel::', '');
-          const description = att.entry[1]._ || att.entry[1].p[0];
+          const name = att.entry[0].codeph[0].replace(/\(.*\)/, '').replace(/[[\]']+/g, '').replace('intel::', '').replace(/\r\n/g, '').trim();
+          const description = `${(att.entry[1]._ || att.entry[1].p[0]._ || att.entry[1].p[0])?.replace(/\s+/g, ' ')}\n\n${messages.loopAttrLearnMore}`;
           fpgaMemoryAttributes[name] = {
             description,
-            signature: att.entry[0].codeph[0].replace(/[[\]']+/g, '')
+            signature: att.entry[0].codeph[0].replace(/[[\]']+/g, '').replace(/\r\n/g, '').trim()
           };
         }
       });
@@ -123,14 +131,19 @@ export function activate(context: vscode.ExtensionContext): void {
       parser.parseStringPromise(data).then((result: any) => {
         const attributes = result.concept.conbody[0].table[0].tgroup[0].tbody[0].row;
         for (const att of attributes) {
-          const name = att.entry[0].codeph[0].replace(/\(.*\)/, '').replace(/[[\]']+/g, '').replace('intel::', '');
-          const description = att.entry[1]._ || att.entry[1].p[0];
+          const name = att.entry[0].codeph[0].replace(/\(.*\)/, '').replace(/[[\]']+/g, '').replace('intel::', '').replace(/\r\n/g, '').trim();
+          const description = `${(att.entry[1]._ || att.entry[1].p[0])?.replace(/\s+/g, ' ')}\n\n${messages.memoryAttrLearnMore}`;
           fpgaMemoryAttributes[name] = {
             description,
-            signature: att.entry[0].codeph[0].replace(/[[\]']+/g, '')
+            signature: att.entry[0].codeph[0].replace(/[[\]']+/g, '').replace(/\r\n/g, '').trim()
           };
         }
       });
+      fpgaMemoryAttributes.unroll = {
+        description: messages.unrollAttrDescr,
+        signature: messages.unrollAttrSignature
+      };
+      fpgaMemoryAttributes = { ...fpgaMemoryAttributes, ...cpuAttributesTooltips };
       context.subscriptions.push(vscode.languages.registerHoverProvider('cpp', new FPGAMemoryHoverProvider(fpgaMemoryAttributes)));
     });
   });
@@ -139,10 +152,10 @@ export function activate(context: vscode.ExtensionContext): void {
   checkExtensionsConflict(context.extension.id);
 
   // Register the commands that will interact with the user and write the launcher scripts.
-  vscode.commands.registerCommand('intelOneAPI.analysis.launchAdvisor', async(selectedNode: vscode.Uri) => {
+  vscode.commands.registerCommand('intel-corporation.oneapi-analysis-configurator.launchAdvisor', async(selectedNode: vscode.Uri) => {
     // VS Code will return undefined for remoteName if working with a local workspace
     if (typeof vscode.env.remoteName !== 'undefined') {
-      vscode.window.showWarningMessage('Launching Intel Advisor on a remote connection is not currently supported.');
+      vscode.window.showWarningMessage(messages.warnLaunchingAdvisor);
       return;
     }
 
@@ -152,12 +165,13 @@ export function activate(context: vscode.ExtensionContext): void {
     }
 
     const writer = new AdvisorLaunchScriptWriter();
-    writer.writeLauncherScript(settings);
+    await writer.writeLauncherScript(settings);
+    advisorProjRoot = settings.getProjectRootNode();
   });
-  vscode.commands.registerCommand('intelOneAPI.analysis.launchVTune', async(selectedNode: vscode.Uri) => {
+  vscode.commands.registerCommand('intel-corporation.oneapi-analysis-configurator.launchVTune', async(selectedNode: vscode.Uri) => {
     // VS Code will return undefined for remoteName if working with a local workspace
     if (typeof vscode.env.remoteName !== 'undefined') {
-      vscode.window.showWarningMessage('Launching Intel VTune Profiler on a remote connection is not currently supported.');
+      vscode.window.showWarningMessage(messages.warnLaunchingVTune);
       return;
     }
 
@@ -172,63 +186,49 @@ export function activate(context: vscode.ExtensionContext): void {
     }
 
     const writer = new VtuneLaunchScriptWriter();
-    writer.writeLauncherScript(settings);
+    await writer.writeLauncherScript(settings);
+    vtuneProjRoot = settings.getProjectRootNode();
   });
 
   // Updating parameters when they are changed in Setting.json
-  context.subscriptions.push(vscode.workspace.onDidChangeConfiguration(e => {
-    if (e.affectsConfiguration('intelOneAPI.analysis.binary-path')) {
-      const binaryPath = vscode.workspace.getConfiguration().get<string>('intelOneAPI.analysis.binary-path');
-      checkIfPathExist(binaryPath, 'Path of the executable to analyze');
-    }
-    if (e.affectsConfiguration('intelOneAPI.analysis.advisor.install-root')) {
-      const installPath = vscode.workspace.getConfiguration().get<string>('intelOneAPI.analysis.advisor.install-root');
-      checkIfPathExist(installPath, 'Root install location for Intel(R) Advisor');
-    }
-    if (e.affectsConfiguration('intelOneAPI.analysis.vtune.install-root')) {
-      const path = vscode.workspace.getConfiguration().get<string>('intelOneAPI.analysis.vtune.install-root');
-      checkIfPathExist(path, 'Root install location for Intel(R) VTune™ Profiler');
-    }
-    if (e.affectsConfiguration('intelOneAPI.analysis.advisor.project-folder')) {
-      const binaryPath = vscode.workspace.getConfiguration().get<string>('intelOneAPI.analysis.advisor.project-folder');
-      checkIfPathExist(binaryPath, 'Path of the Intel(R) Advisor project folder');
-    }
-    if (e.affectsConfiguration('intelOneAPI.analysis.vtune.project-folder')) {
-      const binaryPath = vscode.workspace.getConfiguration().get<string>('intelOneAPI.analysis.vtune.project-folder');
-      checkIfPathExist(binaryPath, 'Path of the Intel(R) VTune™ Profiler project folder');
-    }
-    if (e.affectsConfiguration('intel-corporation.oneapi-analysis-configurator.ONEAPI_ROOT')) {
-      const ONEAPI_ROOT = vscode.workspace.getConfiguration().get<string>('intel-corporation.oneapi-analysis-configurator.ONEAPI_ROOT');
-      const compilerPath = path.normalize(process.platform === 'win32' ? `${ONEAPI_ROOT}/compiler/latest/windows/bin/dpcpp.exe` : `${ONEAPI_ROOT}/compiler/latest/linux/bin/dpcpp`);
+  context.subscriptions.push(vscode.workspace.onDidChangeConfiguration(async e => {
+    const vtuneScriptUpdater = new VtuneLaunchScriptWriter();
+    const advisorScriptUpdater = new AdvisorLaunchScriptWriter();
 
-      checkIfPathExist(compilerPath, 'Compiler');
-      if (vscode.workspace.workspaceFolders) {
-        for (const folder of vscode.workspace.workspaceFolders) {
-          fs.access(`${folder.uri.path}/.vscode/settings.json`, fs.F_OK, (err: any) => {
-            if (!err) {
-              fs.readFile(`${folder.uri.path}/.vscode/settings.json`, function(err: any, data: string) {
-                if (!err) {
-                  if (data.includes('C_Cpp.default.compilerPath')) {
-                    const update = 'Update';
-                    const skip = 'Skip';
-                    vscode.window.showInformationMessage(`Should this ONEAPI_ROOT update change the setting.json file in ${folder.name} folder?`, update, skip)
-                      .then((selection) => {
-                        if (selection === update) {
-                          const cppConfiguration = vscode.workspace.getConfiguration('C_Cpp', folder);
-                          cppConfiguration.update('default.includePath', [
-                            '${workspaceFolder}/**',
-                            `${path.normalize(ONEAPI_ROOT)}/**`
-                          ], vscode.ConfigurationTarget.WorkspaceFolder);
-                          cppConfiguration.update('default.compilerPath', compilerPath, vscode.ConfigurationTarget.WorkspaceFolder);
-                        }
-                      });
-                  }
-                }
-              });
-            }
-          });
-        }
-      }
+    if (e.affectsConfiguration('intel-corporation.oneapi-analysis-configurator.binary-path')) {
+      await vtuneScriptUpdater.updateAppPath();
+      await advisorScriptUpdater.updateAppPath();
+      vscode.window.showInformationMessage(messages.updateBinaryPath);
+    }
+
+    if (e.affectsConfiguration('intel-corporation.oneapi-analysis-configurator.advisor.install-root')) {
+      await advisorScriptUpdater.updateInstallRoot();
+      vscode.window.showInformationMessage(messages.updateAdvisorInstallRoot);
+    }
+
+    if (e.affectsConfiguration('intel-corporation.oneapi-analysis-configurator.advisor.project-folder')) {
+      await advisorScriptUpdater.updateProjectPath();
+      vscode.window.showInformationMessage(messages.updateAdvisorProjectFolder);
+    }
+
+    if (e.affectsConfiguration('intel-corporation.oneapi-analysis-configurator.vtune.install-root')) {
+      await vtuneScriptUpdater.updateInstallRoot();
+      vscode.window.showInformationMessage(messages.updateVtuneInstallRoot);
+    }
+
+    if (e.affectsConfiguration('intel-corporation.oneapi-analysis-configurator.vtune.project-folder')) {
+      await vtuneScriptUpdater.updateProjectPath();
+      vscode.window.showInformationMessage(messages.updateVtuneProjectFolder);
+    }
+
+    if (e.affectsConfiguration('intel-corporation.oneapi-analysis-configurator.ONEAPI_ROOT')) {
+      await wait(5000);
+      const ONEAPI_ROOT = vscode.workspace.getConfiguration().get<string>('intel-corporation.oneapi-analysis-configurator.ONEAPI_ROOT');
+      if (!ONEAPI_ROOT) return;
+      const normalizedOneAPIRoot = path.normalize(ONEAPI_ROOT);
+      updateSettingsJSON(normalizedOneAPIRoot);
+      updateAnalyzersRoot(normalizedOneAPIRoot);
+      vscode.window.showInformationMessage(messages.updateOneApiRoot);
     }
   }));
 
@@ -236,15 +236,16 @@ export function activate(context: vscode.ExtensionContext): void {
   const type = 'toolProvider';
   vscode.tasks.registerTaskProvider(type, {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    provideTasks(token?: vscode.CancellationToken) {
-      const advisor = new AdvisorLaunchScriptWriter();
+    async provideTasks(token?: vscode.CancellationToken) {
       const vtune = new VtuneLaunchScriptWriter();
-
+      const vtunerShell = await vtune.getLauncherScriptPath(vtuneProjRoot);
+      const advisor = new AdvisorLaunchScriptWriter();
+      const advisorShell = await advisor.getLauncherScriptPath(advisorProjRoot);
       return [
         new vscode.Task({ type: type }, vscode.TaskScope.Workspace,
-          'Launch Advisor', 'Intel(R) oneAPI', new vscode.ShellExecution(advisor.getLauncherScriptPath())),
+          'Launch Advisor', 'Intel(R) oneAPI', new vscode.ShellExecution(advisorShell)),
         new vscode.Task({ type: type }, vscode.TaskScope.Workspace,
-          'Launch VTune Profiler', 'Intel(R) oneAPI', new vscode.ShellExecution(vtune.getLauncherScriptPath()))
+          'Launch VTune Profiler', 'Intel(R) oneAPI', new vscode.ShellExecution(vtunerShell))
       ];
     },
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -254,18 +255,17 @@ export function activate(context: vscode.ExtensionContext): void {
   });
 
   const launchConfigurator = new LaunchConfigurator();
-  context.subscriptions.push(vscode.commands.registerCommand('intelOneAPI.launchConfigurator.generateTaskJson', () => launchConfigurator.makeTasksFile()));
-  context.subscriptions.push(vscode.commands.registerCommand('intelOneAPI.launchConfigurator.quickBuild', () => launchConfigurator.quickBuild(false)));
-  context.subscriptions.push(vscode.commands.registerCommand('intelOneAPI.launchConfigurator.quickBuildSycl', () => launchConfigurator.quickBuild(true)));
-  context.subscriptions.push(vscode.commands.registerCommand('intelOneAPI.launchConfigurator.editCppProperties', () => launchConfigurator.editCppProperties()));
+  context.subscriptions.push(vscode.commands.registerCommand('intel-corporation.oneapi-analysis-configurator.generateTaskJson', () => launchConfigurator.makeTasksFile()));
+  context.subscriptions.push(vscode.commands.registerCommand('intel-corporation.oneapi-analysis-configurator.quickBuild', () => launchConfigurator.quickBuild(false)));
+  context.subscriptions.push(vscode.commands.registerCommand('intel-corporation.oneapi-analysis-configurator.quickBuildSycl', () => launchConfigurator.quickBuild(true)));
+  context.subscriptions.push(vscode.commands.registerCommand('intel-corporation.oneapi-analysis-configurator.editCppProperties', () => launchConfigurator.editCppProperties()));
 
   // Check that oneapi-environment-configurator already installed
   const tsExtension = vscode.extensions.getExtension('intel-corporation.oneapi-environment-configurator');
   if (!tsExtension) {
-    const GoToInstall = 'Install';
-    vscode.window.showInformationMessage('It is recommended to install Environment configurator for Intel oneAPI Toolkits to simplify oneAPI environment setup', GoToInstall)
+    vscode.window.showInformationMessage(messages.installEnvConfigurator, messages.choiceInstall)
       .then((selection) => {
-        if (selection === GoToInstall) {
+        if (selection === messages.choiceInstall) {
           vscode.commands.executeCommand('workbench.extensions.installExtension', 'intel-corporation.oneapi-environment-configurator');
         }
       });

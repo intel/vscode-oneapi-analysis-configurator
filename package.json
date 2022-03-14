@@ -3,7 +3,7 @@
 	"displayName": "Analysis Configurator for Intel(R) oneAPI Toolkits",
 	"description": "Build and performance analysis of your Intel(R) oneAPI applications.",
 	"publisher": "intel-corporation",
-	"version": "0.1.3",
+	"version": "0.1.13",
 	"license": "MIT",
 	"icon": "media/oneapi-logo.png",
 	"keywords": [
@@ -14,14 +14,13 @@
 		"iot"
 	],
 	"engines": {
-		"vscode": "^1.56.0"
+		"vscode": "^1.64.0"
 	},
 	"categories": [
 		"Snippets",
 		"Other"
 	],
 	"activationEvents": [
-		"onCommand:workbench.action.tasks.runTask",
 		"onStartupFinished"
 	],
 	"main": "./out/extension.js",
@@ -34,27 +33,27 @@
 		],
 		"commands": [
 			{
-				"command": "intelOneAPI.launchConfigurator.generateTaskJson",
+				"command": "intel-corporation.oneapi-analysis-configurator.generateTaskJson",
 				"title": "Intel oneAPI: Generate tasks"
 			},
 			{
-				"command": "intelOneAPI.launchConfigurator.quickBuild",
+				"command": "intel-corporation.oneapi-analysis-configurator.quickBuild",
 				"title": "Intel oneAPI: Quick build current file with ICPX"
 			},
 			{
-				"command": "intelOneAPI.launchConfigurator.quickBuildSycl",
+				"command": "intel-corporation.oneapi-analysis-configurator.quickBuildSycl",
 				"title": "Intel oneAPI: Quick build current file with ICPX and SYCL enabled"
 			},
 			{
-				"command": "intelOneAPI.analysis.launchAdvisor",
+				"command": "intel-corporation.oneapi-analysis-configurator.launchAdvisor",
 				"title": "Intel oneAPI: Launch Advisor"
 			},
 			{
-				"command": "intelOneAPI.analysis.launchVTune",
+				"command": "intel-corporation.oneapi-analysis-configurator.launchVTune",
 				"title": "Intel oneAPI: Launch VTune Profiler"
 			},
 			{
-				"command": "intelOneAPI.launchConfigurator.editCppProperties",
+				"command": "intel-corporation.oneapi-analysis-configurator.editCppProperties",
 				"title": "Intel oneAPI: Configure cpp properties configuration"
 			}
 		],
@@ -66,27 +65,27 @@
 						"type": "string",
 						"description": "%capabilities.ONEAPI_ROOT.description%"
 					},
-					"intelOneAPI.analysis.binary-path": {
+					"intel-corporation.oneapi-analysis-configurator.binary-path": {
 						"type": "string",
 						"description": "Path of the executable to analyze",
 						"scope": "resource"
 					},
-					"intelOneAPI.analysis.advisor.install-root": {
+					"intel-corporation.oneapi-analysis-configurator.advisor.install-root": {
 						"type": "string",
 						"description": "Root install location for Intel(R) Advisor",
 						"scope": "window"
 					},
-					"intelOneAPI.analysis.vtune.install-root": {
+					"intel-corporation.oneapi-analysis-configurator.vtune.install-root": {
 						"type": "string",
 						"description": "Root install location for Intel(R) VTune™ Profiler",
 						"scope": "window"
 					},
-					"intelOneAPI.analysis.advisor.project-folder": {
+					"intel-corporation.oneapi-analysis-configurator.advisor.project-folder": {
 						"type": "string",
 						"description": "Path of the Intel(R) Advisor project folder",
 						"scope": "resource"
 					},
-					"intelOneAPI.analysis.vtune.project-folder": {
+					"intel-corporation.oneapi-analysis-configurator.vtune.project-folder": {
 						"type": "string",
 						"description": "Path of the Intel(R) VTune™ Profiler project folder",
 						"scope": "resource"
@@ -118,25 +117,24 @@
 		"ui-test": "extest setup-and-run -o ./src/test/ui/configs/settings.json --yarn out/test/ui/*.js"
 	},
 	"devDependencies": {
-		"@types/chai": "^4.2.18",
-		"@types/mkdirp": "^1.0.1",
-		"@types/mocha": "^8.2.2",
-		"@types/node": "^15.0.3",
-		"@types/rimraf": "^3.0.0",
-		"@types/vscode": "^1.56.0",
-		"@typescript-eslint/eslint-plugin": "^4.28.5",
-		"@typescript-eslint/parser": "^4.28.5",
-		"chai": "^4.3.4",
-		"eslint": "^7.31.0",
+		"@types/chai": "^4.3.0",
+		"@types/mkdirp": "^1.0.2",
+		"@types/mocha": "^9.1.0",
+		"@types/node": "^17.0.21",
+		"@types/rimraf": "^3.0.2",
+		"@types/vscode": "^1.64.0",
+		"@typescript-eslint/eslint-plugin": "^5.12.1",
+		"@typescript-eslint/parser": "^5.12.1",
+		"chai": "^4.3.6",
+		"eslint": "^8.10.0",
 		"eslint-config-standard": "^16.0.3",
-		"eslint-plugin-import": "^2.23.4",
+		"eslint-plugin-import": "^2.25.4",
 		"eslint-plugin-node": "^11.1.0",
-		"eslint-plugin-promise": "^5.1.0",
-		"mocha": "^9.1.3",
-		"typescript": "^4.2.4",
-		"vsce": "^1.88.0",
-		"vscode-extension-tester": "^4.0.3",
-		"vscode-extension-tester-native": "^3.0.0",
+		"eslint-plugin-promise": "^6.0.0",
+		"mocha": "^9.2.1",
+		"typescript": "^4.5.5",
+		"vsce": "^2.6.7",
+		"vscode-extension-tester": "^4.2.4",
 		"vscode-test": "^1.5.2"
 	},
 	"repository": {

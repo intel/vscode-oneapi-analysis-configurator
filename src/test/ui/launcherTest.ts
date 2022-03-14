@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-disable no-undef */
 import { Workbench, VSBrowser, InputBox, WebDriver, Notification, NotificationType, ModalDialog } from 'vscode-extension-tester';
-import { DialogHandler } from 'vscode-extension-tester-native';
+// import { DialogHandler } from 'vscode-extension-tester-native';
 import { execSync } from 'child_process';
 import { expect } from 'chai';
 import { copyFileSync, existsSync, mkdirSync, rmdirSync } from 'fs';
@@ -27,9 +27,9 @@ describe('Launcher Extension basic tests', () => {
     browser = VSBrowser.instance;
 
     await workbench.executeCommand('File: Open Folder');
-    const dialog = await DialogHandler.getOpenDialog();
-    await dialog.selectPath(workspacePath);
-    await dialog.confirm();
+    // const dialog = await DialogHandler.getOpenDialog();
+    // await dialog.selectPath(workspacePath);
+    // await dialog.confirm();
     await browser.driver.sleep(1000);
   });
 
@@ -37,11 +37,11 @@ describe('Launcher Extension basic tests', () => {
     this.timeout(30000);
 
     await workbench.executeCommand('vtune');
-    const dialog = await DialogHandler.getOpenDialog();
-    await dialog.selectPath(executablePath);
-    await dialog.confirm(); // Confirm executable path (once for all tests)
-    await dialog.confirm(); // Confirm install path
-    await dialog.confirm(); // Confirm project path
+    // const dialog = await DialogHandler.getOpenDialog();
+    // await dialog.selectPath(executablePath);
+    // await dialog.confirm(); // Confirm executable path (once for all tests)
+    // await dialog.confirm(); // Confirm install path
+    // await dialog.confirm(); // Confirm project path
 
     await browser.driver.sleep(1500);
     expect(execSync('ps -a | grep vtune-gui').includes('vtune-gui')).to.be.true;
@@ -53,10 +53,10 @@ describe('Launcher Extension basic tests', () => {
 
     await browser.driver.sleep(3000);
     await workbench.executeCommand('advisor');
-    const dialog = await DialogHandler.getOpenDialog();
+    // const dialog = await DialogHandler.getOpenDialog();
 
-    await dialog.confirm(); // Confirm install path
-    await dialog.confirm(); // Confirm project path
+    // await dialog.confirm(); // Confirm install path
+    // await dialog.confirm(); // Confirm project path
 
     await browser.driver.sleep(1500);
     expect(execSync('ps -a | grep advisor-gui').includes('advisor-gui')).to.be.true;
@@ -86,9 +86,9 @@ describe('Generating tasks and launch configuration', async function() {
       this.timeout(20000);
       const workbench = new Workbench();
       await workbench.executeCommand('File: Open Folder');
-      const dialog = await DialogHandler.getOpenDialog();
-      await dialog.selectPath(samplePath);
-      await dialog.confirm();
+      // const dialog = await DialogHandler.getOpenDialog();
+      // await dialog.selectPath(samplePath);
+      // await dialog.confirm();
     });
 
     it('Quick pick contain command', async function() {
@@ -212,9 +212,9 @@ describe('Quick build functions', async function() {
       const input = await workbench.openCommandPrompt() as InputBox;
       await input.setText('>File: Open File');
       await input.selectQuickPick('File: Open File');
-      const dialog = await DialogHandler.getOpenDialog();
-      await dialog.selectPath(sourcePath);
-      await dialog.confirm();
+      // const dialog = await DialogHandler.getOpenDialog();
+      // await dialog.selectPath(sourcePath);
+      // await dialog.confirm();
     });
 
     it('Quick pick contain command', async function() {
@@ -253,9 +253,9 @@ describe('Quick build functions', async function() {
       const input = await workbench.openCommandPrompt() as InputBox;
       await input.setText('>File: Open File');
       await input.selectQuickPick('File: Open File');
-      const dialog = await DialogHandler.getOpenDialog();
-      await dialog.selectPath(sourcePath);
-      await dialog.confirm();
+      // const dialog = await DialogHandler.getOpenDialog();
+      // await dialog.selectPath(sourcePath);
+      // await dialog.confirm();
     });
 
     it('Quick pick contain command', async function() {

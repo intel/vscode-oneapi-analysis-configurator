@@ -1,3 +1,5 @@
+import { cpuAttributesSnippets } from './CPUAttributes';
+
 (async function() {
   const fs = require('fs').promises;
   const path = require('path');
@@ -20,9 +22,9 @@
     parser.parseStringPromise(data).then((result: any) => {
       const attributes = result.reference ? result.reference.refbody[0].table[0].tgroup[0].tbody[0].row : result.concept.conbody[0].table[0].tgroup[0].tbody[0].row;
       for (const att of attributes) {
-        const name = att.entry[0].codeph[0].replace(/[[\]']+/g, '').replace('intel::', '');
-        const description = att.entry[1]._ || att.entry[1].p[0]._ || att.entry[1].p[0];
-        const prefix = att.entry[0].codeph[0].replace(/\(.*\)/, '').replace(/[[\]']+/g, '');
+        const name = att.entry[0].codeph[0].replace(/[[\]']+/g, '').replace('intel::', '').replace(/\r\n/g, '').trim();
+        const description = (att.entry[1]._ || att.entry[1].p[0]._ || att.entry[1].p[0])?.replace(/\s+/g, ' ').trim();
+        const prefix = att.entry[0].codeph[0].replace(/\(.*\)/, '').replace(/[[\]']+/g, '').replace(/\r\n/g, '').trim();
         fpgaMemoryAttributes[name] = {
           description,
           prefix,
@@ -31,8 +33,8 @@
       }
     });
   }));
-  await fs.writeFile('snippets.json', JSON.stringify(fpgaMemoryAttributes, null, 4), function(err: Error) {
+  await fs.writeFile('snippets.json', JSON.stringify({ ...fpgaMemoryAttributes, ...cpuAttributesSnippets }, null, 4), function(err: Error) {
     if (err) throw err;
-    console.log('File is rewritten successfully.');
+    console.log('File was successfully rewritten.');
   });
 }());

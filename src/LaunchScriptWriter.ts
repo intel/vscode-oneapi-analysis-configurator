@@ -7,6 +7,7 @@
 'use strict';
 import { ProjectSettings } from './ProjectSettings';
 export interface LaunchScriptWriter {
-    getLauncherScriptPath(): string;
+    getLauncherScriptPath(projRoot?: string): Promise<string>;
+    whereLauncherScriptPath(projRoot?: string): string;
     writeLauncherScript(settings: ProjectSettings): void;
 }

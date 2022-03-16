@@ -3,7 +3,7 @@
 	"displayName": "Analysis Configurator for Intel(R) oneAPI Toolkits",
 	"description": "Build and performance analysis of your Intel(R) oneAPI applications.",
 	"publisher": "intel-corporation",
-	"version": "0.1.13",
+	"version": "0.1.14",
 	"license": "MIT",
 	"icon": "media/oneapi-logo.png",
 	"keywords": [

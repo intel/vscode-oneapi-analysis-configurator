@@ -1,4 +1,4 @@
-# Analysis Configurator for Intel(R) oneAPI Toolkits
+# Analysis Configurator for Intel® oneAPI Toolkits
 
 #### [Repository](https://github.com/intel/vscode-oneapi-analysis-configurator)&nbsp;&nbsp;|&nbsp;&nbsp;[Issues](https://github.com/intel/vscode-oneapi-analysis-configurator/issues)&nbsp;&nbsp;|&nbsp;&nbsp;[Documentation](https://www.intel.com/content/www/us/en/developer/tools/oneapi/documentation.html)&nbsp;&nbsp;|&nbsp;&nbsp;[Samples](https://github.com/oneapi-src/oneAPI-samples)&nbsp;&nbsp;|&nbsp;&nbsp;[Forums](https://community.intel.com/t5/Intel-oneAPI-Toolkits/ct-p/oneapi)
 
@@ -8,22 +8,22 @@ configure your oneAPI C/++ projects for building, running and debugging your
 application with Visual Studio Code* (VS Code).
 
 
-- [Intel(R) VTune™ Profiler](https://www.intel.com/content/www/us/en/developer/tools/oneapi/vtune-profiler.htm)
+- [Intel® VTune™ Profiler](https://www.intel.com/content/www/us/en/developer/tools/oneapi/vtune-profiler.htm)
   is a performance profiling tool that provides advanced sampling and profiling
   techniques to quickly analyze code, isolate issues and deliver insights for
   optimizing performance on modern processors.
 
 
-- [Intel(R) Advisor](https://www.intel.com/content/www/us/en/develop/documentation/get-started-with-advisor/top.html)
+- [Intel® Advisor](https://www.intel.com/content/www/us/en/develop/documentation/get-started-with-advisor/top.html)
   is for software architects and developers who need the right information and
   recommendations to make the best design and optimization decisions for
   efficient vectorization,   threading, and offloading to accelerators.
 
-For details on which compiler options to use with the Intel(R) VTune™ Profiler,
+For details on which compiler options to use with the Intel® VTune™ Profiler,
 see the [Setup Analysis Target](https://www.intel.com/content/www/us/en/develop/documentation/vtune-help/top/set-up-analysis-target.html)
 section of the [Intel® VTune™ Profiler User Guide](https://www.intel.com/content/www/us/en/develop/documentation/vtune-help/top.html).
 
-For details on which compiler options to use with the Intel(R) Advisor, see the
+For details on which compiler options to use with the Intel® Advisor, see the
 [Build Target Application](https://www.intel.com/content/www/us/en/develop/documentation/advisor-user-guide/top/set-up-project/build-target.html)
 section of the [Intel® Advisor User Guide](https://www.intel.com/content/www/us/en/develop/documentation/advisor-user-guide/top.html).
 
@@ -91,7 +91,7 @@ this extension to work and be useful.
 
 7. Enter the name of the tool`s project folder, or press enter to accept the
    default. This needs to be done once for a workspace.
-8. The extension will open the analyser tool and pass the appropriate project
+8. The extension will open the Intel VTune Profiler and pass the appropriate project
    parameters to the tool.
 
     ![image](media/Analysis/8.gif)
@@ -120,7 +120,7 @@ To make changes to the configuration, edit the default path in settings.json.
 ## IntelliSense for basic code hints for FPGA Memory Attributes and CPU pragmas
 - While typing some of the Attributes/Pragmas, there will be suggestions with
   a description of what function should you use.
-- The description with the common usage wil be visible when hovering a cursor
+- The description with the common usage will be visible when hovering a cursor
   over a Attribute or Pragma in your code.
 
 FPGA Loop Directives, FPGA Memory Attributes, FPGA Kernel Attributes and CPU

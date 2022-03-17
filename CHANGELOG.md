@@ -14,7 +14,7 @@
 
 ## 0.0.15
 
-- Function for generating launch configuration moved to GDB with GPU Debug Support for Intel(R) oneAPI Toolkits;
+- Function for generating launch configuration moved to GDB with GPU Debug Support for Intel® oneAPI Toolkits;
 - Fixed several minor bugs.
 
 ## 0.0.14

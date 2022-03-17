@@ -1,7 +1,7 @@
 {
 	"name": "oneapi-analysis-configurator",
-	"displayName": "Analysis Configurator for Intel(R) oneAPI Toolkits",
-	"description": "Build and performance analysis of your Intel(R) oneAPI applications.",
+	"displayName": "Analysis Configurator for Intel® oneAPI Toolkits",
+	"description": "Build and performance analysis of your Intel® oneAPI applications.",
 	"publisher": "intel-corporation",
 	"version": "0.1.14",
 	"license": "MIT",
@@ -59,7 +59,7 @@
 		],
 		"configuration": [
 			{
-				"title": "Analysis Configurator for Intel(R) oneAPI Toolkits",
+				"title": "Analysis Configurator for Intel® oneAPI Toolkits",
 				"properties": {
 					"intel-corporation.oneapi-analysis-configurator.ONEAPI_ROOT": {
 						"type": "string",
@@ -72,22 +72,22 @@
 					},
 					"intel-corporation.oneapi-analysis-configurator.advisor.install-root": {
 						"type": "string",
-						"description": "Root install location for Intel(R) Advisor",
+						"description": "Root install location for Intel® Advisor",
 						"scope": "window"
 					},
 					"intel-corporation.oneapi-analysis-configurator.vtune.install-root": {
 						"type": "string",
-						"description": "Root install location for Intel(R) VTune™ Profiler",
+						"description": "Root install location for Intel® VTune™ Profiler",
 						"scope": "window"
 					},
 					"intel-corporation.oneapi-analysis-configurator.advisor.project-folder": {
 						"type": "string",
-						"description": "Path of the Intel(R) Advisor project folder",
+						"description": "Path of the Intel® Advisor project folder",
 						"scope": "resource"
 					},
 					"intel-corporation.oneapi-analysis-configurator.vtune.project-folder": {
 						"type": "string",
-						"description": "Path of the Intel(R) VTune™ Profiler project folder",
+						"description": "Path of the Intel® VTune™ Profiler project folder",
 						"scope": "resource"
 					}
 				}

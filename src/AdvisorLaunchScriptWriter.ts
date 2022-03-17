@@ -133,7 +133,7 @@ export class AdvisorLaunchScriptWriter implements LaunchScriptWriter {
 	    await fs.promises.mkdir(parentFolder, { recursive: true });
 	    await fs.promises.writeFile(launchScriptPath, command, { mode: 0o744 });
 	    // vscode.window.showInformationMessage(command);
-	    vscode.commands.executeCommand('workbench.action.tasks.runTask', 'Intel(R) oneAPI: Launch Advisor');
+	    vscode.commands.executeCommand('workbench.action.tasks.runTask', 'Intel® oneAPI: Launch Advisor');
 	  }
   }
 }

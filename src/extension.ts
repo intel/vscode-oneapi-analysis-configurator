@@ -159,7 +159,7 @@ export function activate(context: vscode.ExtensionContext): void {
       return;
     }
 
-    const settings = new ProjectSettings('advisor', 'Intel(R) Advisor', getBaseUri(selectedNode));
+    const settings = new ProjectSettings('advisor', 'Intel® Advisor', getBaseUri(selectedNode));
     if (await settings.getProjectSettings() === false) {
       return;
     }
@@ -180,7 +180,7 @@ export function activate(context: vscode.ExtensionContext): void {
       // On MacOS, the vtune tool is installed in a different folder.
       vtuneName = 'vtune_profiler';
     }
-    const settings = new ProjectSettings(vtuneName, 'Intel(R) VTune™ Profiler', getBaseUri(selectedNode));
+    const settings = new ProjectSettings(vtuneName, 'Intel® VTune™ Profiler', getBaseUri(selectedNode));
     if ((await settings.getProjectSettings() === false)) {
       return;
     }
@@ -243,9 +243,9 @@ export function activate(context: vscode.ExtensionContext): void {
       const advisorShell = await advisor.getLauncherScriptPath(advisorProjRoot);
       return [
         new vscode.Task({ type: type }, vscode.TaskScope.Workspace,
-          'Launch Advisor', 'Intel(R) oneAPI', new vscode.ShellExecution(advisorShell)),
+          'Launch Advisor', 'Intel® oneAPI', new vscode.ShellExecution(advisorShell)),
         new vscode.Task({ type: type }, vscode.TaskScope.Workspace,
-          'Launch VTune Profiler', 'Intel(R) oneAPI', new vscode.ShellExecution(vtunerShell))
+          'Launch VTune Profiler', 'Intel® oneAPI', new vscode.ShellExecution(vtunerShell))
       ];
     },
     // eslint-disable-next-line @typescript-eslint/no-unused-vars

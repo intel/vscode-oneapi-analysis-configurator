@@ -8,7 +8,7 @@ configure your oneAPI C/++ projects for building, running and debugging your
 application with Visual Studio Code* (VS Code).
 
 
-- [Intel® VTune™ Profiler](https://www.intel.com/content/www/us/en/developer/tools/oneapi/vtune-profiler.htm)
+- [Intel® VTune™ Profiler](https://www.intel.com/content/www/us/en/developer/tools/oneapi/vtune-profiler.html)
   is a performance profiling tool that provides advanced sampling and profiling
   techniques to quickly analyze code, isolate issues and deliver insights for
   optimizing performance on modern processors.

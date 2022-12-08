@@ -3,7 +3,7 @@
 	"displayName": "Analysis Configurator for Intel® oneAPI Toolkits",
 	"description": "Build and performance analysis of your Intel® oneAPI applications.",
 	"publisher": "intel-corporation",
-	"version": "0.1.14",
+	"version": "0.1.15",
 	"license": "MIT",
 	"icon": "media/oneapi-logo.png",
 	"keywords": [
@@ -127,14 +127,14 @@
 		"@typescript-eslint/parser": "^5.12.1",
 		"chai": "^4.3.6",
 		"eslint": "^8.10.0",
-		"eslint-config-standard": "^16.0.3",
+		"eslint-config-standard": "^17.0.0",
 		"eslint-plugin-import": "^2.25.4",
 		"eslint-plugin-node": "^11.1.0",
 		"eslint-plugin-promise": "^6.0.0",
 		"mocha": "^9.2.1",
 		"typescript": "^4.5.5",
 		"vsce": "^2.6.7",
-		"vscode-extension-tester": "^4.2.4",
+		"vscode-extension-tester": "^5.1.0",
 		"vscode-test": "^1.5.2"
 	},
 	"repository": {

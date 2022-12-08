@@ -1,18 +1,19 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-disable no-undef */
-import { Workbench, VSBrowser, InputBox, WebDriver, Notification, NotificationType, ModalDialog } from 'vscode-extension-tester';
-// import { DialogHandler } from 'vscode-extension-tester-native';
+import { Workbench, VSBrowser, WebDriver, Notification, NotificationType } from 'vscode-extension-tester';
 import { execSync } from 'child_process';
 import { expect } from 'chai';
-import { copyFileSync, existsSync, mkdirSync, rmdirSync } from 'fs';
+import { mkdirSync } from 'fs';
 import * as path from 'path';
 
 describe('Launcher Extension basic tests', () => {
   let browser: VSBrowser;
   let workbench: Workbench;
+  let driver: WebDriver;
   let executablePath: string;
   const workspacePath = path.join(process.cwd(), 'test-data', 'launchers-workspace');
 
+  let text: string;
   before(() => {
     mkdirSync(workspacePath, { recursive: true });
     const sourcePath = path.join(process.cwd(), 'src', 'test', 'ui', 'assets', 'hello-world.c');
@@ -20,268 +21,302 @@ describe('Launcher Extension basic tests', () => {
     execSync(`gcc ${sourcePath} -o ${executablePath}`);
   });
 
-  before(async function() {
-    this.timeout(20000);
-
-    workbench = new Workbench();
+  before(async function () {
     browser = VSBrowser.instance;
-
-    await workbench.executeCommand('File: Open Folder');
-    // const dialog = await DialogHandler.getOpenDialog();
-    // await dialog.selectPath(workspacePath);
-    // await dialog.confirm();
-    await browser.driver.sleep(1000);
+    await browser.waitForWorkbench();
+    driver = browser.driver;
+    workbench = new Workbench();
   });
 
-  it('VTune should run', async function() {
-    this.timeout(30000);
+  describe('Check recommended extensions', async function () {
 
-    await workbench.executeCommand('vtune');
-    // const dialog = await DialogHandler.getOpenDialog();
-    // await dialog.selectPath(executablePath);
-    // await dialog.confirm(); // Confirm executable path (once for all tests)
-    // await dialog.confirm(); // Confirm install path
-    // await dialog.confirm(); // Confirm project path
+    it("Get installed Extension list", async function () {
+      const extensionView = await workbench.getActivityBar().getViewControl("Extensions");
 
-    await browser.driver.sleep(1500);
-    expect(execSync('ps -a | grep vtune-gui').includes('vtune-gui')).to.be.true;
-    execSync('killall -9 vtune-gui');
-  });
+      await extensionView?.openView();
+      const sidebar = workbench.getSideBar();
+      const sidebarView = sidebar.getContent();
+      const inst_ext = await sidebarView.getSection("Installed");
 
-  it('Advisor should run', async function() {
-    this.timeout(30000);
-
-    await browser.driver.sleep(3000);
-    await workbench.executeCommand('advisor');
-    // const dialog = await DialogHandler.getOpenDialog();
-
-    // await dialog.confirm(); // Confirm install path
-    // await dialog.confirm(); // Confirm project path
-
-    await browser.driver.sleep(1500);
-    expect(execSync('ps -a | grep advisor-gui').includes('advisor-gui')).to.be.true;
-    execSync('killall -9 advisor-gui');
-  });
-
-  after(() => {
-    rmdirSync(workspacePath, { recursive: true });
-  });
-});
-
-describe('Generating tasks and launch configuration', async function() {
-  const samplePath = path.join(process.cwd(), 'test-data', 'sample');
-  const vscodeConfigsPath = path.join(samplePath, '.vscode');
-  const makefilePath = path.join(process.cwd(), 'src', 'test', 'ui', 'assets', 'Makefile');
-  let driver: WebDriver;
-
-  before(async function() {
-    this.timeout(20000);
-    mkdirSync(samplePath, { recursive: true });
-    copyFileSync(makefilePath, path.join(samplePath, 'Makefile'));
-    driver = VSBrowser.instance.driver;
-  });
-
-  describe('Intel oneAPI: Generate tasks', async function() {
-    before(async function() {
-      this.timeout(20000);
-      const workbench = new Workbench();
-      await workbench.executeCommand('File: Open Folder');
-      // const dialog = await DialogHandler.getOpenDialog();
-      // await dialog.selectPath(samplePath);
-      // await dialog.confirm();
+      text = await inst_ext.getText();
     });
 
-    it('Quick pick contain command', async function() {
-      this.timeout(10000);
-      const workbench = new Workbench();
-      const input = await workbench.openCommandPrompt() as InputBox;
-      await input.setText('>Intel oneAPI: Generate tasks');
-      const pick = await input.findQuickPick('Intel oneAPI: Generate tasks');
-      expect(pick).not.undefined;
+    it("Contain the correct number of notifications", async function () {
+      const center = await workbench.openNotificationsCenter();
+      const notifications = await center.getNotifications(NotificationType.Any);
+
+      if (text.includes('Environment Configurator')) {
+        expect(notifications.length).equal(0);
+      } else {
+        expect(notifications.length).equal(1);
+      }
     });
 
-    it('Quick pick contain \'build_dpcpp\' task after executing \'Generate tasks\' command', async function() {
-      this.timeout(10000);
-      const workbench = new Workbench();
-      const input = await workbench.openCommandPrompt() as InputBox;
-      await input.setText('>Intel oneAPI: Generate tasks');
-      await input.selectQuickPick('Intel oneAPI: Generate tasks');
-      await driver.sleep(1000);
+    it("Install Env configurator", async function () {
+      const center = await workbench.openNotificationsCenter();
+      const notifications = await center.getNotifications(NotificationType.Any);
+      const actions = await notifications[0]?.getActions();
 
-      const pick = await input.findQuickPick('build_dpcpp');
-      await driver.sleep(1000);
-      expect(pick).not.undefined;
+      if (actions) {
+        const title = await actions[0]?.getTitle();
+        await notifications[0].takeAction(title);
+      }
     });
 
-    it('Adding the task shows a notification with the correct text', async function() {
-      this.timeout(10000);
-      const workbench = new Workbench();
-      const input = await workbench.openCommandPrompt() as InputBox;
-      await input.setText('>Intel oneAPI: Generate tasks');
-      await input.selectQuickPick('Intel oneAPI: Generate tasks');
-      await driver.sleep(1000);
-      await input.selectQuickPick('build_dpcpp');
-      await driver.sleep(1000);
-      const notification = await driver.wait(async() => {
-        return await getNotifications('Task for "build_dpcpp" was added');
-      }, 10000) as Notification;
-      expect(await notification.getType()).equals(NotificationType.Info);
-    });
-
-    it('.vscode folder contains tasks.json file', function() {
-      const task = path.join(vscodeConfigsPath, 'tasks.json');
-      expect(existsSync(task)).equals(true);
+    it("Environment Configurator was installed", async function () {
+      expect(text).include('Environment Configurator for Intel® oneAPI Toolkits');
     });
   });
 
-  describe('Intel oneAPI: Generate launch configurations', function() {
-    it('Quick pick contain command', async function() {
-      this.timeout(10000);
-      const workbench = new Workbench();
-      const input = await workbench.openCommandPrompt() as InputBox;
-      await input.setText('>Intel oneAPI: Generate launch configurations');
-      const pick = await input.findQuickPick('Intel oneAPI: Generate launch configurations');
-      expect(pick).not.undefined;
-    });
+  //   it('VTune should run', async function() {
+  //     this.timeout(30000);
 
-    it('Quick pick contain fake executable', async function() {
-      this.timeout(10000);
-      const workbench = new Workbench();
-      await workbench.executeCommand('Intel oneAPI: Generate launch configurations');
-      await driver.sleep(1000);
-      const input = new InputBox();
-      const pick = await input.findQuickPick('Put temporal target path "a.out" to replace it later with correct path manually');
-      await input.cancel();
+  //     await workbench.executeCommand('vtune');
+  //     // const dialog = await DialogHandler.getOpenDialog();
+  //     // await dialog.selectPath(executablePath);
+  //     // await dialog.confirm(); // Confirm executable path (once for all tests)
+  //     // await dialog.confirm(); // Confirm install path
+  //     // await dialog.confirm(); // Confirm project path
 
-      // close warning about debugging
-      const dialog = new ModalDialog();
-      await dialog.pushButton('OK');
+  //     await browser.driver.sleep(1500);
+  //     expect(execSync('ps -a | grep vtune-gui').includes('vtune-gui')).to.be.true;
+  //     execSync('killall -9 vtune-gui');
+  //   });
 
-      expect(pick).not.undefined;
-    });
+  //   it('Advisor should run', async function() {
+  //     this.timeout(30000);
 
-    it('Command shows a notification with the correct text', async function() {
-      this.timeout(10000);
-      const workbench = new Workbench();
-      workbench.executeCommand('Intel oneAPI: Generate launch configurations');
-      await driver.sleep(1000);
-      const input = new InputBox();
-      await input.selectQuickPick('Put temporal target path "a.out" to replace it later with correct path manually');
+  //     await browser.driver.sleep(3000);
+  //     await workbench.executeCommand('advisor');
+  //     // const dialog = await DialogHandler.getOpenDialog();
 
-      // close note about debugging launch template
-      const dialog = new ModalDialog();
-      await dialog.pushButton('OK');
+  //     // await dialog.confirm(); // Confirm install path
+  //     // await dialog.confirm(); // Confirm project path
 
-      await input.cancel();
-      await input.cancel();
-      await input.cancel();
+  //     await browser.driver.sleep(1500);
+  //     expect(execSync('ps -a | grep advisor-gui').includes('advisor-gui')).to.be.true;
+  //     execSync('killall -9 advisor-gui');
+  //   });
 
-      // close debug warning on non-CPU devices
-      const debugWarning = new ModalDialog();
-      await debugWarning.pushButton('OK');
+  //   after(() => {
+  //     rmdirSync(workspacePath, { recursive: true });
+  //   });
+  // });
 
-      const notification = await driver.wait(async() => {
-        return await getNotifications('Launch configuration "Launch_template" for "a.out" was added');
-      }, 10000) as Notification;
-      expect(await notification.getType()).equals(NotificationType.Info);
-    });
+  // describe('Generating tasks and launch configuration', async function() {
+  //   const samplePath = path.join(process.cwd(), 'test-data', 'sample');
+  //   const vscodeConfigsPath = path.join(samplePath, '.vscode');
+  //   const makefilePath = path.join(process.cwd(), 'src', 'test', 'ui', 'assets', 'Makefile');
+  //   let driver: WebDriver;
 
-    it('.vscode folder contains launch.json file', function() {
-      this.timeout(10000);
-      const launch = path.join(vscodeConfigsPath, 'launch.json');
-      expect(existsSync(launch)).equals(true);
-    });
-  });
-  after(() => {
-    rmdirSync(samplePath, { recursive: true });
-  });
-});
+  //   before(async function() {
+  //     this.timeout(20000);
+  //     mkdirSync(samplePath, { recursive: true });
+  //     copyFileSync(makefilePath, path.join(samplePath, 'Makefile'));
+  //     driver = VSBrowser.instance.driver;
+  //   });
 
-describe('Quick build functions', async function() {
-  // eslint-disable-next-line no-unused-vars
-  let driver: WebDriver;
-  before(async function() {
-    driver = VSBrowser.instance.driver;
-  });
-  describe('Intel oneAPI: Quick build current file with ICPX', async function() {
-    const sourcePath = path.join(process.cwd(), 'src', 'test', 'ui', 'assets', 'hello-world.cpp');
+  //   describe('Intel oneAPI: Generate tasks', async function() {
+  //     before(async function() {
+  //       this.timeout(20000);
+  //       const workbench = new Workbench();
+  //       await workbench.executeCommand('File: Open Folder');
+  //       // const dialog = await DialogHandler.getOpenDialog();
+  //       // await dialog.selectPath(samplePath);
+  //       // await dialog.confirm();
+  //     });
 
-    before(async function() {
-      this.timeout(20000);
-      const workbench = new Workbench();
-      const input = await workbench.openCommandPrompt() as InputBox;
-      await input.setText('>File: Open File');
-      await input.selectQuickPick('File: Open File');
-      // const dialog = await DialogHandler.getOpenDialog();
-      // await dialog.selectPath(sourcePath);
-      // await dialog.confirm();
-    });
+  //     it('Quick pick contain command', async function() {
+  //       this.timeout(10000);
+  //       const workbench = new Workbench();
+  //       const input = await workbench.openCommandPrompt() as InputBox;
+  //       await input.setText('>Intel oneAPI: Generate tasks');
+  //       const pick = await input.findQuickPick('Intel oneAPI: Generate tasks');
+  //       expect(pick).not.undefined;
+  //     });
 
-    it('Quick pick contain command', async function() {
-      this.timeout(10000);
-      const workbench = new Workbench();
-      const input = await workbench.openCommandPrompt() as InputBox;
-      await input.setText('>Intel oneAPI: Quick build current file with ICPX');
-      const pick = await input.findQuickPick('Intel oneAPI: Quick build current file with ICPX');
-      expect(pick).not.undefined;
-    });
+  //     it('Quick pick contain \'build_dpcpp\' task after executing \'Generate tasks\' command', async function() {
+  //       this.timeout(10000);
+  //       const workbench = new Workbench();
+  //       const input = await workbench.openCommandPrompt() as InputBox;
+  //       await input.setText('>Intel oneAPI: Generate tasks');
+  //       await input.selectQuickPick('Intel oneAPI: Generate tasks');
+  //       await driver.sleep(1000);
 
-    // TODO:Oneapi environment required
+  //       const pick = await input.findQuickPick('build_dpcpp');
+  //       await driver.sleep(1000);
+  //       expect(pick).not.undefined;
+  //     });
 
-    // it('A binary file is built', async function () {
-    //     this.timeout(10000);
-    //     const workbench = new Workbench();
-    //     const input = await workbench.openCommandPrompt() as InputBox;
-    //     await input.setText('>Intel oneAPI: Quick build current file with ICPX');
-    //     await input.selectQuickPick('Intel oneAPI: Quick build current file with ICPX');
+  //     it('Adding the task shows a notification with the correct text', async function() {
+  //       this.timeout(10000);
+  //       const workbench = new Workbench();
+  //       const input = await workbench.openCommandPrompt() as InputBox;
+  //       await input.setText('>Intel oneAPI: Generate tasks');
+  //       await input.selectQuickPick('Intel oneAPI: Generate tasks');
+  //       await driver.sleep(1000);
+  //       await input.selectQuickPick('build_dpcpp');
+  //       await driver.sleep(1000);
+  //       const notification = await driver.wait(async() => {
+  //         return await getNotifications('Task for "build_dpcpp" was added');
+  //       }, 10000) as Notification;
+  //       expect(await notification.getType()).equals(NotificationType.Info);
+  //     });
 
-    //     await driver.sleep(5000);
-    //     expect(existsSync(binaryPath)).equals(true);
-    // });
+  //     it('.vscode folder contains tasks.json file', function() {
+  //       const task = path.join(vscodeConfigsPath, 'tasks.json');
+  //       expect(existsSync(task)).equals(true);
+  //     });
+  //   });
 
-    // after(async function () {
-    //     unlinkSync(binaryPath);
-    // });
-  });
+  //   describe('Intel oneAPI: Generate launch configurations', function() {
+  //     it('Quick pick contain command', async function() {
+  //       this.timeout(10000);
+  //       const workbench = new Workbench();
+  //       const input = await workbench.openCommandPrompt() as InputBox;
+  //       await input.setText('>Intel oneAPI: Generate launch configurations');
+  //       const pick = await input.findQuickPick('Intel oneAPI: Generate launch configurations');
+  //       expect(pick).not.undefined;
+  //     });
 
-  describe('Intel oneAPI: Quick build current file with ICPX and SYCL enabled', async function() {
-    const sourcePath = path.join(process.cwd(), 'src', 'test', 'ui', 'assets', 'matrix_mul_dpcpp.cpp');
+  //     it('Quick pick contain fake executable', async function() {
+  //       this.timeout(10000);
+  //       const workbench = new Workbench();
+  //       await workbench.executeCommand('Intel oneAPI: Generate launch configurations');
+  //       await driver.sleep(1000);
+  //       const input = new InputBox();
+  //       const pick = await input.findQuickPick('Put temporal target path "a.out" to replace it later with correct path manually');
+  //       await input.cancel();
 
-    before(async function() {
-      this.timeout(20000);
-      const workbench = new Workbench();
-      const input = await workbench.openCommandPrompt() as InputBox;
-      await input.setText('>File: Open File');
-      await input.selectQuickPick('File: Open File');
-      // const dialog = await DialogHandler.getOpenDialog();
-      // await dialog.selectPath(sourcePath);
-      // await dialog.confirm();
-    });
+  //       // close warning about debugging
+  //       const dialog = new ModalDialog();
+  //       await dialog.pushButton('OK');
 
-    it('Quick pick contain command', async function() {
-      this.timeout(10000);
-      const workbench = new Workbench();
-      const input = await workbench.openCommandPrompt() as InputBox;
-      await input.setText('>Intel oneAPI: Quick build current file with ICPX and SYCL enabled');
-      const pick = await input.findQuickPick('Intel oneAPI: Quick build current file with ICPX and SYCL enabled');
-      expect(pick).not.undefined;
-    });
+  //       expect(pick).not.undefined;
+  //     });
 
-    // TODO:Oneapi environment required
+  //     it('Command shows a notification with the correct text', async function() {
+  //       this.timeout(10000);
+  //       const workbench = new Workbench();
+  //       workbench.executeCommand('Intel oneAPI: Generate launch configurations');
+  //       await driver.sleep(1000);
+  //       const input = new InputBox();
+  //       await input.selectQuickPick('Put temporal target path "a.out" to replace it later with correct path manually');
 
-    // it('A binary file is built', async function () {
-    //     this.timeout(10000);
-    //     const workbench = new Workbench();
-    //     const input = await workbench.openCommandPrompt() as InputBox;
-    //     await input.setText('>Intel oneAPI: Quick build current file with ICPX');
-    //     await input.selectQuickPick('Intel oneAPI: Quick build current file with ICPX');
-    //     expect(existsSync(binaryPath)).equals(true);
-    // });
+  //       // close note about debugging launch template
+  //       const dialog = new ModalDialog();
+  //       await dialog.pushButton('OK');
 
-    // after(async function () {
-    //     unlinkSync(binaryPath);
-    // });
-  });
+  //       await input.cancel();
+  //       await input.cancel();
+  //       await input.cancel();
+
+  //       // close debug warning on non-CPU devices
+  //       const debugWarning = new ModalDialog();
+  //       await debugWarning.pushButton('OK');
+
+  //       const notification = await driver.wait(async() => {
+  //         return await getNotifications('Launch configuration "Launch_template" for "a.out" was added');
+  //       }, 10000) as Notification;
+  //       expect(await notification.getType()).equals(NotificationType.Info);
+  //     });
+
+  //     it('.vscode folder contains launch.json file', function() {
+  //       this.timeout(10000);
+  //       const launch = path.join(vscodeConfigsPath, 'launch.json');
+  //       expect(existsSync(launch)).equals(true);
+  //     });
+  //   });
+  //   after(() => {
+  //     rmdirSync(samplePath, { recursive: true });
+  //   });
+  // });
+
+  // describe('Quick build functions', async function() {
+  //   // eslint-disable-next-line no-unused-vars
+  //   let driver: WebDriver;
+  //   before(async function() {
+  //     driver = VSBrowser.instance.driver;
+  //   });
+  //   describe('Intel oneAPI: Quick build current file with ICPX', async function() {
+  //     const sourcePath = path.join(process.cwd(), 'src', 'test', 'ui', 'assets', 'hello-world.cpp');
+
+  //     before(async function() {
+  //       this.timeout(20000);
+  //       const workbench = new Workbench();
+  //       const input = await workbench.openCommandPrompt() as InputBox;
+  //       await input.setText('>File: Open File');
+  //       await input.selectQuickPick('File: Open File');
+  //       // const dialog = await DialogHandler.getOpenDialog();
+  //       // await dialog.selectPath(sourcePath);
+  //       // await dialog.confirm();
+  //     });
+
+  //     it('Quick pick contain command', async function() {
+  //       this.timeout(10000);
+  //       const workbench = new Workbench();
+  //       const input = await workbench.openCommandPrompt() as InputBox;
+  //       await input.setText('>Intel oneAPI: Quick build current file with ICPX');
+  //       const pick = await input.findQuickPick('Intel oneAPI: Quick build current file with ICPX');
+  //       expect(pick).not.undefined;
+  //     });
+
+  //     // TODO:Oneapi environment required
+
+  //     // it('A binary file is built', async function () {
+  //     //     this.timeout(10000);
+  //     //     const workbench = new Workbench();
+  //     //     const input = await workbench.openCommandPrompt() as InputBox;
+  //     //     await input.setText('>Intel oneAPI: Quick build current file with ICPX');
+  //     //     await input.selectQuickPick('Intel oneAPI: Quick build current file with ICPX');
+
+  //     //     await driver.sleep(5000);
+  //     //     expect(existsSync(binaryPath)).equals(true);
+  //     // });
+
+  //     // after(async function () {
+  //     //     unlinkSync(binaryPath);
+  //     // });
+  //   });
+
+  //   describe('Intel oneAPI: Quick build current file with ICPX and SYCL enabled', async function() {
+  //     const sourcePath = path.join(process.cwd(), 'src', 'test', 'ui', 'assets', 'matrix_mul_dpcpp.cpp');
+
+  //     before(async function() {
+  //       this.timeout(20000);
+  //       const workbench = new Workbench();
+  //       const input = await workbench.openCommandPrompt() as InputBox;
+  //       await input.setText('>File: Open File');
+  //       await input.selectQuickPick('File: Open File');
+  //       // const dialog = await DialogHandler.getOpenDialog();
+  //       // await dialog.selectPath(sourcePath);
+  //       // await dialog.confirm();
+  //     });
+
+  //     it('Quick pick contain command', async function() {
+  //       this.timeout(10000);
+  //       const workbench = new Workbench();
+  //       const input = await workbench.openCommandPrompt() as InputBox;
+  //       await input.setText('>Intel oneAPI: Quick build current file with ICPX and SYCL enabled');
+  //       const pick = await input.findQuickPick('Intel oneAPI: Quick build current file with ICPX and SYCL enabled');
+  //       expect(pick).not.undefined;
+  //     });
+
+  //     // TODO:Oneapi environment required
+
+  //     // it('A binary file is built', async function () {
+  //     //     this.timeout(10000);
+  //     //     const workbench = new Workbench();
+  //     //     const input = await workbench.openCommandPrompt() as InputBox;
+  //     //     await input.setText('>Intel oneAPI: Quick build current file with ICPX');
+  //     //     await input.selectQuickPick('Intel oneAPI: Quick build current file with ICPX');
+  //     //     expect(existsSync(binaryPath)).equals(true);
+  //     // });
+
+  //     // after(async function () {
+  //     //     unlinkSync(binaryPath);
+  //     // });
+  //   });
 });
 
 async function getNotifications(text: string): Promise<Notification | undefined> {

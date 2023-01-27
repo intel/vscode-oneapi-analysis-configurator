@@ -1,5 +1,9 @@
 # Change Log
 
+## 0.1.16
+
+- Fixed json5 dependency vulnerability
+
 ## 0.1.14
 
 - Analyzers running script is moved into working directory

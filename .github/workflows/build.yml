@@ -10,8 +10,10 @@ on:
 
 jobs:
   build-extensions:
-    runs-on: self-hosted
-    container: node:14-buster
+    runs-on: [self-hosted, linux]
+    container: node:16.14.2-buster
+    env:
+      NODE_OPTIONS: "--max-old-space-size=4096"
     steps:
       - name: Check out repository code
         uses: actions/checkout@v2

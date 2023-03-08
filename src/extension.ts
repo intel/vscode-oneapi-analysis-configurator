@@ -242,9 +242,9 @@ export function activate(context: vscode.ExtensionContext): void {
       const advisor = new AdvisorLaunchScriptWriter();
       const advisorShell = await advisor.getLauncherScriptPath(advisorProjRoot);
       return [
-        new vscode.Task({ type: type }, vscode.TaskScope.Workspace,
+        new vscode.Task({ type }, vscode.TaskScope.Workspace,
           'Launch Advisor', 'Intel® oneAPI', new vscode.ShellExecution(advisorShell)),
-        new vscode.Task({ type: type }, vscode.TaskScope.Workspace,
+        new vscode.Task({ type }, vscode.TaskScope.Workspace,
           'Launch VTune Profiler', 'Intel® oneAPI', new vscode.ShellExecution(vtunerShell))
       ];
     },

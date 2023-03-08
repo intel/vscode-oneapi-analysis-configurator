@@ -139,16 +139,16 @@ export class LaunchConfigurator {
       return;
     }
 
-    const compiler = await vscode.window.showQuickPick(['dpcpp','icx','icpx','icc','icpc'], {placeHolder: ' compiler'});
-    const cStandard = await vscode.window.showQuickPick(['c17','c11','c99'], {title: 'c17 is recommended for C compilation'});
-    const cppStandard = await vscode.window.showQuickPick(['c++17','c++14'], {title: 'c++17 is recommended C++ compilation'});
+    const compiler = await vscode.window.showQuickPick(['dpcpp', 'icx', 'icpx', 'icc', 'icpc'], { placeHolder: ' compiler' });
+    const cStandard = await vscode.window.showQuickPick(['c17', 'c11', 'c99'], { title: 'c17 is recommended for C compilation' });
+    const cppStandard = await vscode.window.showQuickPick(['c++17', 'c++14'], { title: 'c++17 is recommended C++ compilation' });
 
     if (!cppStandard || !cStandard) {
       return;
     }
 
     const cppConfiguration = vscode.workspace.getConfiguration('C_Cpp', workspaceFolder);
-    const oneapiPath = path.normalize(ONEAPI_ROOT || process.env.ONEAPI_ROOT || ONEAPI_ROOT_ENV);
+    // const oneapiPath = path.normalize(ONEAPI_ROOT || process.env.ONEAPI_ROOT || ONEAPI_ROOT_ENV);
     const compilerPath = path.normalize(process.platform === 'win32' ? `${compiler}.exe` : `${compiler}`);
 
     cppConfiguration.update('default.cppStandard', cppStandard, vscode.ConfigurationTarget.WorkspaceFolder);

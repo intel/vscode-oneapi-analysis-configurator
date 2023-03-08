@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-disable no-undef */
-import { Workbench, VSBrowser, WebDriver, Notification, NotificationType } from 'vscode-extension-tester';
+import { Workbench, VSBrowser, NotificationType } from 'vscode-extension-tester';
 import { execSync } from 'child_process';
 import { expect } from 'chai';
 import { mkdirSync } from 'fs';
@@ -9,7 +9,7 @@ import * as path from 'path';
 describe('Launcher Extension basic tests', () => {
   let browser: VSBrowser;
   let workbench: Workbench;
-  let driver: WebDriver;
+  // let driver: WebDriver;
   let executablePath: string;
   const workspacePath = path.join(process.cwd(), 'test-data', 'launchers-workspace');
 
@@ -21,27 +21,26 @@ describe('Launcher Extension basic tests', () => {
     execSync(`gcc ${sourcePath} -o ${executablePath}`);
   });
 
-  before(async function () {
+  before(async function() {
     browser = VSBrowser.instance;
     await browser.waitForWorkbench();
-    driver = browser.driver;
+    // driver = browser.driver;
     workbench = new Workbench();
   });
 
-  describe('Check recommended extensions', async function () {
-
-    it("Get installed Extension list", async function () {
-      const extensionView = await workbench.getActivityBar().getViewControl("Extensions");
+  describe('Check recommended extensions', async function() {
+    it('Get installed Extension list', async function() {
+      const extensionView = await workbench.getActivityBar().getViewControl('Extensions');
 
       await extensionView?.openView();
       const sidebar = workbench.getSideBar();
       const sidebarView = sidebar.getContent();
-      const inst_ext = await sidebarView.getSection("Installed");
+      const instExt = await sidebarView.getSection('Installed');
 
-      text = await inst_ext.getText();
+      text = await instExt.getText();
     });
 
-    it("Contain the correct number of notifications", async function () {
+    it('Contain the correct number of notifications', async function() {
       const center = await workbench.openNotificationsCenter();
       const notifications = await center.getNotifications(NotificationType.Any);
 
@@ -52,7 +51,7 @@ describe('Launcher Extension basic tests', () => {
       }
     });
 
-    it("Install Env configurator", async function () {
+    it('Install Env configurator', async function() {
       const center = await workbench.openNotificationsCenter();
       const notifications = await center.getNotifications(NotificationType.Any);
       const actions = await notifications[0]?.getActions();
@@ -63,7 +62,7 @@ describe('Launcher Extension basic tests', () => {
       }
     });
 
-    it("Environment Configurator was installed", async function () {
+    it('Environment Configurator was installed', async function() {
       expect(text).include('Environment Configurator for Intel® oneAPI Toolkits');
     });
   });
@@ -319,12 +318,12 @@ describe('Launcher Extension basic tests', () => {
   //   });
 });
 
-async function getNotifications(text: string): Promise<Notification | undefined> {
-  const notifications = await new Workbench().getNotifications();
-  for (const notification of notifications) {
-    const message = await notification.getMessage();
-    if (message.indexOf(text) >= 0) {
-      return notification;
-    }
-  }
-}
+// async function getNotifications(text: string): Promise<Notification | undefined> {
+//   const notifications = await new Workbench().getNotifications();
+//   for (const notification of notifications) {
+//     const message = await notification.getMessage();
+//     if (message.indexOf(text) >= 0) {
+//       return notification;
+//     }
+//   }
+// }

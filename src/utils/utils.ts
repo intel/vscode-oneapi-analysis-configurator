@@ -11,6 +11,7 @@ import { execSync } from 'child_process';
 import * as fs from 'fs';
 import * as fsPromises from 'fs/promises';
 import * as path from 'path';
+import messages from '../messages';
 
 export function getPSexecutableName(): string | undefined {
   let execName: string;
@@ -93,7 +94,7 @@ function readBytes(fd: number, sharedBuffer: Buffer) {
   });
 }
 
-async function checkValidMagicNumber(filePath:string):Promise<any> {
+async function checkValidMagicNumber(filePath: string): Promise<any> {
   const sharedBuffer = Buffer.alloc(4);
   const fd = fs.openSync(filePath, 'r');
 
@@ -175,6 +176,11 @@ export function updateAnalyzersRoot(ONEAPI_ROOT: string) {
 export async function wait(milliseconds: number) {
   return new Promise(resolve => setTimeout(resolve, milliseconds));
 }
+
+export function isWorkspaceOpen() {
+  return vscode.workspace.workspaceFolders ? true : false;
+}
+
 export async function getworkspaceFolder(): Promise<vscode.WorkspaceFolder | undefined> {
   if (vscode.workspace.workspaceFolders?.length === 1) {
     return vscode.workspace.workspaceFolders[0];
@@ -193,3 +199,19 @@ export async function filter(arr: any[], callback: any) {
   const fail = Symbol();
   return (await Promise.all(arr.map(async item => (await callback(item)) ? item : fail))).filter(i => i !== fail);
 }
+
+export function isExtensionInstalled(extensionId: string): boolean {
+  const envConfExtension = vscode.extensions.getExtension(extensionId);
+  return envConfExtension ? true : false;
+}
+
+export function propmtToInstallExtension(extensionId: string, message: string) {
+  vscode.window.showErrorMessage(message, { modal: true }, messages.choiceInstall)
+    .then((selection) => {
+      if (selection === messages.choiceInstall) {
+        vscode.commands.executeCommand('workbench.extensions.installExtension', extensionId);
+
+      }
+    });
+}
+

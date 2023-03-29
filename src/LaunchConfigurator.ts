@@ -10,10 +10,9 @@ import * as vscode from 'vscode';
 import { execSync } from 'child_process';
 import { posix, join, parse, normalize } from 'path';
 import { existsSync, writeFileSync } from 'fs';
-import { getPSexecutableName, getworkspaceFolder } from './utils/utils';
+import { getPSexecutableName, getworkspaceFolder, isExtensionInstalled, isWorkspaceOpen, propmtToInstallExtension } from './utils/utils';
 import messages from './messages';
 
-const path = require('path');
 interface TaskConfigValue {
   label: string;
   command: string;
@@ -22,7 +21,17 @@ interface TaskConfigValue {
     cwd: string;
   }
 }
+
+class CppProperties {
+  compilerName:string = '';
+  compilerPath: string = '';
+  compilerArgs: string[] = [];
+  cStandard: string = '';
+  cppStandard: string = '';
+  includePaths: string[] = [];
+}
 export class LaunchConfigurator {
+  private cppPropertires: CppProperties = new CppProperties();
   async makeTasksFile(): Promise<boolean> {
     const workspaceFolder = await getworkspaceFolder();
     if (!workspaceFolder) {
@@ -117,54 +126,91 @@ export class LaunchConfigurator {
     return true;
   }
 
-  async editCppProperties(): Promise<void> {
-    const ONEAPI_ROOT = vscode.workspace.getConfiguration().get<string>('intel-corporation.oneapi-analysis-configurator.ONEAPI_ROOT');
-    const ONEAPI_ROOT_ENV = vscode.workspace.getConfiguration().get<string>('intel-corporation.oneapi-environment-configurator.ONEAPI_ROOT');
-    if (!ONEAPI_ROOT_ENV && !process.env.ONEAPI_ROOT && !ONEAPI_ROOT) {
-      const tmp = await vscode.window.showInformationMessage(messages.specifyOneApi, messages.openSettings, messages.choiceSkip);
-      if (tmp === messages.openSettings) {
-        await vscode.commands.executeCommand('workbench.action.openSettings', '@ext:intel-corporation.oneapi-analysis-configurator ONEAPI_ROOT');
-      }
-      return;
-    } else if (ONEAPI_ROOT) {
-      await vscode.window.showInformationMessage(messages.oneApiFromConfigurator);
-    } else if (process.env.ONEAPI_ROOT) {
-      await vscode.window.showInformationMessage(messages.oneApiFromProcEnv);
-    } else {
-      await vscode.window.showInformationMessage(messages.oneApiFromEnvConf);
+  async configureCppProperties(): Promise<void> {
+    try {
+      await this.CheckPrerequisites();
+      await this.requestPropertiesFromUser();
+      await this.requestIncludePathsFromCompiler();
+      await this.updateCppConfiguration();
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  private async CheckPrerequisites() {
+    if (!isExtensionInstalled('intel-corporation.oneapi-environment-configurator')) {
+      propmtToInstallExtension('intel-corporation.oneapi-environment-configurator', messages.installEnvConfigurator);
+      throw messages.installEnvConfigurator;
+    }
+    if (!isExtensionInstalled('ms-vscode.cpptools')) {
+      propmtToInstallExtension('ms-vscode.cpptools', messages.installCpp);
+      throw messages.installEnvConfigurator;
+    }
+    if (!this.isOneApiEnvironmentSet()) {
+      vscode.window.showErrorMessage(messages.errOneApiEnvRequired, { modal: true });
+      throw messages.errOneApiEnvRequired;
     }
 
+    if (!isWorkspaceOpen()) {
+      vscode.window.showErrorMessage(messages.errWorkingDir, { modal: true });
+      throw messages.errWorkingDir;
+    }
+  }
+
+  private async updateCppConfiguration() {
     const workspaceFolder = await getworkspaceFolder();
-    if (!workspaceFolder) {
-      return;
-    }
+    const cppConfiguration = vscode.workspace.getConfiguration('C_Cpp', workspaceFolder);
+    cppConfiguration.update('default.cppStandard', this.cppPropertires.cppStandard, vscode.ConfigurationTarget.WorkspaceFolder);
+    cppConfiguration.update('default.includePath', ['${workspaceFolder}/**'].concat(this.cppPropertires.includePaths), vscode.ConfigurationTarget.WorkspaceFolder);
+    cppConfiguration.update('default.defines', [], vscode.ConfigurationTarget.WorkspaceFolder);
+    cppConfiguration.update('default.compilerPath', this.cppPropertires.compilerPath, vscode.ConfigurationTarget.WorkspaceFolder);
+    cppConfiguration.update('default.compilerArgs', this.cppPropertires.compilerArgs, vscode.ConfigurationTarget.WorkspaceFolder);
+    cppConfiguration.update('default.cStandard', this.cppPropertires.cStandard, vscode.ConfigurationTarget.WorkspaceFolder);
+  }
 
-    const compiler = await vscode.window.showQuickPick(['dpcpp', 'icx', 'icpx', 'icc', 'icpc'], { placeHolder: ' compiler' });
+  private async requestPropertiesFromUser() {
+    const intelCompilers = ['icpx (-fsycl)', 'icpx', 'icx', 'icx (-fsycl)', 'icc', 'icpc'];
+    const compiler = await vscode.window.showQuickPick(intelCompilers, { placeHolder: ' compiler', title: 'icpx -fsycl is default' });
     const cStandard = await vscode.window.showQuickPick(['c17', 'c11', 'c99'], { title: 'c17 is recommended for C compilation' });
     const cppStandard = await vscode.window.showQuickPick(['c++17', 'c++14'], { title: 'c++17 is recommended C++ compilation' });
 
-    if (!cppStandard || !cStandard) {
-      return;
+    if (!compiler || !cppStandard || !cStandard) {
+      throw Error('Failed to get cpp properties from user');
     }
+    this.cppPropertires.cStandard = cStandard;
+    this.cppPropertires.cppStandard = cppStandard;
+    this.cppPropertires.compilerName = compiler.split(' ')[0];
+    this.cppPropertires.compilerArgs = (compiler.indexOf('-fsycl') >= 0) ? ['-fsycl'] : [];
+  }
 
-    const cppConfiguration = vscode.workspace.getConfiguration('C_Cpp', workspaceFolder);
-    // const oneapiPath = path.normalize(ONEAPI_ROOT || process.env.ONEAPI_ROOT || ONEAPI_ROOT_ENV);
-    const compilerPath = path.normalize(process.platform === 'win32' ? `${compiler}.exe` : `${compiler}`);
-
-    cppConfiguration.update('default.cppStandard', cppStandard, vscode.ConfigurationTarget.WorkspaceFolder);
-    // TODO: replace ONEAPI_ROOT components PATH with the one that is relevant for user's installation folder
-    cppConfiguration.update('default.includePath', [
-      '${workspaceFolder}/**'
-      // `${path.normalize(ONEAPI_ROOT)}/**`
-    ], vscode.ConfigurationTarget.WorkspaceFolder);
-    cppConfiguration.update('default.defines', [], vscode.ConfigurationTarget.WorkspaceFolder);
-    cppConfiguration.update('default.compilerPath', compilerPath, vscode.ConfigurationTarget.WorkspaceFolder);
-    cppConfiguration.update('default.cStandard', cStandard, vscode.ConfigurationTarget.WorkspaceFolder);
-    vscode.window.showInformationMessage(messages.editCppProperties);
+  private async requestIncludePathsFromCompiler() {
+    this.cppPropertires.compilerPath = this.getCompilerPath();
+    if (this.cppPropertires.compilerPath.length === 0) {
+      vscode.window.showErrorMessage(messages.errCompilerPath, { modal: true });
+      throw Error(`${this.cppPropertires.compilerName} compiler not present in PATH environment variable`);
+    }
+    const separator = process.platform === 'win32' ? '\r\n' : '\n';
+    const compilerOutput = execSync(`"${this.cppPropertires.compilerName}" -xc++ -E -P -v -dD -c ${process.platform === 'win32' ? 'NUL' : '/dev/null'} 2>&1`)
+      .toString().split(separator).map((string) => { return string.trimStart(); });
+    const includePaths = compilerOutput.slice(compilerOutput.indexOf('#include <...> search starts here:') + 1, compilerOutput.indexOf('End of search list.'));
+    this.cppPropertires.includePaths = includePaths.map(path => {
+      return normalize(path);
+    });
+  }
+  
+  private getCompilerPath() {
+    try {
+      const separator = process.platform === 'win32' ? '\r\n' : '\n';
+      const cmd = process.platform === 'win32' ? `where ${this.cppPropertires.compilerName}` : `which ${this.cppPropertires.compilerName}`;
+      const compilerPath = execSync(cmd).toString().split(separator)[0];
+      return compilerPath;
+    } catch (e) {
+      return '';
+    }
   }
 
   async quickBuild(isSyclEnabled: boolean): Promise<boolean> {
-    if (!process.env.SETVARS_COMPLETED) {
+    if (!this.isOneApiEnvironmentSet()) {
       vscode.window.showErrorMessage(messages.errInitEnvVars, { modal: true });
       return false;
     }
@@ -181,8 +227,9 @@ export class LaunchConfigurator {
     }
     const parsedPath = parse(document.fileName);
     const source = document.fileName;
-    const dest = join(parsedPath.dir, parsedPath.name);
-    const cmd = isSyclEnabled ? `icpx -fsycl -fsycl-unnamed-lambda ${source} -o ${dest} -v` : `icpx ${source} -o ${dest} -v`;
+    const dest = join(parsedPath.dir, process.platform === 'win32' ? `${parsedPath.name}.exe` : parsedPath.name);
+    const cmd = `icpx ${isSyclEnabled ? '-fsycl -fsycl-unnamed-lambda' : ''} ${source} -o ${dest} -v`;
+
     try {
       execSync(cmd);
     } catch (err: any) {
@@ -285,5 +332,9 @@ export class LaunchConfigurator {
       vscode.window.showErrorMessage(messages.errGetTargets(err));
       return [];
     }
+  }
+
+  private isOneApiEnvironmentSet(): boolean {
+    return !!process.env.SETVARS_COMPLETED;
   }
 }

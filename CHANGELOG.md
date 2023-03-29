@@ -1,5 +1,10 @@
 # Change Log
 
+## 0.1.18
+
+- Automatically add path to compiler and include paths into .vscode/settings.json file
+- Suggests to intall C++ extension pack if there's no one
+
 ## 0.1.17
 
 - Fixed http-cache-semantics dependency vulnerability
@@ -7,6 +12,10 @@
 ## 0.1.16
 
 - Fixed json5 dependency vulnerability
+
+## 0.1.15
+
+- Updated log messages and extension name
 
 ## 0.1.14
 

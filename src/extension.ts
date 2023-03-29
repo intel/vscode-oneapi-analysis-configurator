@@ -59,38 +59,6 @@ function checkExtensionsConflict(id: string) {
   });
 }
 
-function updateSettingsJSON(ONEAPI_ROOT: string) {
-  if (!vscode.workspace.workspaceFolders) return;
-  for (const folder of vscode.workspace.workspaceFolders) {
-    fs.access(`${folder.uri.path}/.vscode/settings.json`, fs.F_OK, (err: any) => {
-      if (err) return;
-
-      readFile(`${folder.uri.path}/.vscode/settings.json`, function(err: any, data: string) {
-        if (err) return;
-        if (!data.includes('C_Cpp.default.compilerPath')) return;
-
-        vscode.window.showInformationMessage(messages.updateSettingJson(folder.name), messages.choiceUpdate, messages.choiceSkip)
-          .then((selection) => {
-            if (selection !== messages.choiceUpdate) return;
-
-            const cppConfiguration = vscode.workspace.getConfiguration('C_Cpp', folder);
-
-            cppConfiguration.update('default.includePath', [
-              '${workspaceFolder}/**',
-              `${path.normalize(ONEAPI_ROOT)}/**`
-            ], vscode.ConfigurationTarget.WorkspaceFolder);
-
-            const compilerPath = path.normalize(process.platform === 'win32'
-              ? `${ONEAPI_ROOT}/compiler/latest/windows/bin/dpcpp.exe`
-              : `${ONEAPI_ROOT}/compiler/latest/linux/bin/dpcpp`);
-
-            cppConfiguration.update('default.compilerPath', compilerPath, vscode.ConfigurationTarget.WorkspaceFolder);
-          });
-      });
-    });
-  }
-}
-
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function activate(context: vscode.ExtensionContext): void {
   // Todo: The extension is currently activated at startup, as activationEvents in package.json uses '*'.
@@ -226,7 +194,6 @@ export function activate(context: vscode.ExtensionContext): void {
       const ONEAPI_ROOT = vscode.workspace.getConfiguration().get<string>('intel-corporation.oneapi-analysis-configurator.ONEAPI_ROOT');
       if (!ONEAPI_ROOT) return;
       const normalizedOneAPIRoot = path.normalize(ONEAPI_ROOT);
-      updateSettingsJSON(normalizedOneAPIRoot);
       updateAnalyzersRoot(normalizedOneAPIRoot);
       vscode.window.showInformationMessage(messages.updateOneApiRoot);
     }
@@ -258,16 +225,5 @@ export function activate(context: vscode.ExtensionContext): void {
   context.subscriptions.push(vscode.commands.registerCommand('intel-corporation.oneapi-analysis-configurator.generateTaskJson', () => launchConfigurator.makeTasksFile()));
   context.subscriptions.push(vscode.commands.registerCommand('intel-corporation.oneapi-analysis-configurator.quickBuild', () => launchConfigurator.quickBuild(false)));
   context.subscriptions.push(vscode.commands.registerCommand('intel-corporation.oneapi-analysis-configurator.quickBuildSycl', () => launchConfigurator.quickBuild(true)));
-  context.subscriptions.push(vscode.commands.registerCommand('intel-corporation.oneapi-analysis-configurator.editCppProperties', () => launchConfigurator.editCppProperties()));
-
-  // Check that oneapi-environment-configurator already installed
-  const tsExtension = vscode.extensions.getExtension('intel-corporation.oneapi-environment-configurator');
-  if (!tsExtension) {
-    vscode.window.showInformationMessage(messages.installEnvConfigurator, messages.choiceInstall)
-      .then((selection) => {
-        if (selection === messages.choiceInstall) {
-          vscode.commands.executeCommand('workbench.extensions.installExtension', 'intel-corporation.oneapi-environment-configurator');
-        }
-      });
-  }
+  context.subscriptions.push(vscode.commands.registerCommand('intel-corporation.oneapi-analysis-configurator.editCppProperties', () => launchConfigurator.configureCppProperties()));
 }

@@ -26,7 +26,8 @@ export default {
   updateVtuneProjectFolder: 'VTune project folder was updated.',
   updateOneApiRoot: 'ONEAPI_ROOT was updated. It will update settings.json file from your .vscode folder and may update VTune & Advisor root paths',
   choiceInstall: 'Install',
-  installEnvConfigurator: 'To simplify oneAPI environment setup, install the Environment configurator for Intel oneAPI Toolkits.',
+  installEnvConfigurator: 'The Environment configurator for Intel oneAPI Toolkits is required to configure your oneAPI C/++ projects. Please install it',
+  installCpp: 'No extension for C/C++ was found. Please install it to configure your oneAPI C/++ projects.',
   failedGenerateTasks: 'Generating tasks failed. The project does not contain CMakeLists.txt or MakeFile. Add one of those files to your working directory and try again.',
   chooseTask: (buildSystem: string) => `Choose target from ${buildSystem} or push ESC to exit.`,
   selectNewTarget: 'Select a new target',
@@ -40,6 +41,9 @@ export default {
   oneApiFromProcEnv: 'ONEAPI_ROOT is taken from your process environment variables',
   oneApiFromEnvConf: 'ONEAPI_ROOT is taken from your Environment Configurator extension\'s settings',
   editCppProperties: 'C++ properties are successfully edited. Please check .vscode/settings.json for more details.',
+  provideCppIncludeFiles: 'Please provide your additional cpp include files in .vscode/settings.json or in C++ extension settings.',
+  errOneApiEnvRequired: 'Oneapi environment is required. Press Ctrl+Shift+P and execute "Intel oneAPI: Initialize environment variables".',
+  errCompilerPath: 'Failed to find the selected compiler. Make sure it\'s installed',
   errInitEnvVars: 'Quick build failed. Initialize the oneAPI environment. Press Ctrl+Shift+P and execute "Intel oneAPI: Initialize environment variables".',
   errNoOpenFile: 'Quick build failed. No open file.',
   errCppFile: 'Quick build failed. The open file must be a cpp file.',
@@ -63,6 +67,7 @@ export default {
   specifyPrFolder: 'Please specify the analyzer project folder',
   errWorkingDir: 'Cannot find the working directory.',
   addWorkingDir: 'Please add one or more working directories and try again.',
+  errNoWorkingDir: 'No open working directory.',
   failedReadScript: (scriptPath: string, err: any) => `Failed to read ${scriptPath} file. ${err}`,
   zzz: 'end of message list, do not use in application'
 };

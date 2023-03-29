@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-disable no-undef */
-import { Workbench, VSBrowser, NotificationType } from 'vscode-extension-tester';
+/* eslint-disable no-unused-vars */
+import { Workbench, VSBrowser, WebDriver, Notification, NotificationType } from 'vscode-extension-tester';
 import { execSync } from 'child_process';
 import { expect } from 'chai';
 import { mkdirSync } from 'fs';

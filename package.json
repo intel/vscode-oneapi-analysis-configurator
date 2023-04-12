@@ -143,6 +143,6 @@
 		"url": "https://github.com/intel/vscode-oneapi-analysis-configurator.git"
 	},
 	"dependencies": {
-		"xml2js": "^0.4.23"
+		"xml2js": "^0.5.0"
 	}
 }

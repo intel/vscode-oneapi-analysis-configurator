@@ -1,5 +1,9 @@
 # Change Log
 
+## 0.1.19
+
+- Fixed xml2js dependency vulnerability
+
 ## 0.1.18
 
 - Automatically add path to compiler and include paths into .vscode/settings.json file

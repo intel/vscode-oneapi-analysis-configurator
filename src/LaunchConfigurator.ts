@@ -197,7 +197,7 @@ export class LaunchConfigurator {
       return normalize(path);
     });
   }
-  
+
   private getCompilerPath() {
     try {
       const separator = process.platform === 'win32' ? '\r\n' : '\n';

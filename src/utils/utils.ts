@@ -178,7 +178,7 @@ export async function wait(milliseconds: number) {
 }
 
 export function isWorkspaceOpen() {
-  return vscode.workspace.workspaceFolders ? true : false;
+  return !!vscode.workspace.workspaceFolders;
 }
 
 export async function getworkspaceFolder(): Promise<vscode.WorkspaceFolder | undefined> {
@@ -202,7 +202,7 @@ export async function filter(arr: any[], callback: any) {
 
 export function isExtensionInstalled(extensionId: string): boolean {
   const envConfExtension = vscode.extensions.getExtension(extensionId);
-  return envConfExtension ? true : false;
+  return !!envConfExtension;
 }
 
 export function propmtToInstallExtension(extensionId: string, message: string) {
@@ -210,8 +210,6 @@ export function propmtToInstallExtension(extensionId: string, message: string) {
     .then((selection) => {
       if (selection === messages.choiceInstall) {
         vscode.commands.executeCommand('workbench.extensions.installExtension', extensionId);
-
       }
     });
 }
-

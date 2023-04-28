@@ -134,7 +134,7 @@
 		"eslint-plugin-promise": "^6.1.1",
 		"mocha": "^10.2.0",
 		"typescript": "^5.0.2",
-		"vsce": "^1.97.0",
+		"vsce": "^2.15.0",
 		"vscode-extension-tester": "^5.5.1",
 		"vscode-test": "^1.5.2"
 	},

@@ -1,5 +1,9 @@
 # Change Log
 
+## 0.1.20
+
+- Fixed dependencies vulnerability
+
 ## 0.1.19
 
 - Fixed xml2js dependency vulnerability

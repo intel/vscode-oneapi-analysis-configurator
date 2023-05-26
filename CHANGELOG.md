@@ -1,4 +1,8 @@
 # Change Log
+## 0.1.21
+
+- Fixed dependencies vulnerability
+- Fixed bug for powershell command
 
 ## 0.1.20
 

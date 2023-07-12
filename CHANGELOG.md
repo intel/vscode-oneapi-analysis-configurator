@@ -1,4 +1,8 @@
 # Change Log
+## 0.1.22
+
+- Fixed word-wrap vulnerability
+
 ## 0.1.21
 
 - Fixed dependencies vulnerability

@@ -210,9 +210,9 @@ export function activate(context: vscode.ExtensionContext): void {
       const advisorShell = await advisor.getLauncherScriptPath(advisorProjRoot);
       return [
         new vscode.Task({ type }, vscode.TaskScope.Workspace,
-          'Launch Advisor', 'Intel® oneAPI', new vscode.ShellExecution(advisorShell.replace(' ', '` '))),
+          'Launch Advisor', 'Intel® oneAPI', new vscode.ProcessExecution(advisorShell)),
         new vscode.Task({ type }, vscode.TaskScope.Workspace,
-          'Launch VTune Profiler', 'Intel® oneAPI', new vscode.ShellExecution(vtunerShell.replace(' ', '` ')))
+          'Launch VTune Profiler', 'Intel® oneAPI', new vscode.ProcessExecution(vtunerShell))
       ];
     },
     // eslint-disable-next-line @typescript-eslint/no-unused-vars

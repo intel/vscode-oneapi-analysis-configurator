@@ -228,7 +228,7 @@ export class LaunchConfigurator {
     const parsedPath = parse(document.fileName);
     const source = document.fileName;
     const dest = join(parsedPath.dir, process.platform === 'win32' ? `${parsedPath.name}.exe` : parsedPath.name);
-    const cmd = `icpx ${isSyclEnabled ? '-fsycl -fsycl-unnamed-lambda' : ''} ${source} -o ${dest} -v`;
+    const cmd = `icpx ${isSyclEnabled ? '-fsycl -fsycl-unnamed-lambda' : ''} "${source}" -o "${dest}" -v`;
 
     try {
       execSync(cmd);

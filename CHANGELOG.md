@@ -1,33 +1,38 @@
 # Change Log
+
+## 0.1.23
+
+- Updated versions of 3rd party dependencies
+
 ## 0.1.22
 
-- Fixed word-wrap vulnerability
+- Updated version of 'word-wrap' dependency
 
 ## 0.1.21
 
-- Fixed dependencies vulnerability
+- Updated versions of 3rd party dependencies
 - Fixed bug for powershell command
 
 ## 0.1.20
 
-- Fixed dependencies vulnerability
+- Updated versions of 3rd party dependencies
 
 ## 0.1.19
 
-- Fixed xml2js dependency vulnerability
+- Updated version of 'xml2js' dependency
 
 ## 0.1.18
 
 - Automatically add path to compiler and include paths into .vscode/settings.json file
-- Suggests to intall C++ extension pack if there's no one
+- Suggests to install C++ extension pack if there's no one
 
 ## 0.1.17
 
-- Fixed http-cache-semantics dependency vulnerability
+- Updated version of 'http-cache-semantics' dependency
 
 ## 0.1.16
 
-- Fixed json5 dependency vulnerability
+- Updated version of 'json5' dependency
 
 ## 0.1.15
 

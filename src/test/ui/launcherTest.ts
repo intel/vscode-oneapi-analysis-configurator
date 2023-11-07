@@ -15,9 +15,11 @@ describe('Launcher Extension basic tests', () => {
   const workspacePath = path.join(process.cwd(), 'test-data', 'launchers-workspace');
 
   let text: string;
+
   before(() => {
     mkdirSync(workspacePath, { recursive: true });
     const sourcePath = path.join(process.cwd(), 'src', 'test', 'ui', 'assets', 'hello-world.c');
+
     executablePath = path.join(workspacePath, 'hello-world');
     execSync(`gcc ${sourcePath} -o ${executablePath}`);
   });
@@ -59,6 +61,7 @@ describe('Launcher Extension basic tests', () => {
 
       if (actions) {
         const title = await actions[0]?.getTitle();
+
         await notifications[0].takeAction(title);
       }
     });

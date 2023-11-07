@@ -22,15 +22,18 @@ export abstract class LaunchScriptWriter {
 
   protected whereLauncherScriptPath(projRoot?: string): string {
     const fileExt = this.osType === 'Windows_NT' ? 'bat' : 'sh';
+
     if (projRoot) {
       this.projectRoot = projRoot;
     }
     const launchScriptPath = path.join(this.projectRoot, `launch-${this.toolname}.${fileExt}`).normalize();
+
     return launchScriptPath;
   };
 
   public async getLauncherScriptPath(projRoot?: string): Promise<string> {
     const launchScriptPath = this.whereLauncherScriptPath(projRoot);
+
     if (!await checkIfPathExist(launchScriptPath)) return '';
     return launchScriptPath;
   }

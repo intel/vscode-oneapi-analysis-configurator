@@ -114,7 +114,7 @@ export const cpuAttributesTooltips = {
 };
 
 export const cpuAttributesSnippets = {
-  "alloc_section(var1,var2,..., 'r;attribute-list')": {
+  'alloc_section(var1,var2,..., \'r;attribute-list\')': {
     description: 'Allocates one or more variables in the specified section. Controls section attribute specification for variables.',
     prefix: '#pragma alloc_section',
     body: [
@@ -212,7 +212,7 @@ export const cpuAttributesSnippets = {
       '#pragma omp simd early_exit'
     ]
   },
-  "optimize('', on|off)": {
+  'optimize(\'\', on|off)': {
     description: 'Enables or disables optimizations for code after this pragma until another optimize pragma or end of the translation unit.',
     prefix: '#pragma optimize',
     body: [

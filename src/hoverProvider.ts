@@ -15,6 +15,7 @@ export default class FPGAMemoryHoverProvider implements HoverProvider {
 
   public provideHover(document: TextDocument, position: Position, token: CancellationToken): Hover|undefined {
     const wordRange = document.getWordRangeAtPosition(position);
+
     if (!wordRange) {
       return;
     }
@@ -22,9 +23,11 @@ export default class FPGAMemoryHoverProvider implements HoverProvider {
     const attributeName = document.getText(wordRange);
 
     const entry = this.attributes[attributeName];
+
     if (entry && entry.description) {
       const signature = entry.signature || '';
       const contents = [entry.description, { language: 'cpp', value: signature }];
+
       return new Hover(contents, wordRange);
     }
   }

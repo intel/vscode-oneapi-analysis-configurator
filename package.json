@@ -3,7 +3,7 @@
 	"displayName": "Analysis Configurator for Intel® oneAPI Toolkits",
 	"description": "Build and performance analysis of your Intel® oneAPI applications.",
 	"publisher": "intel-corporation",
-	"version": "0.1.22",
+	"version": "0.1.23",
 	"license": "MIT",
 	"icon": "media/oneapi-logo.png",
 	"keywords": [
@@ -14,7 +14,7 @@
 		"iot"
 	],
 	"engines": {
-		"vscode": "^1.76.0"
+		"vscode": "^1.81.0"
 	},
 	"categories": [
 		"Snippets",
@@ -53,7 +53,7 @@
 				"title": "Intel oneAPI: Launch VTune Profiler"
 			},
 			{
-				"command": "intel-corporation.oneapi-analysis-configurator.editCppProperties",
+				"command": "intel-corporation.oneapi-analysis-configurator.configureCppProperties",
 				"title": "Intel oneAPI: Configure cpp properties configuration"
 			}
 		],
@@ -117,25 +117,25 @@
 		"ui-test": "extest setup-and-run -o ./src/test/ui/configs/settings.json --yarn out/test/ui/*.js"
 	},
 	"devDependencies": {
-		"@types/chai": "^4.3.4",
+		"@types/chai": "^4.3.5",
 		"@types/mkdirp": "^1.0.2",
 		"@types/mocha": "^10.0.1",
-		"@types/node": "^18.15.11",
+		"@types/node": "^20.5.0",
 		"@types/rimraf": "^3.0.2",
-		"@types/vscode": "^1.76.0",
-		"@typescript-eslint/eslint-plugin": "^5.57.0",
-		"@typescript-eslint/parser": "^5.57.0",
-		"@vscode/vsce": "^2.19.0",
+		"@types/vscode": "^1.81.0",
+		"@typescript-eslint/eslint-plugin": "^6.4.0",
+		"@typescript-eslint/parser": "^6.4.0",
+		"@vscode/vsce": "^2.20.1",
 		"chai": "^4.3.7",
-		"eslint": "^8.37.0",
-		"eslint-config-standard": "^17.0.0",
-		"eslint-plugin-import": "^2.27.5",
-		"eslint-plugin-n": "^15.7.0",
+		"eslint": "^8.47.0",
+		"eslint-config-standard": "^17.1.0",
+		"eslint-plugin-import": "^2.28.0",
+		"eslint-plugin-n": "^16.0.1",
 		"eslint-plugin-node": "^11.1.0",
 		"eslint-plugin-promise": "^6.1.1",
 		"mocha": "^10.2.0",
-		"typescript": "^5.0.2",
-		"vscode-extension-tester": "^5.5.1",
+		"typescript": "^5.1.6",
+		"vscode-extension-tester": "^5.9.0",
 		"vscode-test": "^1.5.2"
 	},
 	"repository": {
@@ -143,6 +143,6 @@
 		"url": "https://github.com/intel/vscode-oneapi-analysis-configurator.git"
 	},
 	"dependencies": {
-		"xml2js": "^0.5.0"
+		"xml2js": "^0.6.2"
 	}
 }

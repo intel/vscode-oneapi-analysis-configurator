@@ -29,6 +29,7 @@ export class VtuneLaunchScriptWriter extends LaunchScriptWriter {
 
       const projectPath = vscode.workspace.getConfiguration().get<string>('intel-corporation.oneapi-analysis-configurator.vtune.project-folder');
       const normalizedProjectPath = projectPath ? path.normalize(projectPath) : '';
+
       if (normalizedProjectPath === '') {
         removeScriptPath(scriptPath);
       }
@@ -75,20 +76,22 @@ export class VtuneLaunchScriptWriter extends LaunchScriptWriter {
     }
 
     let command = '';
+
     switch (this.osType) {
-      case 'Linux':
-      case 'Darwin':
-        command = `#!/bin/bash\nsource "${toolInstallFolder}/env/vars.sh" && vtune-gui --project-path "${toolOutputFolder}"`;
-        break;
-      case 'Windows_NT':
-        command = `@echo off\r\n"${toolInstallFolder}\\env\\vars.bat" && vtune-gui --project-path "${toolOutputFolder}"`;
-        break;
+    case 'Linux':
+    case 'Darwin':
+      command = `#!/bin/bash\nsource "${toolInstallFolder}/env/vars.sh" && vtune-gui --project-path "${toolOutputFolder}"`;
+      break;
+    case 'Windows_NT':
+      command = `@echo off\r\n"${toolInstallFolder}\\env\\vars.bat" && vtune-gui --project-path "${toolOutputFolder}"`;
+      break;
     }
     // DEV1A-431: Do not add the --app-path parameter if vtune.vtuneproj exists and
     // contains the tag for the project binary. Note that opening the binary in VTune
     // without profiling it won't save the project binary path in vtune.vtuneproj.
     try {
       const contents = await fs.promises.readFile(path.join(toolOutputFolder, 'vtune.vtuneproj'), 'utf8');
+
       if (!contents.includes(`<launch_app.app_to_launch>${projectBinary}</launch_app.app_to_launch>`)) {
         command += ` --app-path "${projectBinary}"`;
       }
@@ -99,6 +102,7 @@ export class VtuneLaunchScriptWriter extends LaunchScriptWriter {
     if (command) {
       const launchScriptPath = this.whereLauncherScriptPath(settings.getProjectRootNode());
       const parentFolder = path.dirname(launchScriptPath);
+
       await fs.promises.mkdir(parentFolder, { recursive: true });
       await fs.promises.writeFile(launchScriptPath, command, { mode: 0o744 });
       // vscode.window.showInformationMessage(command);

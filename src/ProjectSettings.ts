@@ -18,6 +18,7 @@ const { readdir } = require('fs').promises;
 // It then caches these settings in the local .vscode/settings.json and
 // re-loads them on subsequent invocations so that the user is not prompted.
 //
+
 export class ProjectSettings {
   private projectRoot: vscode.Uri | undefined;
   private projectBinary: string;
@@ -51,6 +52,7 @@ export class ProjectSettings {
       }
     }
     const binaryFromSettings = await this.getProjectBinary();
+
     if (!await this.promptForProjectBinary(binaryFromSettings)) {
       return false;
     }
@@ -70,6 +72,7 @@ export class ProjectSettings {
     if (!this.projectBinary && this.projectRoot) {
       const binaryPath : string = vscode.workspace.getConfiguration('intel-corporation.oneapi-analysis-configurator', this.projectRoot).get('binary-path') || '';
       const normalizedBinaryPath = binaryPath ? path.normalize(binaryPath) : '';
+
       if (!await checkExecFile(normalizedBinaryPath)) return '';
       this.projectBinary = normalizedBinaryPath;
     }
@@ -80,10 +83,13 @@ export class ProjectSettings {
     const dirents = await readdir(dir, { withFileTypes: true });
     const files = await Promise.all(dirents.map((dirent: any) => {
       const res = path.resolve(dir, dirent.name);
+
       return dirent.isDirectory() ? this.getFiles(res) : res;
     }));
+
     return await filter(Array.prototype.concat(...files), async(val: string) => {
       const isExec = await checkExecFile(val);
+
       return isExec;
     });
   }
@@ -98,6 +104,7 @@ export class ProjectSettings {
     const projectRootDir = `${workspaceFolder?.fsPath}`;
 
     const files = await this.getFiles(projectRootDir);
+
     if (binaryFromSettings && files.indexOf(binaryFromSettings) === -1) {
       files.push(binaryFromSettings);
     }
@@ -105,6 +112,7 @@ export class ProjectSettings {
       title: messages.chooseExec
     };
     let dialogList = [messages.changeBinary, messages.openSettings, messages.choiceExit];
+
     if (binaryFromSettings) {
       dialogList = [binaryFromSettings].concat(dialogList);
     }
@@ -132,6 +140,7 @@ export class ProjectSettings {
       };
 
       const executableUri = await vscode.window.showQuickPick(files, options);
+
       if (!executableUri) {
         return false;
       }
@@ -144,6 +153,7 @@ export class ProjectSettings {
           this.projectBinary = path.join(this.projectRoot.fsPath, this.projectBinary);
         }
         const selection = await vscode.window.showQuickPick([messages.choiceSave, messages.choiceOnce], { title: messages.saveFilePath });
+
         if (selection === messages.choiceSave) {
           vscode.workspace.getConfiguration('intel-corporation.oneapi-analysis-configurator', this.projectRoot).update('binary-path', this.projectBinary, vscode.ConfigurationTarget.WorkspaceFolder);
         }
@@ -158,6 +168,7 @@ export class ProjectSettings {
   // Get the install directory of the profiler.
   public async getToolInstallFolder(): Promise<string> {
     const execName = this.toolName === 'advisor' ? 'advixe-cl' : 'amplxe-cl';
+
     if (!this.toolInstallFolder) {
       // 1. check settings.json
       this.toolInstallFolder = vscode.workspace.getConfiguration('intel-corporation.oneapi-analysis-configurator').get(this.toolName + '.install-root') || '';
@@ -171,6 +182,7 @@ export class ProjectSettings {
         const dialogList = [messages.autoSearch(this.toolName), messages.openSettings, messages.choiceExit];
 
         const selection = await vscode.window.showQuickPick(dialogList, options);
+
         if (selection === messages.openSettings) {
           await vscode.commands.executeCommand('workbench.action.openSettings', '@ext:intel-corporation.oneapi-analysis-configurator install-root');
           return '';
@@ -180,36 +192,20 @@ export class ProjectSettings {
     } else {
       return this.toolInstallFolder;
     }
-    // 2.check in $ONEAPI_ROOT
+
+    // 2.check in $ONEAPI_ROOT new path
+    if (process.env.ONEAPI_ROOT && existsSync(join(process.env.ONEAPI_ROOT, 'bin', `${execName}${process.platform === 'win32' ? '.exe' : ''}`))) {
+      this.toolInstallFolder = join(process.env.ONEAPI_ROOT, this.toolName, 'latest');
+      await this.promptSaveInstallRootSetting(`Save the path to the ${this.toolName}?`, 'install-root');
+      return this.toolInstallFolder;
+    }
+    // check in $ONEAPI_ROOT old path
     if (process.env.ONEAPI_ROOT && existsSync(join(process.env.ONEAPI_ROOT, this.toolName, 'latest', 'bin64', `${execName}${process.platform === 'win32' ? '.exe' : ''}`))) {
       this.toolInstallFolder = join(process.env.ONEAPI_ROOT, this.toolName, 'latest');
       await this.promptSaveInstallRootSetting(`Save the path to the ${this.toolName}?`, 'install-root');
       return this.toolInstallFolder;
     }
 
-    // 3.check in global installation path
-    if (process.env['ProgramFiles(x86)']) {
-      const globalPath = process.platform === 'win32'
-        ? join(process.env['ProgramFiles(x86)'], 'Intel', 'oneAPI', this.toolName, 'latest', 'bin64', `${execName}.exe`)
-        : join('opt', 'intel', 'oneapi', this.toolName, 'latest', 'bin64', execName);
-      if (existsSync(globalPath)) {
-        this.toolInstallFolder = process.platform === 'win32'
-          ? join(process.env['ProgramFiles(x86)'], 'Intel', 'oneAPI', this.toolName, 'latest')
-          : join('opt', 'intel', 'oneapi', this.toolName, 'latest');
-
-        await this.promptSaveInstallRootSetting(`Save the path to the ${this.toolName}?`, 'install-root');
-        return this.toolInstallFolder;
-      }
-    }
-
-    if (process.platform !== 'win32' && process.env.HOME) {
-      // 4.check in local installation path
-      if (existsSync(join(process.env.HOME, 'intel', 'oneapi', this.toolName, 'latest', 'bin64', `${execName}.exe`))) {
-        this.toolInstallFolder = join(process.env.HOME, 'intel', 'oneapi', this.toolName, 'latest');
-        await this.promptSaveInstallRootSetting(`Save the path to the ${this.toolName}?`, 'install-root');
-        return this.toolInstallFolder;
-      }
-    }
     vscode.window.showErrorMessage(messages.couldNotFind(this.toolName));
     return '';
   }
@@ -228,6 +224,7 @@ export class ProjectSettings {
       prompt: messages.specifyPrFolder,
       value: './' + this.toolName // default to a subfolder of the folderRoot e.g ./vtune or ./advisor
     });
+
     if (toolProjectPath) {
       this.toolOutputFolder = toolProjectPath;
       if (this.projectRoot) {
@@ -271,6 +268,7 @@ export class ProjectSettings {
     const dialogList = [messages.choiceSave, messages.choiceOnce];
 
     const selection = await vscode.window.showQuickPick(dialogList, options);
+
     if (selection === messages.choiceSave) {
       await vscode.workspace.getConfiguration('intel-corporation.oneapi-analysis-configurator').update(`${this.toolName}.${setting}`, this.toolInstallFolder);
     }
@@ -283,6 +281,7 @@ export class ProjectSettings {
     const dialogList = [messages.choiceSave, messages.choiceOnce];
 
     const selection = await vscode.window.showQuickPick(dialogList, options);
+
     if (selection === messages.choiceSave) {
       await vscode.workspace.getConfiguration('intel-corporation.oneapi-analysis-configurator').update(`${this.toolName}.${setting}`, this.toolOutputFolder);
     }

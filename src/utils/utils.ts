@@ -15,6 +15,7 @@ import messages from '../messages';
 
 export function getPSexecutableName(): string | undefined {
   let execName: string;
+
   try {
     execSync('pwsh');
     execName = 'pwsh';
@@ -36,6 +37,7 @@ export function getBaseUri(node: vscode.Uri): vscode.Uri | undefined {
 
   // If only one folder, just return its uri
   const folders = vscode.workspace.workspaceFolders;
+
   if (folders && folders.length === 1) {
     baseUri = folders[0].uri;
   }
@@ -43,6 +45,7 @@ export function getBaseUri(node: vscode.Uri): vscode.Uri | undefined {
   // Get the folder corresponding to the selected node
   if (node) {
     const folder: vscode.WorkspaceFolder | undefined = vscode.workspace.getWorkspaceFolder(node);
+
     if (folder) {
       baseUri = folder.uri;
     }
@@ -101,6 +104,7 @@ async function checkValidMagicNumber(filePath: string): Promise<any> {
   try {
     const buffer = await readBytes(fd, sharedBuffer);
     const firstBytes = buffer.toString('utf8', 0, 4);
+
     if (process.platform === 'win32' && firstBytes.indexOf('MZ') !== -1) {
       return true;
     } else if (firstBytes.indexOf('ELF') !== -1) {
@@ -114,12 +118,14 @@ async function checkValidMagicNumber(filePath: string): Promise<any> {
 
 export async function checkExecFile(normalizedPath: string): Promise<any> {
   const isExist = await checkIfPathExist(normalizedPath);
+
   if (normalizedPath === '' || !isExist || !fs.statSync(normalizedPath).isFile()) {
     return false;
   }
   if (process.platform === 'win32') {
     const pathExt = process.env.PATHEXT;
     const extname = path.extname(normalizedPath).toUpperCase();
+
     if (extname === '' || !pathExt?.includes(extname)) {
       return false;
     }
@@ -163,6 +169,7 @@ export function updateAnalyzersRoot(ONEAPI_ROOT: string) {
         vscode.window.showInformationMessage(`${newAdvisorRoot} could not be found.`);
       } else {
         const advisorConfiguration = vscode.workspace.getConfiguration('intel-corporation.oneapi-analysis-configurator');
+
         vscode.window.showInformationMessage('Should this ONEAPI_ROOT update change the root path to Advisor?', update, skip)
           .then((selection) => {
             if (selection === update) {
@@ -186,6 +193,7 @@ export async function getworkspaceFolder(): Promise<vscode.WorkspaceFolder | und
     return vscode.workspace.workspaceFolders[0];
   }
   const selection = await vscode.window.showWorkspaceFolderPick();
+
   if (!selection) {
     vscode.window.showErrorMessage('Cannot find the working directory.', { modal: true });
     vscode.window.showInformationMessage('Please add one or more working directories and try again.');
@@ -197,6 +205,7 @@ export async function getworkspaceFolder(): Promise<vscode.WorkspaceFolder | und
 export async function filter(arr: any[], callback: any) {
   // eslint-disable-next-line symbol-description
   const fail = Symbol();
+
   return (await Promise.all(arr.map(async item => (await callback(item)) ? item : fail))).filter(i => i !== fail);
 }
 

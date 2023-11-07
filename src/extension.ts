@@ -36,13 +36,16 @@ function checkExtensionsConflict(id: string) {
   const ExtensionsList = [['intel-corporation.oneapi-environment-variables', 'intel-corporation.oneapi-environment-configurator'],
     ['intel-corporation.oneapi-launch-configurator', 'intel-corporation.oneapi-analysis-configurator'],
     ['', 'intel-corporation.oneapi-gdb-debug']];
+
   ExtensionsList.forEach((Extension) => {
     const actualExtension = vscode.extensions.getExtension(Extension[ExtensionState.actual]);
     const deprecatedExtension = vscode.extensions.getExtension(Extension[ExtensionState.deprecated]);
+
     if (actualExtension?.id === id) {
       if (deprecatedExtension) {
         const deprExtName = deprecatedExtension.packageJSON.displayName;
         const actualExtName = actualExtension.packageJSON.displayName;
+
         vscode.window.showInformationMessage(messages.deprecatedExtension(deprExtName, actualExtName), messages.goToUninstall, messages.choiceIgnore)
           .then((selection) => {
             if (selection === messages.goToUninstall) {
@@ -70,9 +73,11 @@ export function activate(context: vscode.ExtensionContext): void {
   readFile(path.join(__dirname, '/../attributes/kernel.xml')).then((data: any) => {
     parser.parseStringPromise(data).then((result: any) => {
       const attributes = result.reference.refbody[0].table[0].tgroup[0].tbody[0].row;
+
       for (const att of attributes) {
         const name = att.entry[0].codeph[0].replace(/\(.*\)/, '').replace(/[[\]']+/g, '').replace('intel::', '').replace(/\r\n/g, '').trim();
         const description = `${(att.entry[1]._ || att.entry[1].p[0])?.replace(/\s+/g, ' ')}\n\n${messages.kernelAttrLearnMore}`;
+
         fpgaMemoryAttributes[name] = {
           description,
           signature: att.entry[0].codeph[0].replace(/[[\]']+/g, '').replace(/\r\n/g, '').trim()
@@ -84,9 +89,11 @@ export function activate(context: vscode.ExtensionContext): void {
       parser.parseStringPromise(data).then((result: any) => {
         console.log('result', result);
         const attributes = result.concept.conbody[0].table[0].tgroup[0].tbody[0].row;
+
         for (const att of attributes) {
           const name = att.entry[0].codeph[0].replace(/\(.*\)/, '').replace(/[[\]']+/g, '').replace('intel::', '').replace(/\r\n/g, '').trim();
           const description = `${(att.entry[1]._ || att.entry[1].p[0]._ || att.entry[1].p[0])?.replace(/\s+/g, ' ')}\n\n${messages.loopAttrLearnMore}`;
+
           fpgaMemoryAttributes[name] = {
             description,
             signature: att.entry[0].codeph[0].replace(/[[\]']+/g, '').replace(/\r\n/g, '').trim()
@@ -98,9 +105,11 @@ export function activate(context: vscode.ExtensionContext): void {
     readFile(path.join(__dirname, '/../attributes/memory.xml')).then((data: any) => {
       parser.parseStringPromise(data).then((result: any) => {
         const attributes = result.concept.conbody[0].table[0].tgroup[0].tbody[0].row;
+
         for (const att of attributes) {
           const name = att.entry[0].codeph[0].replace(/\(.*\)/, '').replace(/[[\]']+/g, '').replace('intel::', '').replace(/\r\n/g, '').trim();
           const description = `${(att.entry[1]._ || att.entry[1].p[0])?.replace(/\s+/g, ' ')}\n\n${messages.memoryAttrLearnMore}`;
+
           fpgaMemoryAttributes[name] = {
             description,
             signature: att.entry[0].codeph[0].replace(/[[\]']+/g, '').replace(/\r\n/g, '').trim()
@@ -128,11 +137,13 @@ export function activate(context: vscode.ExtensionContext): void {
     }
 
     const settings = new ProjectSettings('advisor', 'Intel® Advisor', getBaseUri(selectedNode));
+
     if (await settings.getProjectSettings() === false) {
       return;
     }
 
     const writer = new AdvisorLaunchScriptWriter();
+
     await writer.writeLauncherScript(settings);
     advisorProjRoot = settings.getProjectRootNode();
   });
@@ -144,16 +155,19 @@ export function activate(context: vscode.ExtensionContext): void {
     }
 
     let vtuneName = 'vtune';
+
     if (os.type() === 'Darwin') {
       // On MacOS, the vtune tool is installed in a different folder.
       vtuneName = 'vtune_profiler';
     }
     const settings = new ProjectSettings(vtuneName, 'Intel® VTune™ Profiler', getBaseUri(selectedNode));
+
     if ((await settings.getProjectSettings() === false)) {
       return;
     }
 
     const writer = new VtuneLaunchScriptWriter();
+
     await writer.writeLauncherScript(settings);
     vtuneProjRoot = settings.getProjectRootNode();
   });
@@ -192,8 +206,10 @@ export function activate(context: vscode.ExtensionContext): void {
     if (e.affectsConfiguration('intel-corporation.oneapi-analysis-configurator.ONEAPI_ROOT')) {
       await wait(5000);
       const ONEAPI_ROOT = vscode.workspace.getConfiguration().get<string>('intel-corporation.oneapi-analysis-configurator.ONEAPI_ROOT');
+
       if (!ONEAPI_ROOT) return;
       const normalizedOneAPIRoot = path.normalize(ONEAPI_ROOT);
+
       updateAnalyzersRoot(normalizedOneAPIRoot);
       vscode.window.showInformationMessage(messages.updateOneApiRoot);
     }
@@ -201,6 +217,7 @@ export function activate(context: vscode.ExtensionContext): void {
 
   // Register the tasks that will invoke the launcher scripts.
   const type = 'toolProvider';
+
   vscode.tasks.registerTaskProvider(type, {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     async provideTasks(token?: vscode.CancellationToken) {
@@ -208,6 +225,7 @@ export function activate(context: vscode.ExtensionContext): void {
       const vtunerShell = await vtune.getLauncherScriptPath(vtuneProjRoot);
       const advisor = new AdvisorLaunchScriptWriter();
       const advisorShell = await advisor.getLauncherScriptPath(advisorProjRoot);
+
       return [
         new vscode.Task({ type }, vscode.TaskScope.Workspace,
           'Launch Advisor', 'Intel® oneAPI', new vscode.ProcessExecution(advisorShell)),
@@ -222,8 +240,9 @@ export function activate(context: vscode.ExtensionContext): void {
   });
 
   const launchConfigurator = new LaunchConfigurator();
+
   context.subscriptions.push(vscode.commands.registerCommand('intel-corporation.oneapi-analysis-configurator.generateTaskJson', () => launchConfigurator.makeTasksFile()));
   context.subscriptions.push(vscode.commands.registerCommand('intel-corporation.oneapi-analysis-configurator.quickBuild', () => launchConfigurator.quickBuild(false)));
   context.subscriptions.push(vscode.commands.registerCommand('intel-corporation.oneapi-analysis-configurator.quickBuildSycl', () => launchConfigurator.quickBuild(true)));
-  context.subscriptions.push(vscode.commands.registerCommand('intel-corporation.oneapi-analysis-configurator.editCppProperties', () => launchConfigurator.configureCppProperties()));
+  context.subscriptions.push(vscode.commands.registerCommand('intel-corporation.oneapi-analysis-configurator.configureCppProperties', () => launchConfigurator.configureCppProperties()));
 }

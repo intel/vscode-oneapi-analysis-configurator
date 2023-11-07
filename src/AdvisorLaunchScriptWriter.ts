@@ -28,6 +28,7 @@ export class AdvisorLaunchScriptWriter extends LaunchScriptWriter {
 
       const projectPath = vscode.workspace.getConfiguration().get<string>('intel-corporation.oneapi-analysis-configurator.advisor.project-folder');
       const normalizedProjectPath = projectPath ? path.normalize(projectPath) : '';
+
       if (normalizedProjectPath === '') {
         removeScriptPath(scriptPath);
       }
@@ -74,18 +75,20 @@ export class AdvisorLaunchScriptWriter extends LaunchScriptWriter {
     }
 
     let command = '';
+
     switch (this.osType) {
-      case 'Linux':
-      case 'Darwin':
-        command = `#!/bin/bash\nsource "${toolInstallFolder}/env/vars.sh" && advixe-cl --create-project --project-dir "${toolOutputFolder}" -- "${projectBinary}" && advisor-gui "${toolOutputFolder}/e000"`;
-        break;
-      case 'Windows_NT':
-        command = `@echo off\r\n"${toolInstallFolder}\\env\\vars.bat" && advixe-cl --create-project --project-dir "${toolOutputFolder}" -- "${projectBinary}" && advisor-gui "${toolOutputFolder}/e000"`;
-        break;
+    case 'Linux':
+    case 'Darwin':
+      command = `#!/bin/bash\nsource "${toolInstallFolder}/env/vars.sh" && advixe-cl --create-project --project-dir "${toolOutputFolder}" -- "${projectBinary}" && advisor-gui "${toolOutputFolder}/e000"`;
+      break;
+    case 'Windows_NT':
+      command = `@echo off\r\n"${toolInstallFolder}\\env\\vars.bat" && advixe-cl --create-project --project-dir "${toolOutputFolder}" -- "${projectBinary}" && advisor-gui "${toolOutputFolder}\\e000"`;
+      break;
     }
     if (command) {
       const launchScriptPath = this.whereLauncherScriptPath(settings.getProjectRootNode());
       const parentFolder = path.dirname(launchScriptPath);
+
       await fs.promises.mkdir(parentFolder, { recursive: true });
       await fs.promises.writeFile(launchScriptPath, command, { mode: 0o744 });
       // vscode.window.showInformationMessage(command);

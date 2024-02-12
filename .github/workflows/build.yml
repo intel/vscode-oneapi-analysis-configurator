@@ -1,5 +1,6 @@
-name: Pre-commit
+name: Build
 on:
+  branch_protection_rule: 
   push:
     branches:
       - main
@@ -8,19 +9,22 @@ on:
       - main
   workflow_dispatch:
 
+permissions: read-all
+
 jobs:
   build-extensions:
-    runs-on: [self-hosted, linux]
-    container: node:16.14.2-buster
+    name: Build Extension
+    runs-on: linux
+    container: node:20.11.0-buster
     env:
       NODE_OPTIONS: "--max-old-space-size=4096"
     steps:
       - name: Check out repository code
-        uses: actions/checkout@v2
+        uses: actions/checkout@1e31de5234b9f8995739874a8ce0492dc87873e2 #v4
       - name: Build the package
-        run: yarn install  && yarn package
+        run: npm install  && npm run package
       - name: Upload artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@c7d193f32edcb7bfad88892161225aeda64e9392 #v4
         with:
           name: launcher-extension
           path: ./*.vsix

@@ -14,8 +14,7 @@ permissions: read-all
 jobs:
   build-extensions:
     name: Build Extension
-    runs-on: linux
-    container: node:20.11.0-buster
+    runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: "--max-old-space-size=4096"
     steps:

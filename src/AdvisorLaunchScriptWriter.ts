@@ -11,6 +11,7 @@ import * as fs from 'fs';
 import { LaunchScriptWriter } from './LaunchScriptWriter';
 import { ProjectSettings } from './ProjectSettings';
 import { checkIfPathExist, removeScriptPath } from './utils/utils';
+import messages from './messages';
 
 export class AdvisorLaunchScriptWriter extends LaunchScriptWriter {
   protected toolname: string = 'advisor';
@@ -22,7 +23,7 @@ export class AdvisorLaunchScriptWriter extends LaunchScriptWriter {
 
     fs.readFile(scriptPath, 'utf8', async function(err: any, content: any) {
       if (err) {
-        vscode.window.showErrorMessage(`Failed to read ${scriptPath} file. ${err}`);
+        vscode.window.showErrorMessage(messages.errReadScript(scriptPath, err));
         return;
       };
 
@@ -55,7 +56,7 @@ export class AdvisorLaunchScriptWriter extends LaunchScriptWriter {
 
     fs.readFile(scriptPath, 'utf8', async function(err: any, content: any) {
       if (err) {
-        vscode.window.showErrorMessage(`Failed to read ${scriptPath} file. ${err}`);
+        vscode.window.showErrorMessage(messages.failedReadScript(scriptPath, err));
         return;
       }
 
@@ -92,7 +93,7 @@ export class AdvisorLaunchScriptWriter extends LaunchScriptWriter {
       await fs.promises.mkdir(parentFolder, { recursive: true });
       await fs.promises.writeFile(launchScriptPath, command, { mode: 0o744 });
       // vscode.window.showInformationMessage(command);
-      vscode.commands.executeCommand('workbench.action.tasks.runTask', 'Intel® oneAPI: Launch Advisor');
+      vscode.commands.executeCommand('workbench.action.tasks.runTask', messages.launchAdvisor);
     }
   }
 }

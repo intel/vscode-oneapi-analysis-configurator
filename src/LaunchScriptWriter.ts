@@ -11,6 +11,7 @@ import * as vscode from 'vscode';
 import { checkExecFile, checkIfPathExist, removeScriptPath } from './utils/utils';
 import { promises, readFile } from 'fs';
 import * as os from 'os';
+import messages from './messages';
 export abstract class LaunchScriptWriter {
   protected osType: string = os.type();
   protected projectRoot: string = '';
@@ -45,7 +46,7 @@ export abstract class LaunchScriptWriter {
 
     if (!await checkExecFile(normalizedBinaryPath)) {
       if (normalizedBinaryPath !== '') {
-        vscode.window.showErrorMessage(`${normalizedBinaryPath} is not an executable file. Please check the app name and path and also make sure that the file has sufficient permissions to launch.`);
+        vscode.window.showErrorMessage(messages.errExecFile(normalizedBinaryPath));
       }
       await removeScriptPath(scriptPath);
       return;
@@ -55,7 +56,7 @@ export abstract class LaunchScriptWriter {
 
     readFile(scriptPath, 'utf8', async function(err: any, content: any) {
       if (err) {
-        vscode.window.showErrorMessage(`Failed to read ${scriptPath} file. ${err}`);
+        vscode.window.showErrorMessage(messages.failedReadScript(scriptPath, err));
         return;
       }
       const updatedContent = content.replace(/--app-path "[^"]*"/, `--app-path "${normalizedBinaryPath}"`, 'utf8');

@@ -13,7 +13,7 @@ export default class FPGAMemoryHoverProvider implements HoverProvider {
     this.attributes = attributes;
   }
 
-  public provideHover(document: TextDocument, position: Position, token: CancellationToken): Hover|undefined {
+  public provideHover(document: TextDocument, position: Position, token?: CancellationToken): Hover|undefined {
     const wordRange = document.getWordRangeAtPosition(position);
 
     if (!wordRange) {

@@ -277,7 +277,7 @@ export class LaunchConfigurator {
       vscode.window.showErrorMessage(messages.errLog(logPath), { modal: true });
       return false;
     }
-    vscode.window.showInformationMessage(`File ${dest} was built.`);
+    vscode.window.showInformationMessage(messages.builtFile(dest));
     return true;
   }
 

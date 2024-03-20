@@ -187,7 +187,7 @@ export class ProjectSettings {
           await vscode.commands.executeCommand('workbench.action.openSettings', '@ext:intel-corporation.oneapi-analysis-configurator install-root');
           return '';
         } else
-        if (!selection || selection === messages.choiceExit) return '';
+          if (!selection || selection === messages.choiceExit) return '';
       }
     } else {
       return this.toolInstallFolder;
@@ -196,13 +196,13 @@ export class ProjectSettings {
     // 2.check in $ONEAPI_ROOT new path
     if (process.env.ONEAPI_ROOT && existsSync(join(process.env.ONEAPI_ROOT, 'bin', `${execName}${process.platform === 'win32' ? '.exe' : ''}`))) {
       this.toolInstallFolder = join(process.env.ONEAPI_ROOT, this.toolName, 'latest');
-      await this.promptSaveInstallRootSetting(`Save the path to the ${this.toolName}?`, 'install-root');
+      await this.promptSaveInstallRootSetting(messages.saveToolPath(this.toolName), 'install-root');
       return this.toolInstallFolder;
     }
     // check in $ONEAPI_ROOT old path
     if (process.env.ONEAPI_ROOT && existsSync(join(process.env.ONEAPI_ROOT, this.toolName, 'latest', 'bin64', `${execName}${process.platform === 'win32' ? '.exe' : ''}`))) {
       this.toolInstallFolder = join(process.env.ONEAPI_ROOT, this.toolName, 'latest');
-      await this.promptSaveInstallRootSetting(`Save the path to the ${this.toolName}?`, 'install-root');
+      await this.promptSaveInstallRootSetting(messages.saveToolPath(this.toolName), 'install-root');
       return this.toolInstallFolder;
     }
 
@@ -232,7 +232,7 @@ export class ProjectSettings {
           this.toolOutputFolder = path.join(this.projectRoot.fsPath, this.toolOutputFolder);
         }
       }
-      await this.promptSaveProjectFolderSetting('Save the path to the project?', 'project-folder');
+      await this.promptSaveProjectFolderSetting(messages.saveProjPath, 'project-folder');
       return true;
     }
     return false;

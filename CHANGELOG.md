@@ -1,5 +1,10 @@
 # Change Log
 
+## 0.1.24
+
+- Refactoring errors
+- Added sycl snippets and tooltips 
+
 ## 0.1.23
 
 - Updated versions of 3rd party dependencies

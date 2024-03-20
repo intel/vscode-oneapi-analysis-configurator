@@ -49,7 +49,7 @@ export class VtuneLaunchScriptWriter extends LaunchScriptWriter {
     const fullPath = path.join(normalizedinstallRoot, 'latest', 'bin64', 'amplxe-cl');
 
     if (!await checkExecFile(fullPath)) {
-      vscode.window.showErrorMessage(`${fullPath} is not an executable file. Please check the app name and path and also make sure that the file has sufficient permissions to launch.`);
+      vscode.window.showErrorMessage(messages.errExecFile(fullPath));
       await removeScriptPath(scriptPath);
       return;
     };
@@ -106,7 +106,7 @@ export class VtuneLaunchScriptWriter extends LaunchScriptWriter {
       await fs.promises.mkdir(parentFolder, { recursive: true });
       await fs.promises.writeFile(launchScriptPath, command, { mode: 0o744 });
       // vscode.window.showInformationMessage(command);
-      vscode.commands.executeCommand('workbench.action.tasks.runTask', 'Intel® oneAPI: Launch VTune Profiler');
+      vscode.commands.executeCommand('workbench.action.tasks.runTask', messages.launchVTune);
     }
   }
 }

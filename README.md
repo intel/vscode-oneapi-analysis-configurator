@@ -1,4 +1,4 @@
-# Analysis Configurator for Intel® oneAPI Toolkits
+# Analysis Configurator for Intel Software Developer Tools
 
 #### [Repository](https://github.com/intel/vscode-oneapi-analysis-configurator)&nbsp;&nbsp;|&nbsp;&nbsp;[Issues](https://github.com/intel/vscode-oneapi-analysis-configurator/issues)&nbsp;&nbsp;|&nbsp;&nbsp;[Documentation](https://www.intel.com/content/www/us/en/developer/tools/oneapi/documentation.html)&nbsp;&nbsp;|&nbsp;&nbsp;[Samples](https://github.com/oneapi-src/oneAPI-samples)&nbsp;&nbsp;|&nbsp;&nbsp;[Forums](https://community.intel.com/t5/Intel-oneAPI-Toolkits/ct-p/oneapi)
 

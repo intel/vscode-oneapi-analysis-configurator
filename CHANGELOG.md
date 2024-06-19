@@ -1,5 +1,10 @@
 # Change Log
 
+## 0.1.25
+
+- Updated extension name
+- Minor bugfixes 
+
 ## 0.1.24
 
 - Refactoring errors

@@ -1,9 +1,9 @@
 {
 	"name": "oneapi-analysis-configurator",
-	"displayName": "Analysis Configurator for Intel® oneAPI Toolkits",
+	"displayName": "Analysis Configurator for Intel Software Developer Tools",
 	"description": "Build and performance analysis of your Intel® oneAPI applications.",
 	"publisher": "intel-corporation",
-	"version": "0.1.24",
+	"version": "0.1.25",
 	"license": "MIT",
 	"icon": "media/oneapi-logo.png",
 	"keywords": [
@@ -59,7 +59,7 @@
 		],
 		"configuration": [
 			{
-				"title": "Analysis Configurator for Intel® oneAPI Toolkits",
+				"title": "Analysis Configurator for Intel Software Developer Tools",
 				"properties": {
 					"intel-corporation.oneapi-analysis-configurator.ONEAPI_ROOT": {
 						"type": "string",

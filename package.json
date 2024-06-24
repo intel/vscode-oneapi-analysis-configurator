@@ -3,7 +3,7 @@
 	"displayName": "Analysis Configurator for Intel Software Developer Tools",
 	"description": "Build and performance analysis of your Intel® oneAPI applications.",
 	"publisher": "intel-corporation",
-	"version": "0.1.25",
+	"version": "0.1.26",
 	"license": "MIT",
 	"icon": "media/oneapi-logo.png",
 	"keywords": [

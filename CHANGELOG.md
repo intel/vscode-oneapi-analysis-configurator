@@ -1,5 +1,9 @@
 # Change Log
 
+## 0.1.26
+
+- 3rd Party component dependency version update
+
 ## 0.1.25
 
 - Updated extension name

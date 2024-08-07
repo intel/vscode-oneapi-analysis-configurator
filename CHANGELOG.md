@@ -1,9 +1,5 @@
 # Change Log
 
-## 0.1.27
-
-- version update for new release
-
 ## 0.1.26
 
 - 3rd Party component dependency version update

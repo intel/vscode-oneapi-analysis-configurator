@@ -1,4 +1,7 @@
 # Change Log
+## 0.1.27
+
+- 3rd Party component dependency version update - Bumps micromatch
 
 ## 0.1.26
 

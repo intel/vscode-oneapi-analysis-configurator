@@ -1,4 +1,8 @@
 # Change Log
+## 0.1.28
+
+- CVE Vulnerability Fixes
+
 ## 0.1.27
 
 - 3rd Party component dependency version update - Bumps micromatch

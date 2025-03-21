@@ -181,7 +181,13 @@ export function updateAnalyzersRoot(ONEAPI_ROOT: string) {
 }
 
 export async function wait(milliseconds: number) {
-  return new Promise(resolve => setTimeout(resolve, milliseconds));
+  if (typeof milliseconds !== "number" || milliseconds < 0) {
+    throw new Error("Invalid input for milliseconds");
+  }
+
+  return new Promise<void>((resolve) => {
+    setTimeout(() => resolve(), milliseconds);
+  });
 }
 
 export function isWorkspaceOpen() {

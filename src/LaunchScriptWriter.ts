@@ -20,6 +20,7 @@ export abstract class LaunchScriptWriter {
   public abstract writeLauncherScript(settings: ProjectSettings): void;
   public abstract updateProjectPath(): Promise<void>;
   public abstract updateInstallRoot(): Promise<void>;
+  public abstract executeLauncherRemotely(): Promise<void>;  
 
   protected whereLauncherScriptPath(projRoot?: string): string {
     const fileExt = this.osType === 'Windows_NT' ? 'bat' : 'sh';

@@ -8,7 +8,7 @@
 import * as vscode from 'vscode';
 import * as os from 'os';
 import { ProjectSettings } from './ProjectSettings';
-import { AdvisorLaunchScriptWriter } from './AdvisorLaunchScriptWriter';
+import { AdvisorLaunchScriptWriter} from './AdvisorLaunchScriptWriter';
 import { VtuneLaunchScriptWriter } from './VtuneLaunchScriptWriter';
 import { LaunchConfigurator } from './LaunchConfigurator';
 import FPGAMemoryHoverProvider from './hoverProvider';
@@ -129,7 +129,7 @@ export function activate(context: vscode.ExtensionContext): void {
   checkExtensionsConflict(context.extension.id);
 
   // Register the commands that will interact with the user and write the launcher scripts.
-  vscode.commands.registerCommand('intel-corporation.oneapi-analysis-configurator.launchAdvisor', async(selectedNode: vscode.Uri) => {
+  vscode.commands.registerCommand('intel-corporation.oneapi-analysis-configurator.launchAdvisor', async (selectedNode: vscode.Uri) => {
     // VS Code will return undefined for remoteName if working with a local workspace
     if (typeof vscode.env.remoteName !== 'undefined') {
       vscode.window.showWarningMessage(messages.warnLaunchingAdvisor);
@@ -147,12 +147,9 @@ export function activate(context: vscode.ExtensionContext): void {
     await writer.writeLauncherScript(settings);
     advisorProjRoot = settings.getProjectRootNode();
   });
-  vscode.commands.registerCommand('intel-corporation.oneapi-analysis-configurator.launchVTune', async(selectedNode: vscode.Uri) => {
-    // VS Code will return undefined for remoteName if working with a local workspace
-    if (typeof vscode.env.remoteName !== 'undefined') {
-      vscode.window.showWarningMessage(messages.warnLaunchingVTune);
-      return;
-    }
+  vscode.commands.registerCommand('intel-corporation.oneapi-analysis-configurator.launchVTune', async (selectedNode: vscode.Uri) => {
+    let remoteHost = process.env.SSH_CONNECTION?.split(' ')[2]; // Extract remote IP
+    let isRemoteSSH = vscode.env.remoteName && vscode.env.remoteName.startsWith("ssh-");
 
     let vtuneName = 'vtune';
 
@@ -160,16 +157,22 @@ export function activate(context: vscode.ExtensionContext): void {
       // On MacOS, the vtune tool is installed in a different folder.
       vtuneName = 'vtune_profiler';
     }
-    const settings = new ProjectSettings(vtuneName, 'Intel® VTune™ Profiler', getBaseUri(selectedNode));
 
-    if ((await settings.getProjectSettings() === false)) {
-      return;
+    if (!isRemoteSSH) {
+      const settings = new ProjectSettings(vtuneName, 'Intel® VTune™ Profiler', getBaseUri(selectedNode));
+      if ((await settings.getProjectSettings() === false)) {
+        return;
+      }
+      const writer = new VtuneLaunchScriptWriter();
+      await writer.writeLauncherScript(settings);
+      vtuneProjRoot = settings.getProjectRootNode();
+    } else if (remoteHost) {
+      vscode.window.showInformationMessage(`Starting VTune on remote host: ${remoteHost}...`);
+      const launchVtuneRemotely = new VtuneLaunchScriptWriter();
+      await launchVtuneRemotely.executeLauncherRemotely();
+    } else {
+      vscode.window.showErrorMessage("Failed to determine remote host.");
     }
-
-    const writer = new VtuneLaunchScriptWriter();
-
-    await writer.writeLauncherScript(settings);
-    vtuneProjRoot = settings.getProjectRootNode();
   });
 
   // Updating parameters when they are changed in Setting.json

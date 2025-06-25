@@ -96,4 +96,9 @@ export class AdvisorLaunchScriptWriter extends LaunchScriptWriter {
       vscode.commands.executeCommand('workbench.action.tasks.runTask', messages.launchAdvisor);
     }
   }
+
+  // @TODO - Run Advisor remotely
+  public executeLauncherRemotely(): Promise<void> {
+    throw new Error('Method not implemented.');
+  }
 }

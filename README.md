@@ -96,6 +96,17 @@ this extension to work and be useful.
 
     ![image](media/Analysis/8.gif)
 
+## Enable VTune on a **Remote Machine** via VS Code
+This feature allows users to run VTune profiling on a remote machine through SSH, with the VTune installer location either fetched from the `vtune.install-root` configuration or provided by the user and saved for future use in the `vtune.install-root` workspace.
+
+### Features:
+1. Run VTune with additional parameters (e.g., `--web-port=55001`)
+2. Run VTune without parameters
+3. Reset the `passphrase` if the user is unable to recall it
+
+After execution, the user will get access to the VTune Profiler GUI, which is accessible via a `web interface`.
+![image](media/Analysis/VtuneRemote.gif)
+
 ## How to Use IntelliSense for Code Developed with Intel oneAPI Toolkits
 
 ### Configure C++ Properties

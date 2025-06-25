@@ -1,4 +1,8 @@
 # Change Log
+## 0.1.29
+
+- VTune Remote Enablement via VS Code; CVE Vulnerabilities Fixed
+
 ## 0.1.28
 
 - CVE Vulnerability Fixes

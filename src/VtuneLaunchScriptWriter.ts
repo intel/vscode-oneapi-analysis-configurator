@@ -12,6 +12,7 @@ import { LaunchScriptWriter } from './LaunchScriptWriter';
 import { ProjectSettings } from './ProjectSettings';
 import { checkIfPathExist, checkExecFile, removeScriptPath } from './utils/utils';
 import messages from './messages';
+import { runVTuneRemotely } from './LaunchVtuneRemotely';
 
 export class VtuneLaunchScriptWriter extends LaunchScriptWriter {
   protected toolname: string = 'vtune';
@@ -108,5 +109,12 @@ export class VtuneLaunchScriptWriter extends LaunchScriptWriter {
       // vscode.window.showInformationMessage(command);
       vscode.commands.executeCommand('workbench.action.tasks.runTask', messages.launchVTune);
     }
+  }
+
+  /**
+   * Executes the VTune Profiler remotely on the target machine
+   */
+  public async executeLauncherRemotely() {
+    await runVTuneRemotely();
   }
 }

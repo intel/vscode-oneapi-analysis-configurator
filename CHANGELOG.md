@@ -1,4 +1,9 @@
 # Change Log
+## 0.1.31
+
+- Security: Mitigated multiple reported CVE vulnerabilities  
+  (CVE-2025-59343, CVE-2025-64756, CVE-2025-64718, CVE-2025-65945)
+
 ## 0.1.30
 
 - CVE Vulnerability Mitigations

@@ -1,4 +1,7 @@
 # Change Log
+## 0.1.33
+- Security: Resolved multiple reported CVE vulnerabilities
+
 ## 0.1.32
 - Security: Mitigated multiple reported CVE vulnerabilities  
   (CVE-2025-64756, CVE-2025-15284)
